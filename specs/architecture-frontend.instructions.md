@@ -388,6 +388,8 @@ The landing's `LanguageBubbles` reuses `LinguAvatar` in the centered 140 × 140 
 through. The avatar and language circle remain transparent and hidden from assistive technology
 until `onReady`, then fade in together without a preliminary PNG or staggered bubble entrances.
 The reserved space, surrounding language positions, and container dimensions remain stable.
+Flag images use fixed 14 × 10 px boxes matching their declared image dimensions, with flex shrinking
+disabled and centered `object-cover` cropping to keep a uniform size without stretching the artwork.
 Bubble floating starts when the group is ready. Reduced motion disables the entrance transition
 and floating; reduced motion and loading failures reveal the group with static Lingu artwork.
 An optional `className` overrides the avatar's default responsive dimensions so other surfaces
