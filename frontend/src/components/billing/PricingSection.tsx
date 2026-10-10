@@ -104,6 +104,7 @@ export default function PricingSection({
     }
   }
 
+  const canStartTrial = trialDays > 0 && !trialUsed
   const planIcons = [Circle, CircleDot, Diamond]
 
   const freeRows = ['f1', 'f2', 'f3', 'f4', 'f5']
@@ -154,11 +155,11 @@ export default function PricingSection({
       price: priceMonthly,
       priceLabel: tBilling('month'),
       originalPrice: totalPriceMonthly,
-      badge: tBilling(trialUsed ? 'trialBadgeTrialUsed' : 'trialBadge'),
+      badge: tBilling(canStartTrial ? 'trialBadge' : 'trialBadgeTrialUsed'),
       desc: null,
       badgeStyle: 'text-fl-accent border-fl-accent/30',
       href: hasSession ? '/dashboard' : '/register?plan=monthly',
-      cta: tBilling(trialUsed ? 'ctaRegisterTrialUsed' : 'ctaRegister'),
+      cta: tBilling(canStartTrial ? 'ctaRegister' : 'ctaRegisterTrialUsed'),
       isFree: false as const,
       interval: 'monthly' as const,
     },
@@ -172,7 +173,7 @@ export default function PricingSection({
       desc: null,
       badgeStyle: 'text-fl-accent border-fl-accent/30',
       href: hasSession ? '/dashboard' : '/register?plan=yearly',
-      cta: tBilling(trialUsed ? 'ctaRegisterTrialUsed' : 'ctaRegister'),
+      cta: tBilling(canStartTrial ? 'ctaRegister' : 'ctaRegisterTrialUsed'),
       isFree: false as const,
       interval: 'yearly' as const,
     },
@@ -185,7 +186,7 @@ export default function PricingSection({
           {tBilling('pricingTitle')}
         </h2>
         <p className="text-fl-muted-1 font-sans text-sm">
-          {tBilling(trialUsed ? 'pricingDescTrialUsed' : 'pricingDesc', {
+          {tBilling(canStartTrial ? 'pricingDesc' : 'pricingDescTrialUsed', {
             days: trialDays,
           })}
         </p>
@@ -362,7 +363,9 @@ export default function PricingSection({
           >
             {checkoutLoading === 'yearly'
               ? '...'
-              : tBilling(trialUsed ? 'ctaRegisterTrialUsed' : 'ctaRegister')}
+              : tBilling(
+                  canStartTrial ? 'ctaRegister' : 'ctaRegisterTrialUsed'
+                )}
           </button>
         ) : (
           <Link
@@ -370,7 +373,7 @@ export default function PricingSection({
             className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 inline-block px-10 py-3 font-mono text-sm font-bold tracking-widest uppercase transition-colors"
           >
             {allowRegistration
-              ? tBilling(trialUsed ? 'ctaRegisterTrialUsed' : 'ctaRegister')
+              ? tBilling(canStartTrial ? 'ctaRegister' : 'ctaRegisterTrialUsed')
               : tLanding('signIn')}
           </Link>
         )}

@@ -99,14 +99,15 @@ not-found error. Administrators cannot edit rating, comment, or snapshots.
 
 - requires no authentication;
 - rate limit: `60/minute`;
-- returns only `is_approved=true` and `rating >= 4`;
+- returns only `is_approved=true` and `rating >= 4` with a non-null, non-empty comment;
 - orders by creation time descending without an ID tie-breaker;
-- accepts only `limit` from 1 to 100, defaulting to 100;
+- accepts only `limit` from 1 to 50, defaulting to 50;
 - has no offset, cursor, total, or language filter;
 - omits user ID, approval state, and update time.
 
 The endpoint's maximum collection is the public carousel dataset, not a paginated representation of
-all approved reviews.
+all approved reviews. The comment filter is applied before the limit; whitespace-only submissions
+are normalized to null when created or edited.
 
 ## Review prompt
 
@@ -174,7 +175,7 @@ administrative request.
 
 ## Landing carousel
 
-The server-rendered landing requests `/api/reviews/public?limit=100` with five-minute revalidation.
+The server-rendered landing requests `/api/reviews/public?limit=50` with five-minute revalidation.
 Failure is non-fatal and hides both the section and its navigation link.
 
 The carousel displays:
@@ -182,14 +183,15 @@ The carousel displays:
 - snapshot display name;
 - localized target-language name;
 - accessible five-star rating;
-- comment or localized neutral fallback;
+- comment;
 - six-line comment clamp;
 - responsive horizontal snap scrolling;
 - manual scroll and automatic 320-pixel advance every 3.5 seconds;
 - wrap to the beginning at the end.
 
 One review is centered without auto-scroll. Average rating and count describe only the returned
-maximum-100 collection, not necessarily every review in the database.
+maximum-50 collection of approved positive reviews with comments, not necessarily every review in
+the database.
 
 ## Email notification
 

@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest an improvement to FreeLingo.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Please write the issue title and your answers in English. Keep quoted application text in its original language when relevant.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or need
+      description: Describe the use case and who would benefit from this improvement.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+      description: Describe the change you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected outcome
+      description: What would this improvement let users do, or make easier?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Alternatives and additional context
+      description: Optional alternatives, current workarounds, examples, or screenshots.

@@ -72,7 +72,7 @@ export function LanguageBubbles() {
                   alt={tTarget(lang.code)}
                   width={14}
                   height={10}
-                  className="rounded-[2px]"
+                  className="h-[10px] w-[14px] shrink-0 rounded-[2px] object-cover"
                 />
                 <span className="text-fl-fg font-sans text-[11px] font-medium whitespace-nowrap">
                   {greeting}

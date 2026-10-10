@@ -82,9 +82,9 @@ export default function PrivacyPage() {
             className="mb-3"
           />
         </Link>
-        <h1 className="text-fl-fg font-code text-xl font-bold tracking-widest uppercase">
+        <p className="text-fl-fg font-code text-xl font-bold tracking-widest uppercase">
           FreeLingo
-        </h1>
+        </p>
         <p className="text-fl-caption text-fl-muted-2 mt-1 font-mono tracking-widest uppercase">
           {tCommon('tagline')}
         </p>
@@ -93,9 +93,9 @@ export default function PrivacyPage() {
       <div className="border-fl-border bg-fl-surface space-y-8 border p-8">
         <div className="border-fl-border flex items-center gap-2 border-b pb-4">
           <span className="text-fl-label text-fl-muted-2">●</span>
-          <span className="text-fl-muted-2 font-mono text-xs tracking-widest uppercase">
+          <h1 className="text-fl-muted-2 font-mono text-xs tracking-widest uppercase">
             {t('pageTitle')}
-          </span>
+          </h1>
         </div>
 
         <p className="text-fl-hint text-fl-muted-2 font-mono tracking-wide">
