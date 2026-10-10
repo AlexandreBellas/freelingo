@@ -138,9 +138,10 @@ Checkout includes `STRIPE_TRIAL_DAYS` only when the configured value is positive
 false. Abandoning checkout does not consume the right. The flag is committed when verified checkout
 completion reports `trialing`; direct `active` activation and administrative overrides do not mark it.
 
-The landing pricing subtitle uses the monthly/yearly plan-selection text when configured Stripe
-trial days are zero or negative, or the user has already used the Stripe trial. Otherwise, it displays
-the configured number of free trial days.
+The landing pricing subtitle, monthly badge, and all paid-plan CTAs advertise a Stripe trial only
+when configured trial days are positive and the user has not already used it. Otherwise, the subtitle
+uses the monthly/yearly plan-selection text, the monthly badge says Premium, and paid-plan CTAs use
+the plan-selection label. When a trial is available, the subtitle displays its configured duration.
 
 The Stripe card trial and the freemium no-card trial are independent. A Stripe `trialing` status has
 subscription precedence and does not consume freemium counters.
