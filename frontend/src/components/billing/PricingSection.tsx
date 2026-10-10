@@ -185,9 +185,10 @@ export default function PricingSection({
           {tBilling('pricingTitle')}
         </h2>
         <p className="text-fl-muted-1 font-sans text-sm">
-          {tBilling(trialUsed ? 'pricingDescTrialUsed' : 'pricingDesc', {
-            days: trialDays,
-          })}
+          {tBilling(
+            trialUsed || trialDays <= 0 ? 'pricingDescTrialUsed' : 'pricingDesc',
+            { days: trialDays }
+          )}
         </p>
       </div>
 

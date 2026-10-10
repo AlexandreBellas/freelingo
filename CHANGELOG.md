@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.25] - Unreleased
+
+### Fixed
+
+- The landing pricing subtitle shows monthly/yearly plan-selection text instead of advertising free trial days when `STRIPE_TRIAL_DAYS` is zero or negative.
+- The landing reviews carousel shows only the 50 most recent approved four- or five-star reviews with comments, with its average and count based on the displayed collection.
+
 ## [1.10.20] - 2026-10-10
 
 ### Added

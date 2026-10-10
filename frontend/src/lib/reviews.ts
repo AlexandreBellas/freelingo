@@ -63,7 +63,7 @@ export async function deleteMyReview(): Promise<void> {
   }
 }
 
-export async function fetchPublicReviews(limit = 100): Promise<ReviewPublic[]> {
+export async function fetchPublicReviews(limit = 50): Promise<ReviewPublic[]> {
   const params = new URLSearchParams({ limit: String(limit) })
   const res = await apiFetch(`/api/reviews/public?${params.toString()}`)
   return parseOrThrow<ReviewPublic[]>(res)

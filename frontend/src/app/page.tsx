@@ -91,7 +91,7 @@ export default async function Home() {
       // Landing CTAs can lag registration changes by the existing one-hour cache.
       // The backend still enforces ALLOW_REGISTRATION on every signup request.
       fetch(`${backendUrl}/api/config`, { next: { revalidate: 3600 } }),
-      fetch(`${backendUrl}/api/reviews/public?limit=100`, {
+      fetch(`${backendUrl}/api/reviews/public?limit=50`, {
         next: { revalidate: 300 },
       }).catch(() => null),
     ])
