@@ -22,6 +22,7 @@ const PROTECTED_ROUTES = [
   '/phrasebook',
   '/plan',
   '/progress',
+  '/reading',
   '/settings',
   '/vocabulary',
 ]

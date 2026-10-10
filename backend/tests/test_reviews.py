@@ -293,7 +293,7 @@ async def test_public_reviews_include_approved_positive_rating(client, test_user
         display_name="Landing User",
         target_language="fr-FR",
         rating=4,
-        comment=None,
+        comment="Great app",
         is_approved=True,
     )
 
@@ -305,7 +305,7 @@ async def test_public_reviews_include_approved_positive_rating(client, test_user
     assert data[0]["user_display_name"] == "Landing User"
     assert data[0]["target_language"] == "fr-FR"
     assert data[0]["rating"] == 4
-    assert data[0]["comment"] is None
+    assert data[0]["comment"] == "Great app"
     assert "is_approved" not in data[0]
     assert "user_id" not in data[0]
 

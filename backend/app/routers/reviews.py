@@ -97,7 +97,7 @@ async def delete_my_review(
 @limiter.limit("60/minute")
 async def list_public_reviews(
     request: Request,
-    limit: int = Query(default=100, ge=1, le=100),
+    limit: int = Query(default=50, ge=1, le=50),
     db: AsyncSession = Depends(get_db),
 ) -> list[Review]:
     result = await db.execute(
@@ -105,6 +105,8 @@ async def list_public_reviews(
         .where(
             Review.is_approved.is_(True),
             Review.rating >= 4,
+            Review.comment.is_not(None),
+            Review.comment != "",
         )
         .order_by(Review.created_at.desc())
         .limit(limit)

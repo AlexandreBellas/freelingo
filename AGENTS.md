@@ -1,6 +1,6 @@
 # AGENTS.md — FreeLingo
 
-**Current version: 1.10.20**
+**Current version: 1.10.25**
 
 ## Project
 
@@ -45,6 +45,7 @@ Common documentation targets:
 - Service, provider, or environment changes: `services.instructions.md`, `architecture-backend.instructions.md`, `docker.instructions.md`, and possibly `README.md`.
 - Auth or cross-system flow changes: `platform.instructions.md`, `architecture.instructions.md`.
 - Frontend structure changes: `architecture-frontend.instructions.md` and the affected domain spec.
+- Public indexing, metadata, canonical URLs, sitemap, robots, and structured data: `seo.instructions.md`.
 - Study plan, lesson, or progress changes: `study-plan.instructions.md`, `learning-resources.instructions.md`, `api-endpoints.instructions.md`.
 - New major domain: add a domain-oriented spec, then update `README.md`, this file, and `CHANGELOG.md` as applicable.
 
@@ -53,12 +54,23 @@ Common documentation targets:
 Use the narrowest relevant spec first:
 
 - Architecture: `architecture.instructions.md`, `architecture-backend.instructions.md`, `architecture-frontend.instructions.md`.
+- Technical SEO and Search Console: `seo.instructions.md`.
 - Platform and languages: `platform.instructions.md`, `target-language.instructions.md`, `multi-language.instructions.md`, `add-target-language.instructions.md`.
 - Learning: `study-plan.instructions.md`, `learning-resources.instructions.md`, `listening.instructions.md`, `reading.instructions.md`, `games.instructions.md`.
 - Speech and AI: `speech-services.instructions.md`, `voice-conversation.instructions.md`, `memories.instructions.md`, `prompts.instructions.md`, `llm-error-handling.instructions.md`.
 - Access and community: `subscriptions-freemium.instructions.md`, `feedback.instructions.md`, `reviews.instructions.md`, `whats-new.instructions.md`.
 - Contracts and operations: `database-models.instructions.md`, `services.instructions.md`, `api-endpoints.instructions.md`, `rate-limiting.instructions.md`, `docker.instructions.md`, `umami.instructions.md`.
 - Project maintenance: `testing.instructions.md`, `readme.instructions.md`, `changelog.instructions.md`, `version.md`.
+
+## Pull requests and issues
+
+- Always write PR and issue titles and bodies in English, including issue-form answers. Preserve the original language of quoted application text, error messages, and logs when relevant. This does not change the language used to communicate with the user.
+
+- Read and use `.github/PULL_REQUEST_TEMPLATE.md` when drafting or creating a PR, including through a CLI or API.
+- Preserve the template headings. Report only validation actually performed and its results; identify pending checks explicitly. Use `N/A` for notes that do not apply.
+- For bug reports and feature requests, read the matching form in `.github/ISSUE_TEMPLATE/`. When using a CLI or API, use its field labels as Markdown headings and include the required information. Mark unknown details explicitly rather than inventing reproduction steps, versions, or results.
+- When creating an issue or PR, inspect the repository's existing labels and apply at least one appropriate label: `bug` for defects or fixes, `enhancement` for new features or improvements, and `documentation` for documentation work. Use multiple labels only when each describes a substantive part of the scope.
+- Apply labels during creation when supported, otherwise immediately afterward. CLI/API-created issues must receive the appropriate labels explicitly; do not assume issue-form defaults are applied. Preserve existing labels when adding labels. If permissions prevent labeling or no existing label fits, report the limitation and the pending labeling decision.
 
 ## Development environment
 
