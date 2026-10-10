@@ -13,7 +13,7 @@
     "startFree": "Počni učiti besplatno",
     "freeNote": "Bez platne kartice. Besplatan pristup ima ograničenja korištenja; možeš ga proširiti uz Premium.",
     "seoTitle": "FreeLingo: uči jezike uz plan i Lingua",
-    "seoDescription": "Otkrij svoju razinu, slijedi plan učenja i učvrsti znanje vježbama i igrama. Primijeni naučeno u razgovoru s Linguom, svojim AI partnerom. Počni besplatno.",
+    "seoDescription": "Uči jezike od A1 do C2 uz osobni plan, vježbe i igre. Primijeni naučeno u razgovorima s Linguom, svojim AI tutorom.",
     "journey": {
       "title": "Kako funkcionira FreeLingo",
       "learnTitle": "Uči svojim tempom",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Uvjeti korištenja",
+      "seoDescription": "Pročitaj uvjete FreeLinga o računima, dopuštenoj upotrebi, besplatnom pristupu i pretplatama na platformu za učenje jezika.",
       "updated": "Posljednje ažuriranje: kolovoz 2026.",
       "s1Title": "1. O FreeLingu",
       "s1Body": "FreeLingo je platforma otvorenog koda za učenje jezika uz AI, dostupna na dva načina: (1) samostalnim hostanjem, kada je besplatno pokrećeš na vlastitoj infrastrukturi, i (2) kao hostirana usluga kojom upravlja tim FreeLingo, s besplatnim i plaćenim planovima. Korištenjem usluge na bilo koji od tih načina prihvaćaš ove Uvjete korištenja.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Pravila privatnosti",
+      "seoDescription": "Saznaj kako FreeLingo obrađuje osobne podatke, pohranu preglednika i anonimnu statistiku te kako ostvariti svoja prava na privatnost.",
       "updated": "Posljednje ažuriranje: 10. listopada 2026.",
       "s1Title": "1. Pregled",
       "s1Body": "FreeLingo je dostupan kao aplikacija za samostalno hostanje i kao hostirana usluga. Pri samostalnom hostanju svi se podaci pohranjuju isključivo na poslužitelju upravitelja i autori projekta FreeLingo nemaju pristup njima. Za hostiranu uslugu tim FreeLingo voditelj je obrade podataka; ova pravila objašnjavaju kako se tvoji osobni podaci prikupljaju, koriste i štite.",

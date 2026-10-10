@@ -13,7 +13,7 @@
     "startFree": "Începe să înveți gratuit",
     "freeNote": "Fără card. Accesul gratuit are limite de utilizare; îl poți extinde cu Premium.",
     "seoTitle": "FreeLingo: învață limbi străine cu un plan și Lingu",
-    "seoDescription": "Descoperă-ți nivelul, urmează un plan și consolidează prin exerciții și jocuri. Aplică ce înveți vorbind cu Lingu, partenerul tău IA. Începe gratuit.",
+    "seoDescription": "Învață limbi străine de la A1 la C2 cu un plan personalizat, exerciții și jocuri. Aplică ce înveți în conversații cu Lingu, tutorele tău IA.",
     "journey": {
       "title": "Cum funcționează FreeLingo",
       "learnTitle": "Învață în ritmul tău",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Termeni și condiții",
+      "seoDescription": "Consultă termenii FreeLingo privind conturile, utilizarea acceptabilă, accesul gratuit și abonamentele la platforma de învățare a limbilor.",
       "updated": "Ultima actualizare: august 2026",
       "s1Title": "1. Despre FreeLingo",
       "s1Body": "FreeLingo este o platformă de învățare a limbilor bazată pe AI, disponibilă în două moduri: (1) auto-găzduită, pe care o poți rula pe propria infrastructură fără costuri, și (2) ca serviciu găzduit gestionat de echipa FreeLingo, cu un plan gratuit și abonamente plătite.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Politică de confidențialitate",
+      "seoDescription": "Află cum gestionează FreeLingo datele personale, stocarea în browser și statisticile anonime și cum îți poți exercita drepturile de confidențialitate.",
       "updated": "Ultima actualizare: 10 octombrie 2026",
       "s1Title": "1. Prezentare generală",
       "s1Body": "FreeLingo este disponibil ca aplicație auto-găzduită și ca serviciu găzduit. Pentru implementările auto-găzduite, toate datele sunt stocate exclusiv pe serverul operatorului.",

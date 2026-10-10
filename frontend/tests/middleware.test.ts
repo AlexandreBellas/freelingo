@@ -32,7 +32,7 @@ describe('middleware', () => {
   })
 
   describe('route protection', () => {
-    it.each(['/dashboard', '/games'])('redirects %s to /login without refresh_token', (path) => {
+    it.each(['/dashboard', '/games', '/reading'])('redirects %s to /login without refresh_token', (path) => {
       const req = createRequest(path)
       const res = middleware(req)
 
@@ -40,7 +40,7 @@ describe('middleware', () => {
       expect(res.headers.get('location')).toContain('/login')
     })
 
-    it.each(['/dashboard', '/games'])('allows %s with refresh_token', (path) => {
+    it.each(['/dashboard', '/games', '/reading'])('allows %s with refresh_token', (path) => {
       const req = createRequest(path, {
         cookies: { refresh_token: 'valid-token' },
       })

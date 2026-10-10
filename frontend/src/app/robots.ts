@@ -1,30 +1,17 @@
 import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/seo'
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
-        allow: ['/', '/login', '/register', '/privacy', '/terms'],
-        disallow: [
-          '/dashboard',
-          '/settings',
-          '/chat',
-          '/conversation',
-          '/flashcards',
-          '/plan',
-          '/progress',
-          '/grammar',
-          '/vocabulary',
-          '/phrasebook',
-          '/assessment',
-          '/admin',
-          '/onboarding',
-          '/faq',
-          '/api/',
-        ],
+        // HTML pages must be crawlable for redirects and noindex to be seen.
+        // Authentication and backend authorization protect private content.
+        allow: '/',
+        disallow: ['/api/', '/ws/'],
       },
     ],
-    sitemap: 'https://freelingo.app/sitemap.xml',
+    sitemap: new URL('/sitemap.xml', SITE_URL).href,
   }
 }

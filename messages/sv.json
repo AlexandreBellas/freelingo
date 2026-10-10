@@ -13,7 +13,7 @@
     "startFree": "Börja lära dig gratis",
     "freeNote": "Inget betalkort krävs. Gratis åtkomst har användningsgränser; du kan få mer med Premium.",
     "seoTitle": "FreeLingo: lär dig språk med en plan och Lingu",
-    "seoDescription": "Hitta din nivå, följ en studieplan och stärk dina kunskaper med övningar och spel. Använd det du lär dig i samtal med Lingu, din AI-kamrat. Börja gratis.",
+    "seoDescription": "Lär dig språk från A1 till C2 med en personlig studieplan, övningar och spel. Använd det du lär dig i samtal med Lingu, din AI-handledare.",
     "journey": {
       "title": "Så fungerar FreeLingo",
       "learnTitle": "Lär dig i din egen takt",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Användarvillkor",
+      "seoDescription": "Läs FreeLingos villkor om konton, tillåten användning, gratis åtkomst och prenumerationer på plattformen för språkinlärning.",
       "updated": "Senast uppdaterad: augusti 2026",
       "s1Title": "1. Om FreeLingo",
       "s1Body": "FreeLingo är en plattform med öppen källkod för språkinlärning med AI, tillgänglig på två sätt: (1) med egen drift, där du kör tjänsten på din egen infrastruktur utan kostnad, och (2) som en hostad tjänst som drivs av FreeLingo-teamet med en gratisplan och betalda prenumerationer. Genom att använda tjänsten på något av dessa sätt godkänner du dessa användarvillkor.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Integritetspolicy",
+      "seoDescription": "Läs hur FreeLingo hanterar personuppgifter, webbläsarlagring och anonym statistik och hur du kan utöva dina integritetsrättigheter.",
       "updated": "Senast uppdaterad: 10 oktober 2026",
       "s1Title": "1. Översikt",
       "s1Body": "FreeLingo finns som en app för egen drift och som en hostad tjänst. Vid egen drift lagras alla data uteslutande på operatörens server och FreeLingo-projektets upphovspersoner har inte tillgång till dem. För den hostade tjänsten är FreeLingo-teamet personuppgiftsansvarigt, och denna policy beskriver hur dina personuppgifter samlas in, används och skyddas.",

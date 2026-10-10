@@ -13,7 +13,7 @@
     "startFree": "Commencez à apprendre gratuitement",
     "freeNote": "Sans carte bancaire. L’accès gratuit est soumis à des limites d’utilisation ; Premium permet d’aller plus loin.",
     "seoTitle": "FreeLingo : apprenez les langues avec un plan et Lingu",
-    "seoDescription": "Découvrez votre niveau, suivez un plan et consolidez vos acquis avec des exercices et des jeux. Pratiquez avec Lingu, votre compagnon IA. Commencez gratuitement.",
+    "seoDescription": "Apprenez les langues de A1 à C2 avec un plan personnalisé, des exercices et des jeux. Pratiquez en conversant avec Lingu, votre tuteur IA.",
     "journey": {
       "title": "Comment fonctionne FreeLingo",
       "learnTitle": "Apprenez à votre rythme",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Conditions d'utilisation",
+      "seoDescription": "Consultez les conditions de FreeLingo concernant les comptes, les usages autorisés, l'accès gratuit et les abonnements à la plateforme de langues.",
       "updated": "Dernière mise à jour : août 2026",
       "s1Title": "1. À propos de FreeLingo",
       "s1Body": "FreeLingo est une plateforme d'apprentissage des langues propulsée par l'IA, disponible en deux modes : (1) auto-hébergé, où vous l'exécutez sur votre propre infrastructure sans frais, et (2) comme service hébergé opéré par l'équipe FreeLingo, avec un forfait gratuit et des abonnements payants. En utilisant ce service dans l'un ou l'autre mode, vous acceptez ces Conditions d'utilisation.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Politique de confidentialité",
+      "seoDescription": "Découvrez comment FreeLingo traite les données personnelles, le stockage du navigateur et les statistiques anonymes, ainsi que vos droits.",
       "updated": "Dernière mise à jour : 10 octobre 2026",
       "s1Title": "1. Aperçu",
       "s1Body": "FreeLingo est disponible en tant qu'application auto-hébergée et en tant que service hébergé. Pour les déploiements auto-hébergés, toutes les données sont stockées exclusivement sur le serveur de l'opérateur et les auteurs du projet FreeLingo n'y ont pas accès. Pour le service hébergé, l'équipe FreeLingo agit en tant que responsable du traitement et cette politique décrit comment vos données personnelles sont collectées, utilisées et protégées.",

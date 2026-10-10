@@ -13,7 +13,7 @@
     "startFree": "Begynd at lære gratis",
     "freeNote": "Intet betalingskort kræves. Gratis adgang har forbrugsgrænser; du kan få mere med Premium.",
     "seoTitle": "FreeLingo: lær sprog med en plan og Lingu",
-    "seoDescription": "Find dit niveau, følg en studieplan og styrk din viden med øvelser og spil. Brug det, du lærer, i samtaler med Lingu, din AI-makker. Start gratis.",
+    "seoDescription": "Lær sprog fra A1 til C2 med en personlig studieplan, øvelser og spil. Brug det, du lærer, i samtaler med Lingu, din AI-vejleder.",
     "journey": {
       "title": "Sådan fungerer FreeLingo",
       "learnTitle": "Lær i dit eget tempo",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Brugervilkår",
+      "seoDescription": "Læs FreeLingos vilkår om konti, tilladt brug, gratis adgang og abonnementer på platformen til sprogindlæring.",
       "updated": "Senest opdateret: august 2026",
       "s1Title": "1. Om FreeLingo",
       "s1Body": "FreeLingo er en open source-platform til sprogindlæring med AI, som kan bruges på to måder: (1) ved selvhosting, hvor du kører tjenesten på din egen infrastruktur uden omkostninger, og (2) som en hostet tjeneste drevet af FreeLingo-teamet med et gratis abonnement og betalte abonnementer. Ved at bruge tjenesten på en af disse måder accepterer du disse brugervilkår.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Privatlivspolitik",
+      "seoDescription": "Læs, hvordan FreeLingo behandler personoplysninger, browserlagring og anonym statistik, og hvordan du kan udøve dine privatlivsrettigheder.",
       "updated": "Senest opdateret: 10. oktober 2026",
       "s1Title": "1. Overblik",
       "s1Body": "FreeLingo tilbydes som en selvhostet app og som en hostet tjeneste. Ved selvhosting opbevares alle data udelukkende på operatørens server, og FreeLingo-projektets ophavspersoner har ikke adgang til dem. For den hostede tjeneste er FreeLingo-teamet dataansvarlig, og denne politik beskriver, hvordan dine personoplysninger indsamles, bruges og beskyttes.",

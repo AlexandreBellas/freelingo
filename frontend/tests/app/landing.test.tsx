@@ -11,6 +11,7 @@ vi.mock('next/headers', () => ({
 }))
 
 vi.mock('next-intl/server', () => ({
+  getLocale: async () => 'en',
   getTranslations: async () => (key: string) => key,
 }))
 
@@ -91,6 +92,58 @@ afterEach(() => {
 })
 
 describe('Landing Home', () => {
+  it('renders the main learning content and one H1 in the server response', async () => {
+    render(await Home())
+    const main = screen.getByRole('main')
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+    expect(within(main).getByRole('heading', { level: 1 })).toHaveTextContent(
+      'hero'
+    )
+    expect(within(main).getByText('journey.learnDesc')).toBeInTheDocument()
+    expect(within(main).getByText('journey.practiceDesc')).toBeInTheDocument()
+    expect(within(main).getByText('journey.speakDesc')).toBeInTheDocument()
+    expect(main.querySelector('.reveal h1')).toBeNull()
+  })
+
+  it.each([
+    { registration: true, session: false, offer: true },
+    { registration: false, session: false, offer: false },
+    { registration: true, session: true, offer: false },
+  ])(
+    'only marks up a free offer when signup is visible: %j',
+    async ({ registration, session, offer }) => {
+      config.allow_registration = registration
+      mockHas.mockReturnValue(session)
+      const { container } = render(await Home())
+      const scripts = container.querySelectorAll(
+        'script[type="application/ld+json"]'
+      )
+      expect(scripts).toHaveLength(1)
+      const data = JSON.parse(scripts[0].textContent ?? '')
+      const app = data['@graph'].find(
+        (node: { '@type': string }) => node['@type'] === 'WebApplication'
+      )
+      const website = data['@graph'].find(
+        (node: { '@type': string }) => node['@type'] === 'WebSite'
+      )
+      expect(app.applicationCategory).toBe('EducationalApplication')
+      expect(website.about['@id']).toBe(app['@id'])
+      expect(app.url).toBe('https://freelingo.app/')
+      expect(app.inLanguage).toBe('en')
+      expect(app.aggregateRating).toBeUndefined()
+      expect(app.review).toBeUndefined()
+      if (offer) {
+        expect(app.offers.price).toBe(0)
+        expect(app.offers.priceCurrency).toBeUndefined()
+        expect(
+          screen.getAllByRole('link', { name: app.offers.name })
+        ).toHaveLength(2)
+      } else {
+        expect(app.offers).toBeUndefined()
+      }
+    }
+  )
+
   it('keeps signup available when optional reviews cannot be fetched', async () => {
     vi.mocked(fetch).mockImplementation(async (url) => {
       if (String(url).endsWith('/api/config')) {

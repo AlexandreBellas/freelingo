@@ -13,7 +13,7 @@
     "startFree": "Begin gratis met leren",
     "freeNote": "Geen betaalkaart nodig. Gratis toegang heeft gebruikslimieten; met Premium kun je meer doen.",
     "seoTitle": "FreeLingo: leer talen met een plan en Lingu",
-    "seoDescription": "Ontdek je niveau, volg een leerplan en versterk je kennis met oefeningen en spellen. Oefen wat je leert in gesprekken met Lingu, je AI-partner. Begin gratis.",
+    "seoDescription": "Leer talen van A1 tot C2 met een persoonlijk leerplan, oefeningen en spellen. Pas het geleerde toe in gesprekken met Lingu, je AI-tutor.",
     "journey": {
       "title": "Zo werkt FreeLingo",
       "learnTitle": "Leer in je eigen tempo",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Gebruiksvoorwaarden",
+      "seoDescription": "Lees de voorwaarden van FreeLingo over accounts, toegestaan gebruik, gratis toegang en abonnementen op het platform voor het leren van talen.",
       "updated": "Laatst bijgewerkt: augustus 2026",
       "s1Title": "1. Over FreeLingo",
       "s1Body": "FreeLingo is een open-source AI-gestuurd taalleerleerplatform dat beschikbaar is in twee modi: (1) zelf gehost, waarbij je het op je eigen infrastructuur uitvoert zonder kosten, en (2) als een gehoste service die wordt beheerd door het FreeLingo-team, met een gratis abonnement en betaalde abonnementen. Door deze service in een van beide modi te gebruiken, ga je akkoord met deze Gebruiksvoorwaarden.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Privacybeleid",
+      "seoDescription": "Lees hoe FreeLingo omgaat met persoonsgegevens, browseropslag en anonieme statistieken en hoe je je privacyrechten kunt uitoefenen.",
       "updated": "Laatst bijgewerkt: 10 oktober 2026",
       "s1Title": "1. Overzicht",
       "s1Body": "FreeLingo is beschikbaar als zelf gehoste applicatie en als gehoste service. Voor zelf gehoste implementaties worden alle gegevens uitsluitend opgeslagen op de server van de operator en hebben de auteurs van het FreeLingo-project er geen toegang toe.",

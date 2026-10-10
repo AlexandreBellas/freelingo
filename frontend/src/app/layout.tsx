@@ -12,6 +12,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { CookieBanner } from '@/components/CookieBanner'
 import { getUmamiConfig } from '@/lib/umami-config'
+import { SITE_URL } from '@/lib/seo'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,38 +27,31 @@ const geistMono = Geist_Mono({
 const notoSansJP = Noto_Sans_JP({
   variable: '--font-noto-ja',
   subsets: ['latin'],
+  preload: false,
 })
 
 const notoSansKR = Noto_Sans_KR({
   variable: '--font-noto-ko',
   subsets: ['latin'],
+  preload: false,
 })
 
 const notoSansSC = Noto_Sans_SC({
   variable: '--font-noto-zh',
   subsets: ['latin'],
+  preload: false,
 })
 
 const themeScript = `(function(){try{var t='system';var s=localStorage.getItem('fl-theme');if(s){var p=JSON.parse(s);t=p&&p.state&&p.state.theme?p.state.theme:t}var l=t==='light'||(t==='system'&&window.matchMedia('(prefers-color-scheme: light)').matches);if(l){document.documentElement.setAttribute('data-theme','light')}else{document.documentElement.removeAttribute('data-theme')}}catch(e){}})();`
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://freelingo.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'FreeLingo',
     template: '%s | FreeLingo',
   },
-  description:
-    'FreeLingo is a self-hosted AI-powered language learning platform with voice conversation, flashcards, grammar lessons, and a personal AI tutor.',
-  keywords: [
-    'English learning',
-    'AI language tutor',
-    'self-hosted',
-    'voice conversation',
-    'flashcards',
-    'CEFR',
-    'language learning app',
-    'learn English online',
-  ],
+  // Public content opts in at its own route; private and account pages stay out.
+  robots: { index: false, follow: true },
   authors: [
     {
       name: 'Arturo Carretero Calvo',
@@ -71,30 +65,6 @@ export const metadata: Metadata = {
       { url: '/favicon.png', type: 'image/png' },
     ],
     apple: '/apple-touch-icon.png',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://freelingo.app',
-    siteName: 'FreeLingo',
-    title: 'FreeLingo: AI-powered language learning',
-    description:
-      'Learn languages with an AI tutor, voice conversations, flashcards, and structured lessons. Self-hosted and privacy-friendly.',
-    images: [
-      {
-        url: '/og-image-v2.png',
-        width: 1200,
-        height: 630,
-        alt: 'FreeLingo: AI-powered language learning',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary',
-    title: 'FreeLingo: AI-powered language learning',
-    description:
-      'Learn languages with an AI tutor, voice conversations, flashcards, and structured lessons.',
-    images: ['/logo.png'],
   },
 }
 

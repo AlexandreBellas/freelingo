@@ -13,7 +13,7 @@
     "startFree": "Starte kostenlos mit dem Lernen",
     "freeNote": "Keine Kreditkarte nötig. Der kostenlose Zugang hat Nutzungslimits; mit Premium kannst du ihn erweitern.",
     "seoTitle": "FreeLingo: Sprachen lernen mit einem Plan und Lingu",
-    "seoDescription": "Entdecke dein Niveau, folge einem Lernplan und festige dein Wissen mit Übungen und Spielen. Wende es im Gespräch mit KI-Begleiter Lingu an. Starte kostenlos.",
+    "seoDescription": "Lerne Sprachen von A1 bis C2 mit einem persönlichen Lernplan, Übungen und Spielen. Wende das Gelernte im Gespräch mit Lingu, deinem KI-Tutor, an.",
     "journey": {
       "title": "So funktioniert FreeLingo",
       "learnTitle": "Lerne in deinem Tempo",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Nutzungsbedingungen",
+      "seoDescription": "Lesen Sie die FreeLingo-Nutzungsbedingungen zu Konten, zulässiger Nutzung, kostenlosem Zugang und Abonnements der Sprachlernplattform.",
       "updated": "Zuletzt aktualisiert: August 2026",
       "s1Title": "1. Über FreeLingo",
       "s1Body": "FreeLingo ist eine quelloffene, KI-gestützte Sprachlernplattform, die in zwei Modi verfügbar ist: (1) selbst gehostet, wo Sie sie auf Ihrer eigenen Infrastruktur kostenlos betreiben, und (2) als gehosteter Dienst des FreeLingo-Teams mit einem kostenlosen Plan und kostenpflichtigen Abonnements. Durch die Nutzung des Dienstes in einem der beiden Modi stimmen Sie diesen Nutzungsbedingungen zu.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Datenschutzerklärung",
+      "seoDescription": "Erfahren Sie, wie FreeLingo personenbezogene Daten, Browserspeicher und anonyme Statistiken verarbeitet und welche Datenschutzrechte Sie haben.",
       "updated": "Zuletzt aktualisiert: 10. Oktober 2026",
       "s1Title": "1. Überblick",
       "s1Body": "FreeLingo ist als selbst gehostete Anwendung und als gehosteter Dienst verfügbar. Bei selbst gehosteten Installationen werden alle Daten ausschließlich auf dem Server des Betreibers gespeichert, und die Autoren des FreeLingo-Projekts haben keinen Zugriff darauf. Beim gehosteten Dienst agiert das FreeLingo-Team als Verantwortlicher und diese Richtlinie beschreibt, wie Ihre personenbezogenen Daten erhoben, genutzt und geschützt werden.",

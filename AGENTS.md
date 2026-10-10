@@ -45,6 +45,7 @@ Common documentation targets:
 - Service, provider, or environment changes: `services.instructions.md`, `architecture-backend.instructions.md`, `docker.instructions.md`, and possibly `README.md`.
 - Auth or cross-system flow changes: `platform.instructions.md`, `architecture.instructions.md`.
 - Frontend structure changes: `architecture-frontend.instructions.md` and the affected domain spec.
+- Public indexing, metadata, canonical URLs, sitemap, robots, and structured data: `seo.instructions.md`.
 - Study plan, lesson, or progress changes: `study-plan.instructions.md`, `learning-resources.instructions.md`, `api-endpoints.instructions.md`.
 - New major domain: add a domain-oriented spec, then update `README.md`, this file, and `CHANGELOG.md` as applicable.
 
@@ -53,6 +54,7 @@ Common documentation targets:
 Use the narrowest relevant spec first:
 
 - Architecture: `architecture.instructions.md`, `architecture-backend.instructions.md`, `architecture-frontend.instructions.md`.
+- Technical SEO and Search Console: `seo.instructions.md`.
 - Platform and languages: `platform.instructions.md`, `target-language.instructions.md`, `multi-language.instructions.md`, `add-target-language.instructions.md`.
 - Learning: `study-plan.instructions.md`, `learning-resources.instructions.md`, `listening.instructions.md`, `reading.instructions.md`, `games.instructions.md`.
 - Speech and AI: `speech-services.instructions.md`, `voice-conversation.instructions.md`, `memories.instructions.md`, `prompts.instructions.md`, `llm-error-handling.instructions.md`.

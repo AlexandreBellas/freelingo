@@ -13,7 +13,7 @@
     "startFree": "Comece a aprender grátis",
     "freeNote": "Sem cartão. O acesso gratuito tem limites de uso; você pode ampliar com Premium.",
     "seoTitle": "FreeLingo: aprenda idiomas com um plano e Lingu",
-    "seoDescription": "Descubra seu nível, siga um plano e reforce o aprendizado com exercícios e jogos. Pratique o que aprendeu conversando com Lingu, seu companheiro com IA. Comece grátis.",
+    "seoDescription": "Aprenda idiomas de A1 a C2 com um plano personalizado, exercícios e jogos. Pratique o que aprendeu em conversas com Lingu, seu tutor com IA.",
     "journey": {
       "title": "Como funciona o FreeLingo",
       "learnTitle": "Aprenda no seu ritmo",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Termos de serviço",
+      "seoDescription": "Consulte os termos do FreeLingo sobre contas, uso aceitável, acesso gratuito e assinaturas da plataforma de aprendizado de idiomas.",
       "updated": "Última atualização: agosto de 2026",
       "s1Title": "1. Sobre o FreeLingo",
       "s1Body": "FreeLingo é uma plataforma de aprendizado de idiomas com IA de código aberto disponível em dois modos: (1) auto-hospedado, onde você o executa na sua própria infraestrutura sem custo, e (2) como serviço hospedado operado pela equipe FreeLingo, com um plano gratuito e assinaturas pagas. Ao usar o serviço em qualquer dos modos, você concorda com estes Termos de serviço.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Política de privacidade",
+      "seoDescription": "Saiba como o FreeLingo trata dados pessoais, armazenamento do navegador e estatísticas anônimas, e como exercer seus direitos de privacidade.",
       "updated": "Última atualização: 10 de outubro de 2026",
       "s1Title": "1. Visão geral",
       "s1Body": "FreeLingo está disponível como aplicativo auto-hospedado e como serviço hospedado. Para implantações auto-hospedadas, todos os dados são armazenados exclusivamente no servidor do operador e os autores do projeto FreeLingo não têm acesso a eles. Para o serviço hospedado, a equipe FreeLingo atua como controladora de dados e esta política descreve como seus dados pessoais são coletados, usados e protegidos.",

@@ -13,7 +13,7 @@
     "startFree": "Zacznij uczyć się za darmo",
     "freeNote": "Bez karty płatniczej. Bezpłatny dostęp ma limity użytkowania; możesz go rozszerzyć dzięki Premium.",
     "seoTitle": "FreeLingo: ucz się języków z planem i Lingu",
-    "seoDescription": "Poznaj swój poziom, ucz się według planu i utrwalaj wiedzę dzięki ćwiczeniom i grom. Wykorzystaj ją w rozmowach z Lingu, towarzyszem AI. Zacznij za darmo.",
+    "seoDescription": "Ucz się języków od A1 do C2 z indywidualnym planem, ćwiczeniami i grami. Wykorzystuj wiedzę w rozmowach z Lingu, twoim tutorem AI.",
     "journey": {
       "title": "Jak działa FreeLingo",
       "learnTitle": "Ucz się we własnym tempie",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Regulamin",
+      "seoDescription": "Poznaj zasady FreeLingo dotyczące kont, dozwolonego użytkowania, bezpłatnego dostępu i subskrypcji platformy do nauki języków.",
       "updated": "Ostatnia aktualizacja: sierpień 2026",
       "s1Title": "1. O FreeLingo",
       "s1Body": "FreeLingo to platforma do nauki języków wspierana przez AI, dostępna w dwóch trybach: (1) samodzielnie hostowana, gdzie uruchamiasz ją na własnej infrastrukturze bezpłatnie, oraz (2) jako usługa hostowana prowadzona przez zespół FreeLingo, z darmowym planem i płatnymi subskrypcjami. Korzystając z tej usługi w dowolnym trybie, wyrażasz zgodę na niniejszy Regulamin.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Polityka prywatności",
+      "seoDescription": "Dowiedz się, jak FreeLingo przetwarza dane osobowe, pamięć przeglądarki i anonimowe statystyki oraz jak korzystać z praw do prywatności.",
       "updated": "Ostatnia aktualizacja: 10 października 2026",
       "s1Title": "1. Przegląd",
       "s1Body": "FreeLingo jest dostępny jako aplikacja samodzielnie hostowana i jako usługa hostowana. W przypadku wdrożeń samodzielnie hostowanych wszystkie dane są przechowywane wyłącznie na serwerze operatora, a autorzy projektu FreeLingo nie mają do nich dostępu.",

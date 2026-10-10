@@ -13,7 +13,7 @@
     "startFree": "Aloita oppiminen ilmaiseksi",
     "freeNote": "Et tarvitse maksukorttia. Ilmaisella käytöllä on käyttörajat; Premium tarjoaa lisää käyttömahdollisuuksia.",
     "seoTitle": "FreeLingo: opi kieliä suunnitelman ja Lingun avulla",
-    "seoDescription": "Selvitä tasosi, seuraa opintosuunnitelmaa ja vahvista taitojasi harjoituksilla ja peleillä. Sovella oppimaasi puhumalla tekoälykumppani Lingun kanssa. Aloita ilmaiseksi.",
+    "seoDescription": "Opi kieliä A1-tasolta C2-tasolle oman opintosuunnitelman, harjoitusten ja pelien avulla. Sovella oppimaasi keskusteluissa tekoälyohjaaja Lingun kanssa.",
     "journey": {
       "title": "Näin FreeLingo toimii",
       "learnTitle": "Opi omaan tahtiisi",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Käyttöehdot",
+      "seoDescription": "Tutustu FreeLingon kieltenoppimisalustan käyttöehtoihin: käyttäjätilit, sallittu käyttö, maksuton käyttö ja maksulliset tilaukset.",
       "updated": "Päivitetty viimeksi: elokuu 2026",
       "s1Title": "1. Tietoa FreeLingosta",
       "s1Body": "FreeLingo on avoimen lähdekoodin tekoälypohjainen kieltenoppimisalusta, jota voi käyttää kahdella tavalla: (1) itse ylläpidettynä omassa infrastruktuurissasi maksutta tai (2) FreeLingo-tiimin ylläpitämänä palveluna, jossa on ilmainen suunnitelma ja maksullisia tilauksia. Käyttämällä palvelua kummalla tahansa tavalla hyväksyt nämä käyttöehdot.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Tietosuojakäytäntö",
+      "seoDescription": "Lue, miten FreeLingo käsittelee henkilötietoja, selaimen tallennustilaa ja anonyymejä tilastoja ja miten voit käyttää tietosuojaoikeuksiasi.",
       "updated": "Päivitetty viimeksi: 10. lokakuuta 2026",
       "s1Title": "1. Yleiskatsaus",
       "s1Body": "FreeLingo on saatavilla itse ylläpidettävänä sovelluksena ja ylläpidettynä palveluna. Itse ylläpidettävässä asennuksessa kaikki tiedot tallennetaan yksinomaan ylläpitäjän palvelimelle eikä FreeLingo-projektin tekijöillä ole pääsyä niihin. Ylläpidetyssä palvelussa FreeLingo-tiimi toimii rekisterinpitäjänä. Tässä käytännössä kuvataan, miten henkilötietojasi kerätään, käytetään ja suojataan.",

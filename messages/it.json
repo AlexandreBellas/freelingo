@@ -13,7 +13,7 @@
     "startFree": "Inizia a imparare gratis",
     "freeNote": "Nessuna carta richiesta. L’accesso gratuito ha limiti di utilizzo; puoi ampliarlo con Premium.",
     "seoTitle": "FreeLingo: impara le lingue con un piano e Lingu",
-    "seoDescription": "Scopri il tuo livello, segui un piano e consolida le conoscenze con esercizi e giochi. Metti in pratica ciò che impari con Lingu, il tuo compagno IA. Inizia gratis.",
+    "seoDescription": "Impara le lingue da A1 a C2 con un piano personalizzato, esercizi e giochi. Metti in pratica ciò che impari conversando con Lingu, il tuo tutor IA.",
     "journey": {
       "title": "Come funziona FreeLingo",
       "learnTitle": "Impara al tuo ritmo",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Termini di servizio",
+      "seoDescription": "Consulta i termini di FreeLingo su account, uso consentito, accesso gratuito e abbonamenti alla piattaforma per l'apprendimento delle lingue.",
       "updated": "Ultimo aggiornamento: agosto 2026",
       "s1Title": "1. Informazioni su FreeLingo",
       "s1Body": "FreeLingo è una piattaforma open source per l'apprendimento delle lingue con IA, disponibile in due modalità: (1) self-hosted, dove la esegui sulla tua infrastruttura senza costi, e (2) come servizio ospitato gestito dal team FreeLingo, con un piano gratuito e abbonamenti a pagamento. Utilizzando il servizio in entrambe le modalità, accetti questi Termini di servizio.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Informativa sulla privacy",
+      "seoDescription": "Scopri come FreeLingo tratta dati personali, archiviazione del browser e statistiche anonime e come esercitare i tuoi diritti sulla privacy.",
       "updated": "Ultimo aggiornamento: 10 ottobre 2026",
       "s1Title": "1. Panoramica",
       "s1Body": "FreeLingo è disponibile come applicazione self-hosted e come servizio ospitato. Per le installazioni self-hosted, tutti i dati sono memorizzati esclusivamente sul server dell'operatore e gli autori del progetto FreeLingo non vi hanno accesso. Per il servizio ospitato, il team FreeLingo agisce come titolare del trattamento dei dati e questa informativa descrive come i tuoi dati personali vengono raccolti, utilizzati e protetti.",

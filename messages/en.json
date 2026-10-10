@@ -13,7 +13,7 @@
     "startFree": "Start learning for free",
     "freeNote": "No card required. Free access has usage limits; you can upgrade to Premium.",
     "seoTitle": "FreeLingo: learn languages with a plan and Lingu",
-    "seoDescription": "Discover your level, follow a study plan and reinforce it with exercises and games. Practise what you learn by talking to Lingu, your AI companion. Start free.",
+    "seoDescription": "Learn languages from A1 to C2 with a personalised study plan, exercises and games. Practise what you learn in conversations with Lingu, your AI tutor.",
     "journey": {
       "title": "How FreeLingo works",
       "learnTitle": "Learn at your own pace",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Terms of Service",
+      "seoDescription": "Read FreeLingo's terms of service for accounts, acceptable use, free access and paid subscriptions to the language learning platform.",
       "updated": "Last updated: August 2026",
       "s1Title": "1. About FreeLingo",
       "s1Body": "FreeLingo is an open-source AI-powered language learning platform available in two modes: (1) self-hosted, where you run it on your own infrastructure at no cost, and (2) as a hosted service operated by the FreeLingo team with a free plan and paid subscriptions. By using this service in either mode, you agree to these Terms of Service.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Privacy Policy",
+      "seoDescription": "Learn how FreeLingo handles personal data, browser storage and anonymous analytics, and how to exercise your privacy rights.",
       "updated": "Last updated: October 10, 2026",
       "s1Title": "1. Overview",
       "s1Body": "FreeLingo is available as a self-hosted application and as a hosted service. For self-hosted deployments, all data is stored exclusively on the operator's server and the FreeLingo project authors have no access to it. For the hosted service, the FreeLingo team acts as the data controller and this policy describes how your personal data is collected, used, and protected.",

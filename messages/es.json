@@ -13,7 +13,7 @@
     "startFree": "Empieza a aprender gratis",
     "freeNote": "Sin tarjeta. El acceso gratuito tiene límites de uso; puedes ampliar con Premium.",
     "seoTitle": "FreeLingo: aprende idiomas con un plan y Lingu",
-    "seoDescription": "Descubre tu nivel, sigue un plan de estudio y refuerza con ejercicios y juegos. Practica lo aprendido hablando con Lingu, tu compañero con IA. Empieza gratis.",
+    "seoDescription": "Aprende idiomas de A1 a C2 con un plan personalizado, ejercicios y juegos. Practica lo aprendido en conversaciones con Lingu, tu tutor con IA.",
     "journey": {
       "title": "Cómo funciona FreeLingo",
       "learnTitle": "Aprende a tu ritmo",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Términos de servicio",
+      "seoDescription": "Consulta los términos de FreeLingo sobre cuentas, uso aceptable, acceso gratuito y suscripciones a la plataforma de aprendizaje de idiomas.",
       "updated": "Última actualización: agosto de 2026",
       "s1Title": "1. Sobre FreeLingo",
       "s1Body": "FreeLingo es una plataforma de aprendizaje de idiomas con IA de código abierto disponible en dos modalidades: (1) autoalojada, donde la ejecutas en tu propia infraestructura sin coste, y (2) como servicio alojado operado por el equipo de FreeLingo, con un plan gratuito y suscripciones de pago. Al usar el servicio en cualquiera de las modalidades, aceptas estos Términos de servicio.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Política de privacidad",
+      "seoDescription": "Conoce cómo FreeLingo trata los datos personales, el almacenamiento del navegador y las estadísticas anónimas, y cómo ejercer tus derechos de privacidad.",
       "updated": "Última actualización: 10 de octubre de 2026",
       "s1Title": "1. Descripción general",
       "s1Body": "FreeLingo está disponible como aplicación autoalojada y como servicio alojado. En los despliegues autoalojados, todos los datos se almacenan exclusivamente en el servidor del operador y los autores del proyecto FreeLingo no tienen acceso a ellos. En el servicio alojado, el equipo de FreeLingo actúa como responsable del tratamiento y esta política describe cómo se recogen, usan y protegen tus datos personales.",

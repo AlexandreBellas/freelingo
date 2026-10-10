@@ -13,7 +13,7 @@
     "startFree": "Ücretsiz öğrenmeye başlayın",
     "freeNote": "Kart gerekmez. Ücretsiz erişimde kullanım sınırları vardır; Premium ile daha fazlasına erişebilirsiniz.",
     "seoTitle": "FreeLingo: bir plan ve Lingu ile dil öğrenin",
-    "seoDescription": "Seviyenizi keşfedin, bir çalışma planı izleyin ve alıştırma ve oyunlarla pekiştirin. Öğrendiklerinizi yapay zekâ arkadaşınız Lingu ile konuşarak kullanın. Ücretsiz başlayın.",
+    "seoDescription": "Kişisel çalışma planı, alıştırmalar ve oyunlarla A1'den C2'ye dil öğrenin. Öğrendiklerinizi yapay zekâ eğitmeniniz Lingu ile konuşarak kullanın.",
     "journey": {
       "title": "FreeLingo nasıl çalışır?",
       "learnTitle": "Kendi hızınızda öğrenin",
@@ -426,6 +426,7 @@
   "legal": {
     "terms": {
       "pageTitle": "Hizmet Koşulları",
+      "seoDescription": "FreeLingo dil öğrenme platformunun hesaplar, kabul edilebilir kullanım, ücretsiz erişim ve aboneliklerle ilgili hizmet koşullarını okuyun.",
       "updated": "Son güncelleme: Ağustos 2026",
       "s1Title": "1. FreeLingo Hakkında",
       "s1Body": "FreeLingo, iki şekilde kullanılabilen, yapay zekâ destekli açık kaynaklı bir dil öğrenme platformudur: (1) kendi altyapınızda ücretsiz olarak çalıştırdığınız, kendi kendine barındırılan kurulum ve (2) FreeLingo ekibi tarafından işletilen, ücretsiz plan ve ücretli abonelikler sunan barındırılan hizmet. Bu hizmeti her iki şekilde de kullanarak bu Hizmet Koşulları'nı kabul etmiş olursunuz.",
@@ -460,6 +461,7 @@
     },
     "privacy": {
       "pageTitle": "Gizlilik Politikası",
+      "seoDescription": "FreeLingo'nun kişisel verileri, tarayıcı depolamasını ve anonim istatistikleri nasıl işlediğini ve gizlilik haklarınızı nasıl kullanacağınızı öğrenin.",
       "updated": "Son güncelleme: 10 Ekim 2026",
       "s1Title": "1. Genel Bakış",
       "s1Body": "FreeLingo, kendi kendine barındırılan bir uygulama ve barındırılan bir hizmet olarak kullanılabilir. Kendi kendine barındırılan kurulumlarda tüm veriler yalnızca işletmecinin sunucusunda saklanır ve FreeLingo proje yazarlarının bu verilere erişimi yoktur. Barındırılan hizmette veri sorumlusu FreeLingo ekibidir ve bu politika, kişisel verilerinizin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.",

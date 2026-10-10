@@ -293,6 +293,10 @@ Open Graph, Twitter and the software-application description communicate the str
 journey. The new content renders without reveal gating, and CTA transitions respect reduced motion
 and include visible keyboard focus.
 
+Public metadata is defined through server pages/layouts and the shared `lib/seo.ts` helper.
+The indexing, sitemap, robots, structured-data, and Search Console contract belongs to
+[`seo.instructions.md`](seo.instructions.md).
+
 ## Public registration surfaces
 
 The server-rendered landing page retains its one-hour `/api/config` revalidation and passes
