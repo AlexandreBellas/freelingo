@@ -69,6 +69,8 @@ Use the narrowest relevant spec first:
 - Read and use `.github/PULL_REQUEST_TEMPLATE.md` when drafting or creating a PR, including through a CLI or API.
 - Preserve the template headings. Report only validation actually performed and its results; identify pending checks explicitly. Use `N/A` for notes that do not apply.
 - For bug reports and feature requests, read the matching form in `.github/ISSUE_TEMPLATE/`. When using a CLI or API, use its field labels as Markdown headings and include the required information. Mark unknown details explicitly rather than inventing reproduction steps, versions, or results.
+- When creating an issue or PR, inspect the repository's existing labels and apply at least one appropriate label: `bug` for defects or fixes, `enhancement` for new features or improvements, and `documentation` for documentation work. Use multiple labels only when each describes a substantive part of the scope.
+- Apply labels during creation when supported, otherwise immediately afterward. CLI/API-created issues must receive the appropriate labels explicitly; do not assume issue-form defaults are applied. Preserve existing labels when adding labels. If permissions prevent labeling or no existing label fits, report the limitation and the pending labeling decision.
 
 ## Development environment
 

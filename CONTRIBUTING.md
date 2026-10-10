@@ -21,18 +21,35 @@ Use the [bug report form](.github/ISSUE_TEMPLATE/bug_report.yml) and give the is
 Describe the problem, steps to reproduce, expected and actual behavior, and deployment environment.
 Include the FreeLingo version or commit, browser details, screenshots, and relevant logs when available.
 
-When permissions allow, apply the most appropriate label when opening or triaging an issue. If work on the issue has an associated branch, link that branch in the issue's GitHub Development section so the implementation can be tracked from the issue.
+If work on the issue has an associated branch, link that branch in the issue's GitHub Development section so the implementation can be tracked from the issue.
 
 ### Suggesting features
 
 Use the [feature request form](.github/ISSUE_TEMPLATE/feature_request.yml) to describe the problem or
 need, proposed improvement, and expected outcome. Alternatives and additional context are optional.
-The repository owner will review and label it. Check existing issues and the relevant domain
+The repository owner will review it. Check existing issues and the relevant domain
 specification first.
 
 When opening a bug report or feature request through a CLI or API, read the corresponding form and
 use its field labels as Markdown headings. Include the required information and mark unknown details
 explicitly rather than guessing.
+
+### Labeling issues and pull requests
+
+When opening an issue or PR, apply at least one appropriate existing repository label if you have
+permission:
+
+- `bug`: a defect report or a fix for incorrect behavior.
+- `enhancement`: a new feature or improvement.
+- `documentation`: documentation work.
+
+Choose labels based on the actual scope; use more than one only when each describes a substantive
+part of the change. Preserve existing labels when adding others. If you cannot apply labels or no
+existing label fits, note this so a maintainer can complete triage.
+
+The GitHub bug-report and feature-request forms automatically request `bug` and `enhancement`,
+respectively. For issues and PRs created through a CLI or API, explicitly supply labels during
+creation or apply them immediately afterward; issue-form defaults do not apply to those requests.
 
 ### Branch workflow
 
