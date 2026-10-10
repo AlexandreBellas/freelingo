@@ -62,6 +62,14 @@ Use the narrowest relevant spec first:
 - Contracts and operations: `database-models.instructions.md`, `services.instructions.md`, `api-endpoints.instructions.md`, `rate-limiting.instructions.md`, `docker.instructions.md`, `umami.instructions.md`.
 - Project maintenance: `testing.instructions.md`, `readme.instructions.md`, `changelog.instructions.md`, `version.md`.
 
+## Pull requests and issues
+
+- Always write PR and issue titles and bodies in English, including issue-form answers. Preserve the original language of quoted application text, error messages, and logs when relevant. This does not change the language used to communicate with the user.
+
+- Read and use `.github/PULL_REQUEST_TEMPLATE.md` when drafting or creating a PR, including through a CLI or API.
+- Preserve the template headings. Report only validation actually performed and its results; identify pending checks explicitly. Use `N/A` for notes that do not apply.
+- For bug reports and feature requests, read the matching form in `.github/ISSUE_TEMPLATE/`. When using a CLI or API, use its field labels as Markdown headings and include the required information. Mark unknown details explicitly rather than inventing reproduction steps, versions, or results.
+
 ## Development environment
 
 - Docker is unavailable locally and the application is not deployed on this machine. Do not suggest local Docker commands or runtime checks.

@@ -12,19 +12,27 @@ Follow [DEVELOPMENT.md](DEVELOPMENT.md) to prepare and run the local development
 
 ## How to contribute
 
+Write all pull request and issue titles and descriptions in English, including issue-form answers.
+Keep quoted application text, error messages, and logs in their original language when relevant.
+
 ### Reporting bugs
 
-Open an issue with:
-- A clear title describing the problem
-- Steps to reproduce
-- Expected vs actual behaviour
-- FreeLingo version / commit hash
+Use the [bug report form](.github/ISSUE_TEMPLATE/bug_report.yml) and give the issue a clear title.
+Describe the problem, steps to reproduce, expected and actual behavior, and deployment environment.
+Include the FreeLingo version or commit, browser details, screenshots, and relevant logs when available.
 
 When permissions allow, apply the most appropriate label when opening or triaging an issue. If work on the issue has an associated branch, link that branch in the issue's GitHub Development section so the implementation can be tracked from the issue.
 
 ### Suggesting features
 
-Open an issue describing the use case, not just the feature. The repository owner will review and label it. Check existing issues and the relevant domain specification first.
+Use the [feature request form](.github/ISSUE_TEMPLATE/feature_request.yml) to describe the problem or
+need, proposed improvement, and expected outcome. Alternatives and additional context are optional.
+The repository owner will review and label it. Check existing issues and the relevant domain
+specification first.
+
+When opening a bug report or feature request through a CLI or API, read the corresponding form and
+use its field labels as Markdown headings. Include the required information and mark unknown details
+explicitly rather than guessing.
 
 ### Branch workflow
 
@@ -58,6 +66,11 @@ Contributors must not open PRs directly against `main`; create branches from `de
    (cd frontend && npm run lint && npx tsc --noEmit && npm run test:run)
    ```
 5. Open a pull request against `develop`. CI will run backend tests and frontend lint/typecheck/tests automatically.
+
+Use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md) for every PR, including those
+created through a CLI or API. Keep its headings, describe the changes and their purpose, and report
+only checks actually run with their results. Identify pending checks explicitly and use `N/A` for
+notes that do not apply.
 
 ## Coding standards
 

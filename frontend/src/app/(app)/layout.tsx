@@ -154,7 +154,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         1,
         Math.ceil(
           (new Date(user.subscription_ends_at).getTime() - Date.now()) /
-          (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
         )
       )
       setTrialDaysLeft(days)
@@ -251,10 +251,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${active
+                className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${
+                  active
                     ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                     : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                  }`}
+                }`}
               >
                 <span
                   className={`text-fl-label ${active ? 'text-fl-accent' : 'text-fl-muted-4'}`}
@@ -286,10 +287,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 py-2.5 pr-5 pl-8 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${active
+                    className={`flex items-center gap-3 py-2.5 pr-5 pl-8 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${
+                      active
                         ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                         : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                      }`}
+                    }`}
                   >
                     <span
                       className={`text-fl-label ${active ? 'text-fl-accent' : 'text-fl-muted-4'}`}
@@ -311,10 +313,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${active
+                  className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${
+                    active
                       ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                       : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                    }`}
+                  }`}
                 >
                   <span
                     className={`text-fl-label ${active ? 'text-fl-fg' : 'text-fl-muted-4'}`}
@@ -335,10 +338,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           {user?.role === 'admin' && (
             <Link
               href="/admin"
-              className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${pathname.startsWith('/admin')
+              className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere transition-colors ${
+                pathname.startsWith('/admin')
                   ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                   : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                }`}
+              }`}
             >
               <span className="text-fl-label text-fl-muted-4">●</span>
               {tNav('admin')}
@@ -442,10 +446,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${active
+                  className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${
+                    active
                       ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                       : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                    }`}
+                  }`}
                 >
                   <span
                     className={`text-fl-label ${active ? 'text-fl-fg' : 'text-fl-muted-4'}`}
@@ -481,10 +486,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 py-2.5 pr-5 pl-8 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${active
+                      className={`flex items-center gap-3 py-2.5 pr-5 pl-8 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${
+                        active
                           ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                           : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                        }`}
+                      }`}
                     >
                       <span
                         className={`text-fl-label ${active ? 'text-fl-fg' : 'text-fl-muted-4'}`}
@@ -506,10 +512,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${active
+                  className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${
+                    active
                       ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                       : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                    }`}
+                  }`}
                 >
                   <span
                     className={`text-fl-label ${active ? 'text-fl-fg' : 'text-fl-muted-4'}`}
@@ -530,10 +537,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${pathname.startsWith('/admin')
+                className={`flex items-center gap-3 px-5 py-3 font-mono text-sm tracking-wide wrap-anywhere uppercase transition-colors ${
+                  pathname.startsWith('/admin')
                     ? 'text-fl-fg bg-fl-surface-2 border-fl-accent border-l-2'
                     : 'text-fl-muted-2 hover:text-fl-fg hover:bg-fl-surface border-l-2 border-transparent'
-                  }`}
+                }`}
               >
                 <span className="text-fl-label text-fl-muted-4">●</span>
                 {tNav('admin')}

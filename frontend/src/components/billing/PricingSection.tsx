@@ -186,10 +186,9 @@ export default function PricingSection({
           {tBilling('pricingTitle')}
         </h2>
         <p className="text-fl-muted-1 font-sans text-sm">
-          {tBilling(
-            canStartTrial ? 'pricingDesc' : 'pricingDescTrialUsed',
-            { days: trialDays }
-          )}
+          {tBilling(canStartTrial ? 'pricingDesc' : 'pricingDescTrialUsed', {
+            days: trialDays,
+          })}
         </p>
       </div>
 
@@ -364,7 +363,9 @@ export default function PricingSection({
           >
             {checkoutLoading === 'yearly'
               ? '...'
-              : tBilling(canStartTrial ? 'ctaRegister' : 'ctaRegisterTrialUsed')}
+              : tBilling(
+                  canStartTrial ? 'ctaRegister' : 'ctaRegisterTrialUsed'
+                )}
           </button>
         ) : (
           <Link
