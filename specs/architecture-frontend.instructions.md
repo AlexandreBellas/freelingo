@@ -267,6 +267,32 @@ is decorative. `RewardGuide.tsx` provides a localized, collapsible explanation o
 and links to the corresponding activities. Competency/vocabulary/skill bars expose numeric progress,
 vocabulary filters expose selection, and learned-language curriculum text uses `TargetLanguageText`.
 
+## Public landing
+
+`app/page.tsx` is server-rendered. Its hero introduces the study plan, practice and voice conversation
+with Lingu. The `#features` anchor leads to an ordered three-step learning journey: level assessment
+and a structured A1–C2 curriculum, comprehension/vocabulary practice and the three available games,
+then speaking with Lingu. The steps connect horizontally on desktop and vertically on mobile without
+additional animation or client-side state. Game names reuse the `games` translation namespace.
+
+The static written English correction example accompanies an explanation of voice practice started
+from a completed lesson, whose content and answered exercises can inform Lingu's conversation. It
+uses `TargetLanguageText` with `en-GB`, localized labels, and no simulated controls or API requests.
+Spaced repetition, XP and streaks are supplementary copy rather than a separate feature grid.
+The hero retains the single animated Lingu in `LanguageBubbles`. Reviews, pricing, open-source links,
+FAQ and footer retain their existing components and flows.
+
+Hero and end-of-journey CTAs share the same destination: `/dashboard` for a session cookie,
+`/register` for anonymous visitors when registration is open, otherwise `/login`. Anonymous signup
+copy invites visitors to start learning free. When Stripe is enabled, both signup CTAs clarify that
+registration needs no card and free access has usage limits, with Premium available. No fixed quotas
+or trial durations are promised by this copy.
+
+Landing copy and page-specific metadata use `next-intl` in all fifteen interface catalogs. Metadata,
+Open Graph, Twitter and the software-application description communicate the structured learning
+journey. The new content renders without reveal gating, and CTA transitions respect reduced motion
+and include visible keyboard focus.
+
 ## Public registration surfaces
 
 The server-rendered landing page retains its one-hour `/api/config` revalidation and passes

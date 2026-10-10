@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [1.10.25] - Unreleased
 
+### Changed
+
+- Clarified the public landing's learning journey from level assessment and a structured plan to exercises, games and lesson-context voice practice with Lingu, replacing the feature grid with three connected steps. Updated free-start calls to action, usage-limit guidance and metadata across all fifteen interface languages.
+
 ### Fixed
 
 - The landing pricing subtitle shows monthly/yearly plan-selection text instead of advertising free trial days when `STRIPE_TRIAL_DAYS` is zero or negative.
