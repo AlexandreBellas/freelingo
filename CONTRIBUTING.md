@@ -65,6 +65,11 @@ Contributors must not open PRs directly against `main`; create branches from `de
 
 ### Submitting a pull request
 
+Pull requests that add new interface languages or new study languages are not accepted.
+Adding an interface language is complex and requires coordinated changes across the entire project;
+submissions have not consistently accounted for that full scope. New study languages are also
+outside the accepted scope for pull requests.
+
 1. Fork the repository and create a branch from `develop`:
    ```bash
    git checkout -b feature/short-description

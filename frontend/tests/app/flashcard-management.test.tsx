@@ -89,6 +89,67 @@ beforeEach(() => {
 })
 
 describe('flashcard library', () => {
+  it.each(['reconciled', 'unreconciled', 'filtered'] as const)(
+    'counts a delayed deletion once against a %s list even if its refresh fails',
+    async (snapshot) => {
+      const second = { ...card, id: 8, word: 'apple', source: 'from_text' }
+      const deletion = deferred<Response>()
+      const suspension = deferred<Response>()
+      let reads = 0
+      mockApiFetch.mockImplementation(
+        async (url: string, options?: RequestInit) => {
+          if (options?.method === 'DELETE') return deletion.promise
+          if (url.endsWith('/suspension')) return suspension.promise
+          if (url.startsWith('/api/flashcards/library?')) {
+            reads++
+            if (reads === 1) return library([card, second])
+            if (reads === 2 && snapshot !== 'unreconciled')
+              return library([{ ...second, is_suspended: true }])
+            return json({}, 503)
+          }
+          throw new Error('Unexpected request')
+        }
+      )
+      show()
+      const a = await screen.findByRole('article', { name: 'book' })
+      const b = screen.getByRole('article', { name: 'apple' })
+      if (snapshot === 'reconciled')
+        fireEvent.click(within(b).getByRole('button', { name: 'Suspend' }))
+      fireEvent.click(within(a).getByRole('button', { name: 'Delete' }))
+      fireEvent.click(
+        within(screen.getByRole('alertdialog')).getByRole('button', {
+          name: 'Delete',
+        })
+      )
+      if (snapshot === 'reconciled') {
+        await act(async () =>
+          suspension.resolve(json({ ...second, is_suspended: true }))
+        )
+      } else if (snapshot === 'filtered') {
+        fireEvent.change(screen.getByLabelText('Source'), {
+          target: { value: 'from_text' },
+        })
+      }
+      if (snapshot !== 'unreconciled') {
+        await waitFor(() =>
+          expect(
+            screen.queryByRole('article', { name: 'book' })
+          ).not.toBeInTheDocument()
+        )
+      }
+      await act(async () =>
+        deletion.resolve(new Response(null, { status: 204 }))
+      )
+      await screen.findByRole('alert')
+      expect(screen.getAllByRole('article')).toHaveLength(1)
+      expect(screen.getByRole('article', { name: 'apple' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: messages.flashcards.myVocabulary })
+          .nextElementSibling
+      ).toHaveTextContent(/^1$/)
+    }
+  )
+
   it('preserves an unsaved editor while another card saves and the library refreshes', async () => {
     const second = { ...card, id: 8, word: 'apple' }
     let items = [card, second]
@@ -408,6 +469,62 @@ describe('flashcard library', () => {
 })
 
 describe('review management', () => {
+  it.each(['language', 'plan', 'navigation'] as const)(
+    'reconciles a preference save after a %s remount without a competing GET',
+    async (change) => {
+      const save = deferred<Response>()
+      let stored = 'definition'
+      let reads = 0
+      mockApiFetch.mockImplementation(
+        async (url: string, options?: RequestInit) => {
+          if (url === '/api/flashcards/due')
+            return json({ due: [card], total: 1, cefr_level: 'A1' })
+          if (url === '/api/flashcards/preferences') {
+            if (options?.method === 'PUT') return save.promise
+            reads++
+            return json({ back_content: stored })
+          }
+          throw new Error('Unexpected request')
+        }
+      )
+      const view = show('review')
+      fireEvent.click(
+        await screen.findByRole('button', { name: 'Start review' })
+      )
+      const selector = screen.getByLabelText('Main answer on the back')
+      await waitFor(() => expect(selector).toBeEnabled())
+      fireEvent.change(selector, { target: { value: 'translation' } })
+      if (change === 'navigation') {
+        view.unmount()
+        show('review')
+      } else {
+        act(() =>
+          useLanguageStore.setState(
+            change === 'language'
+              ? { activeLanguage: getLanguageByCode('it-IT')! }
+              : { invalidationVersion: 1 }
+          )
+        )
+      }
+      fireEvent.click(
+        await screen.findByRole('button', { name: 'Start review' })
+      )
+      expect(screen.getByLabelText('Main answer on the back')).toBeDisabled()
+      expect(reads).toBe(1)
+      stored = 'translation'
+      await act(async () => save.resolve(json({ back_content: stored })))
+      expect(screen.getByLabelText('Main answer on the back')).toHaveValue(
+        stored
+      )
+      expect(screen.getByLabelText('Main answer on the back')).toBeEnabled()
+      fireEvent.click(screen.getByRole('button', { name: 'Speaking' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Standard' }))
+      expect(screen.getByLabelText('Main answer on the back')).toHaveValue(
+        stored
+      )
+    }
+  )
+
   it('retries a lost review response with the same identifier and credits the summary once', async () => {
     await startReview()
     fireEvent.click(screen.getByRole('button', { name: 'tap to reveal' }))

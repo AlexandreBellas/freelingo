@@ -5,7 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import messages from '../../../messages/en.json'
 import VocabularySetPage from '@/app/(app)/vocabulary/[setId]/page'
 import { useLanguageStore } from '@/store/language'
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore, type User } from '@/store/auth'
 import { getLanguageByCode } from '@/lib/target-languages'
 
 const { api } = vi.hoisted(() => ({ api: vi.fn() }))
@@ -201,4 +201,125 @@ it('still allows browsing a set without an active plan and does not send an unbo
   expect(api.mock.calls.some(([url]) => url === '/api/flashcards/bulk')).toBe(
     false
   )
+})
+
+it.each(['language', 'account', 'native-language', 'plan'] as const)(
+  'discards obsolete native help on %s changes without disturbing the new request',
+  async (change) => {
+    const user: User = {
+      id: 1,
+      username: 'learner',
+      displayName: 'Learner',
+      role: 'user',
+      native_language: 'es',
+      conversation_max_duration: 300,
+      conversation_inactivity_timeout: 30,
+    }
+    useAuthStore.setState({ user })
+    let oldHelp!: (response: Response) => void
+    let newHelp!: (response: Response) => void
+    const firstHelp = new Promise<Response>((resolve) => {
+      oldHelp = resolve
+    })
+    const secondHelp = new Promise<Response>((resolve) => {
+      newHelp = resolve
+    })
+    const original = api.getMockImplementation()!
+    let helps = 0
+    api.mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.includes('/native-help?'))
+        return ++helps === 1 ? firstHelp : secondHelp
+      return original(url, options)
+    })
+    await show()
+    await screen.findByText('hello')
+    fireEvent.click(screen.getByRole('button', { name: 'Help in Spanish+' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Show help in Spanish' })
+    )
+    const oldSignal = api.mock.calls.find(([url]) =>
+      url.includes('/native-help?')
+    )![1].signal as AbortSignal
+    act(() => {
+      if (change === 'language') {
+        serverLanguage = 'it-IT'
+        useLanguageStore.setState({
+          activeLanguage: getLanguageByCode('it-IT')!,
+        })
+      } else if (change === 'account') {
+        useAuthStore.setState({ sessionVersion: 1, user: { ...user, id: 2 } })
+      } else if (change === 'native-language') {
+        useAuthStore.setState({ user: { ...user, native_language: 'fr' } })
+      } else {
+        useLanguageStore.setState({ invalidationVersion: 1 })
+      }
+    })
+    const language = change === 'native-language' ? 'French' : 'Spanish'
+    fireEvent.click(
+      await screen.findByRole('button', { name: `Help in ${language}+` })
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: `Show help in ${language}` })
+    )
+    expect(helps).toBe(2)
+    expect(oldSignal.aborted).toBe(true)
+    const response = (summary: string) =>
+      json({
+        native_help: {
+          summary,
+          study_tips: [],
+          word_notes: [],
+          common_traps: [],
+          mini_glossary: [],
+          practice_prompts: [],
+        },
+      })
+    await act(async () => oldHelp(response('Obsolete English help')))
+    expect(screen.queryByText('Obsolete English help')).not.toBeInTheDocument()
+    expect(
+      screen.getByText(`Preparing help in ${language}...`)
+    ).toBeInTheDocument()
+    await act(async () => newHelp(response('Current help')))
+    expect(screen.getByText('Current help')).toBeInTheDocument()
+  }
+)
+
+it('ignores an obsolete help failure and lets the current help retry its own failure', async () => {
+  useAuthStore.setState({
+    user: {
+      id: 1,
+      username: 'learner',
+      displayName: 'Learner',
+      role: 'user',
+      native_language: 'es',
+      conversation_max_duration: 300,
+      conversation_inactivity_timeout: 30,
+    },
+  })
+  let failOld!: (response: Response) => void
+  const pending = new Promise<Response>((resolve) => {
+    failOld = resolve
+  })
+  const original = api.getMockImplementation()!
+  let helps = 0
+  api.mockImplementation(async (url: string, options?: RequestInit) => {
+    if (url.includes('/native-help?'))
+      return ++helps === 1 ? pending : json({}, 503)
+    return original(url, options)
+  })
+  await show()
+  await screen.findByText('hello')
+  fireEvent.click(screen.getByRole('button', { name: 'Help in Spanish+' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Show help in Spanish' }))
+  serverLanguage = 'it-IT'
+  act(() =>
+    useLanguageStore.setState({ activeLanguage: getLanguageByCode('it-IT')! })
+  )
+  await screen.findByText('ciao')
+  await act(async () => failOld(json({}, 503)))
+  fireEvent.click(screen.getByRole('button', { name: 'Help in Spanish+' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Show help in Spanish' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Retry' }))
+  await screen.findByRole('button', { name: 'Retry' })
+  expect(helps).toBe(3)
 })

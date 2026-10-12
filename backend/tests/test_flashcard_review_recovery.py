@@ -9,6 +9,8 @@ from sqlalchemy import func, select
 from app.models.flashcard import Flashcard, FlashcardReviewReceipt
 from app.models.progress import Progress
 from tests.conftest import make_study_plan
+from tests.test_learning_analytics import USER_AGENT, event_names
+from tests.test_learning_analytics import capture as capture
 
 
 @pytest.fixture
@@ -51,6 +53,38 @@ async def test_lost_response_retry_preserves_one_review_and_one_reward(
         == 2
     )
     assert await db_session.scalar(select(func.count()).select_from(FlashcardReviewReceipt)) == 1
+
+
+@pytest.mark.parametrize("source", [None, "from_text"])
+async def test_replays_do_not_emit_generic_or_saved_vocabulary_events(
+    client, test_user, db_session, context, capture, source
+):
+    _, card = context
+    card.source = source
+    await db_session.commit()
+    headers = {**test_user[1], "User-Agent": USER_AGENT}
+    path = f"/api/flashcards/{card.id}/review"
+    payload = {"quality": 4, "review_id": str(uuid4())}
+    original = await client.post(path, headers=headers, json=payload)
+    assert original.status_code == 200
+    expected = ["flashcard_reviewed"] + (["saved_vocabulary_reviewed"] if source else [])
+    assert event_names(capture) == expected
+    for _ in range(2):
+        replay = await client.post(path, headers=headers, json=payload)
+        assert replay.status_code == 200 and replay.json() == original.json()
+    conflict = await client.post(path, headers=headers, json={**payload, "quality": 0})
+    assert conflict.status_code == 409
+    assert event_names(capture) == expected
+    another = await client.post(path, headers=headers, json={**payload, "review_id": str(uuid4())})
+    assert another.status_code == 200
+    assert event_names(capture) == expected * 2
+    card.is_suspended = True
+    await db_session.commit()
+    assert (await client.post(path, headers=headers, json=payload)).status_code == 200
+    assert (
+        await client.post(path, headers=headers, json={**payload, "review_id": str(uuid4())})
+    ).status_code == 409
+    assert event_names(capture) == expected * 2
 
 
 async def test_receipt_survives_later_reviews_and_cannot_be_reused_with_another_quality(

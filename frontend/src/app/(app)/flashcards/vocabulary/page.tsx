@@ -335,7 +335,11 @@ function VocabularyContent({
                           (previous) =>
                             previous && {
                               ...previous,
-                              total: Math.max(0, previous.total - 1),
+                              total: previous.items.some(
+                                (card) => card.id === id
+                              )
+                                ? Math.max(0, previous.total - 1)
+                                : previous.total,
                               items: previous.items.filter(
                                 (card) => card.id !== id
                               ),

@@ -8,10 +8,10 @@ from pydantic import BaseModel, Field, field_serializer, field_validator
 
 
 class FlashcardCreate(BaseModel):
-    word: str
+    word: str = Field(max_length=100)
     definition: str
     example_sentence: str
-    translation: str
+    translation: str = Field(max_length=255)
 
 
 class FlashcardBulkCreate(BaseModel):
@@ -56,7 +56,7 @@ class FlashcardPreferences(BaseModel):
 
 
 class FlashcardFromWordRequest(BaseModel):
-    word: str
+    word: str = Field(max_length=100)
     context: str = ""
     cefr_level: str = "B1"
     lesson_id: int | None = Field(default=None, strict=True, ge=1, le=2_147_483_647)
@@ -116,11 +116,8 @@ class VocabularyListResponse(BaseModel):
     pages: int
 
 
-class GeneratedFlashcard(BaseModel):
-    word: str
-    definition: str
-    example_sentence: str
-    translation: str
+class GeneratedFlashcard(FlashcardCreate):
+    pass
 
 
 class FlashcardGenerateResponse(BaseModel):

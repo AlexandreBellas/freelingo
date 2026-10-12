@@ -292,9 +292,12 @@ wraps, and the progress transition respects reduced motion. All controls retain 
 than relying on icons or color alone.
 
 The standard card uses a native reveal button with keyboard support and separate audio controls.
-`useBackPreference` runs in the stable review-page owner and loads/saves the account-wide reverse-side
-preference through the backend; `BackPreference` renders its selector and errors. Mode changes can
-unmount the selector without canceling ownership of a pending write or starting a stale competing GET.
+`useBackPreference` subscribes to the account-session store in `store/flashcard-preferences.ts`;
+`BackPreference` renders its selector and errors. Reads and writes are serialized across mounted
+views. The store owns pending requests across mode, language, plan and page changes; a returning view
+subscribes to an in-flight operation instead of issuing a competing GET. Later visits revalidate the
+saved value. Failed operations expose retry through a fresh read. A new authentication session gets
+an isolated store, and old responses cannot update it. Token rotation preserves the account session.
 `SpeakingCard` owns transcription feedback and retry state, confirms a result before calling the
 review handler, and exposes a learner correction for recognition mismatches. It is keyed by card ID
 and editable content so an edit invalidates old feedback. `lib/flashcard-review.ts` implements speech
@@ -321,6 +324,9 @@ drafts, errors and pending operations therefore survive row unmounts and backgro
 mutations reconcile the list through a request-version guard, including operations whose row left the
 current filter. Existing rows remain mounted during background loading/error states; closed, idle
 action states are released. Review-screen actions retain local state scoped to the current card.
+Acknowledged deletion removes a visible row and decreases the current total only if that snapshot
+still contains the row. If a refresh or filter change has already removed it, the late acknowledgment
+does not decrease the total again. Server refreshes remain authoritative for pagination and totals.
 
 Review submission retains the card, original rating and UUID while a response is unresolved. The
 dedicated save retry sends that same payload, while other review actions stay disabled. Only a

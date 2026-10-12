@@ -270,6 +270,7 @@ async def review_flashcard(
     if receipt is not None:
         if receipt.quality != data.quality:
             raise HTTPException(status_code=409, detail="flashcard_review_conflict")
+        request.state.flashcard_review_replayed = True
         return FlashcardReviewResponse.model_validate(receipt.response)
     if card.is_suspended:
         raise HTTPException(status_code=409, detail="flashcard_suspended")

@@ -236,6 +236,11 @@ to POST sends the text, resolved voice, and optional context as JSON to that URL
 saved vocabulary, and games pass their resource's `studyPlanId`; chat passes `conversationId`.
 Changing either context cancels pending playback and releases the previous audio. Custom GET requests
 use `cache: 'no-store'`, bypassing previously cached browser audio while retaining backend disk caches.
+Both GET and POST audio use the shared authenticated `apiFetch` path. A 401 can renew the access
+token and retry the same audio request once, preserving body, resource context, trace headers and
+binary response handling. The player's timeout includes token renewal. Canceling an audio consumer
+cancels its wait/retry without canceling renewal shared by other requests. Changing account sessions
+cancels playback and discards late audio; token rotation within the same session does not interrupt it.
 
 The dashboard tour posts its displayed i18n text and voice to its locale/step audio URL with this
 player. Optional playback-state notifications coordinate Lingu's speaking animation; they do not

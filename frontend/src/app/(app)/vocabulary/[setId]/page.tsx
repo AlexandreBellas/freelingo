@@ -59,6 +59,7 @@ export default function VocabularySetPage({
     null
   )
   const [loadingNativeHelp, setLoadingNativeHelp] = useState(false)
+  const nativeHelpRequest = useRef<AbortController | null>(null)
   const [nativeHelpError, setNativeHelpError] = useState(false)
   const nativeLanguageName = user?.native_language
     ? tLang(user.native_language)
@@ -171,28 +172,69 @@ export default function VocabularySetPage({
     setNativeHelpOpen(false)
     setNativeHelp(null)
     setNativeHelpError(false)
-  }, [setId, activeLanguage?.code])
+    setLoadingNativeHelp(false)
+    return () => {
+      nativeHelpRequest.current?.abort()
+      nativeHelpRequest.current = null
+    }
+  }, [
+    setId,
+    activeLanguage,
+    sessionVersion,
+    invalidationVersion,
+    isSwitching,
+    needsRefresh,
+    reload,
+    tFlashcards,
+    user?.native_language,
+  ])
 
   const targetLanguageCode = activeLanguage?.code ?? 'en-GB'
 
   const generateNativeHelp = useCallback(async () => {
-    if (loadingNativeHelp) return
+    if (
+      nativeHelpRequest.current ||
+      loading ||
+      !acceptsContext() ||
+      loadedSet?.language !== targetLanguageCode ||
+      loadedSet.set.id !== setId
+    )
+      return
+    const controller = new AbortController()
+    nativeHelpRequest.current = controller
+    const version = viewVersion.current
+    const nativeLanguage = user?.native_language
+    const current = () =>
+      !controller.signal.aborted &&
+      nativeHelpRequest.current === controller &&
+      version === viewVersion.current &&
+      acceptsContext() &&
+      useAuthStore.getState().user?.native_language === nativeLanguage
     setLoadingNativeHelp(true)
     setNativeHelpError(false)
     try {
       const res = await apiFetch(
         `/api/vocabulary/${encodeURIComponent(setId)}/native-help?language=${targetLanguageCode}`,
-        { method: 'POST' }
+        { method: 'POST', signal: controller.signal }
       )
       if (!res.ok) throw new Error('native help failed')
       const data = (await res.json()) as { native_help: VocabularyNativeHelp }
-      setNativeHelp(data.native_help)
+      if (current()) setNativeHelp(data.native_help)
     } catch {
-      setNativeHelpError(true)
+      if (current()) setNativeHelpError(true)
     } finally {
-      setLoadingNativeHelp(false)
+      if (current()) setLoadingNativeHelp(false)
+      if (nativeHelpRequest.current === controller)
+        nativeHelpRequest.current = null
     }
-  }, [loadingNativeHelp, setId, targetLanguageCode])
+  }, [
+    loading,
+    acceptsContext,
+    loadedSet,
+    setId,
+    targetLanguageCode,
+    user?.native_language,
+  ])
 
   if (loading) {
     return <PageLoading />

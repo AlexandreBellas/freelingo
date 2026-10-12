@@ -359,6 +359,11 @@ learner selection is retained for the page's current context. Generation is avai
 summary. Its result reports actual created cards and duplicates skipped, including zero-card results;
 empty model terms are reported separately. Existing selected-word and vocabulary-set additions retain
 their own creation flows.
+Creation content is limited to 100 characters for words and 255 for translations, matching storage.
+Oversized manual/bulk input or selected words return 422 before persistence. Generated content uses
+the same limits through structured-output validation: one corrective model retry is allowed, and
+continued invalid output returns the existing 502 `ai_service_error` without partially saving a batch.
+Content is not truncated to fit the columns.
 
 ### Flashcard library and management
 
@@ -388,14 +393,19 @@ Refreshing after another card's mutation retains existing rows and drafts. A pen
 finish and request reconciliation even if its row has left a filter/page. Mutations invalidate older
 list responses; background-load errors keep the current editors available. These drafts reset when
 the library page's account, language or plan context is unmounted.
+Deletion acknowledgments decrement the displayed total only when removing a row still present in
+that snapshot; acknowledgments arriving after server reconciliation do not decrement it again.
 
 The account-wide `flashcard_back_content` preference chooses definition or translation as the main
 standard-mode answer. Definition is the default and the fallback for missing translations. Examples
 and complementary information remain visible after revealing the card. Speaking uses the confirmation
 flow described above. Failed loads and mutations expose recoverable errors; obsolete responses are
 discarded across session, language and plan changes.
-Preference requests and their loaded value belong to the review page, not the standard-mode selector;
-switching to oral mode and back does not abandon a pending save or start a competing preference read.
+Preference requests and their value belong to the account session. Reads and writes are serialized;
+mode, language, plan and page changes retain pending operations and let returning views subscribe to
+their result. New visits revalidate when no request is pending. Errors remain recoverable through a
+fresh read. Account changes isolate the new preference state from old responses; access-token renewal
+does not change this session identity.
 
 ## Language roles and internationalization
 

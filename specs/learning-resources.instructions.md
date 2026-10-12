@@ -88,6 +88,10 @@ plan. The page sends an empty translation and the bulk endpoint does not generat
 
 Vocabulary native help begins collapsed and is generated on request. Progress treats an item as
 covered only when its plan-owned flashcard has `repetitions > 0`.
+The detail view binds help requests to the loaded set, target/native languages, authentication
+session and view version. Context changes clear help and cancel its pending request. Late successes,
+errors and completion callbacks are ignored, so an old request cannot replace the new help, expose
+an obsolete error or clear the new request's loading state. Current-context failures allow retry.
 
 ## Phrasebook
 

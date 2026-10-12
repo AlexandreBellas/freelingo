@@ -1,74 +1,25 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useStore } from 'zustand'
 import { useTranslations } from 'next-intl'
-import { apiFetch } from '@/lib/api'
-import { useFlashcardScope } from './FlashcardBoundary'
+import { useAuthStore } from '@/store/auth'
+import { getFlashcardPreferences } from '@/store/flashcard-preferences'
 import type { BackContent } from './types'
 
-// The page owns requests, including when the standard-mode selector is hidden.
+// Account-owned requests survive language boundaries and page navigation.
 export function useBackPreference(enabled: boolean) {
-  const isCurrent = useFlashcardScope()
-  const [value, setValue] = useState<BackContent>('definition')
-  const [loading, setLoading] = useState(true)
-  const [loaded, setLoaded] = useState(false)
-  const [error, setError] = useState(false)
-  const [attempt, setAttempt] = useState(0)
-  const pending = useRef(false)
-  const loadedRef = useRef(false)
+  const sessionVersion = useAuthStore((state) => state.sessionVersion)
+  const store = useMemo(
+    () => getFlashcardPreferences(sessionVersion),
+    [sessionVersion]
+  )
+  const preference = useStore(store)
+  const { load } = preference
   useEffect(() => {
-    if (!enabled || loadedRef.current) return
-    const controller = new AbortController()
-    void (async () => {
-      try {
-        const res = await apiFetch('/api/flashcards/preferences', {
-          signal: controller.signal,
-        })
-        if (!res.ok) throw new Error('Preferences unavailable')
-        const data = await res.json()
-        if (!isCurrent() || controller.signal.aborted) return
-        setValue(data.back_content)
-        loadedRef.current = true
-        setLoaded(true)
-        setError(false)
-      } catch {
-        if (isCurrent() && !controller.signal.aborted) setError(true)
-      } finally {
-        if (isCurrent() && !controller.signal.aborted) setLoading(false)
-      }
-    })()
-    return () => controller.abort()
-  }, [attempt, enabled, isCurrent])
-
-  async function save(next: BackContent) {
-    if (pending.current || !isCurrent()) return
-    pending.current = true
-    setLoading(true)
-    setError(false)
-    try {
-      const res = await apiFetch('/api/flashcards/preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ back_content: next }),
-      })
-      if (!res.ok) throw new Error('Could not save preference')
-      if (isCurrent()) setValue(next)
-    } catch {
-      if (isCurrent()) setError(true)
-    } finally {
-      pending.current = false
-      if (isCurrent()) setLoading(false)
-    }
-  }
-
-  function retry() {
-    if (pending.current) return
-    loadedRef.current = false
-    setLoading(true)
-    setAttempt((n) => n + 1)
-  }
-
-  return { value, loading, loaded, error, save, retry }
+    if (enabled) void load()
+  }, [enabled, load])
+  return { ...preference, retry: load }
 }
 
 export function BackPreference({

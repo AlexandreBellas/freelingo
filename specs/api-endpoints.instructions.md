@@ -230,6 +230,12 @@ Lesson viewing and exercise answering use `get_current_user` (always free). Only
 
 ## Flashcards — `/api/flashcards`
 
+Creation schemas limit `word` to 100 characters and `translation` to 255; the selected `word` in
+`/from-word` is also limited to 100. Manual and bulk input violations return 422 before any insertion,
+including when other bulk items are valid. LLM output for `/generate` and `/from-word` shares these
+limits: structured-output validation requests one corrective retry, then returns 502
+`ai_service_error` if still invalid. No truncation or partial batch persistence is performed.
+
 - **GET `/due`** — Rate limit: 60/min. Returns `{due,total,cefr_level}` for the active persisted plan. `due` contains non-suspended cards pending review today in SM-2 order; `total` includes suspended cards. `cefr_level` provides the initial generator selection. Session-size selection is local and does not alter the full due-card response.
 - **GET `/all`** — Rate limit: 60/min. All user's flashcards
 - **POST `/api/flashcards`** — Rate limit: 60/min. Creates a flashcard manually.
@@ -244,6 +250,9 @@ Lesson viewing and exercise answering use `get_current_user` (always free). Only
 - **PUT `/{card_id}/suspension`** — Rate limit: 60/min. Accepts `{is_suspended: boolean}` and returns the owned card. Suspension and reactivation preserve review dates, intervals, ease and repetitions and award no XP. Reactivated overdue cards become due immediately. Saving the same word through existing creation flows does not reactivate a suspended card.
 - **GET/PUT `/preferences`** — Rate limit: 60/min. Reads or replaces `{back_content: "definition"|"translation"}` for the authenticated account, globally across study languages. Defaults to `definition`; no active plan is required. The standard review uses definition when a translation is missing and retains complementary content. This preference applies only to standard-mode content.
 - **DELETE `/{card_id}`** — Rate limit: 60/min. Permanently deletes a flashcard owned by the user; 204 No Content
+
+Review receipt replays return the original successful response but do not enqueue new
+`flashcard_reviewed` or `saved_vocabulary_reviewed` analytics events.
 
 ---
 
