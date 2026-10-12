@@ -100,9 +100,11 @@ function show() {
 }
 async function start(size = '10') {
   await screen.findByRole('button', { name: 'Start review' })
-  fireEvent.change(screen.getByLabelText('Session size'), {
-    target: { value: size },
+  const choice = screen.getByRole('radio', {
+    name: size === 'all' ? 'All due cards' : `${size} cards`,
   })
+  fireEvent.click(choice)
+  expect(choice).toBeChecked()
   fireEvent.click(screen.getByRole('button', { name: 'Start review' }))
 }
 const reviews = () => api.mock.calls.filter(([url]) => url.endsWith('/review'))
@@ -127,6 +129,11 @@ describe('review sessions', () => {
     await start('5')
     for (let index = 0; index < 5; index++) {
       await screen.findByText(`word${index}`)
+      const progress = screen.getByRole('progressbar', {
+        name: 'Session progress',
+      })
+      expect(progress).toHaveAttribute('aria-valuenow', String(index))
+      expect(progress).toHaveAttribute('aria-valuemax', '5')
       fireEvent.click(screen.getByRole('button', { name: 'tap to reveal' }))
       fireEvent.click(
         screen.getByRole('button', { name: index === 1 ? 'Again' : 'Good' })
@@ -178,6 +185,9 @@ describe('review sessions', () => {
     api.mockResolvedValueOnce(json({}, 503))
     fireEvent.click(screen.getByRole('button', { name: 'Good' }))
     await screen.findByRole('alert')
+    expect(
+      screen.getByRole('progressbar', { name: 'Session progress' })
+    ).toHaveAttribute('aria-valuenow', '0')
     fireEvent.click(screen.getByRole('button', { name: 'Finish session' }))
     expect(metric('Cards reviewed')).toHaveTextContent('0')
     act(() =>
@@ -308,9 +318,7 @@ describe('generation feedback', () => {
         skipped_empty: 1,
       })
     )
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Generate' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }))
     expect(
       await screen.findByText('Cards created: 2. Duplicates skipped: 3.')
     ).toBeInTheDocument()
@@ -341,9 +349,7 @@ describe('generation feedback', () => {
         skipped_empty: 0,
       })
     )
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Generate' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }))
     expect(
       await screen.findByText('Cards created: 0. Duplicates skipped: 4.')
     ).toBeInTheDocument()

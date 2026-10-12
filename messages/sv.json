@@ -893,7 +893,10 @@
     "speechConfirmHint": "Bekräfta för att spara en repetition. Transkriptionen jämförs, inte ditt uttal.",
     "speechContinue": "Spara resultatet och fortsätt",
     "speechOverride": "Jag sa det rätt",
-    "speechEmpty": "Inget ord kunde uppfattas. Försök igen."
+    "speechEmpty": "Inget ord kunde uppfattas. Försök igen.",
+    "reviewMode": "Repetitionsläge",
+    "sessionProgress": "Sessionens framsteg",
+    "reviewDetails": "Repetitionsdetaljer"
   },
   "chat": {
     "title": "Lingu, din handledare",

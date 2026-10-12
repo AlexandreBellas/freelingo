@@ -302,6 +302,12 @@ describe('review management', () => {
     expect(screen.queryByText('book')).not.toBeInTheDocument()
     expect(screen.getByText('2 Total · 1 Due')).toBeInTheDocument()
     expect(
+      screen.getByRole('progressbar', { name: 'Session progress' })
+    ).toHaveAttribute('aria-valuenow', '1')
+    expect(
+      screen.getByRole('progressbar', { name: 'Session progress' })
+    ).toHaveAttribute('aria-valuemax', '2')
+    expect(
       mockApiFetch.mock.calls.some(([url]) => url.endsWith('/review'))
     ).toBe(false)
   })

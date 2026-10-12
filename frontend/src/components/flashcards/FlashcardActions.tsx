@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { Check, Pause, Pencil, Play, Trash2 } from 'lucide-react'
 import { apiFetch } from '@/lib/api'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useFlashcardScope } from './FlashcardBoundary'
@@ -105,9 +106,9 @@ export function FlashcardActions({
   }
 
   const buttonClass =
-    'border-fl-border text-fl-muted-1 hover:text-fl-fg border px-3 py-2 text-sm disabled:opacity-40'
+    'border-fl-border text-fl-muted-1 hover:bg-fl-surface-2 hover:text-fl-fg focus-visible:outline-fl-accent inline-flex min-h-11 items-center justify-center gap-2 border px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40'
   const inputClass =
-    'border-fl-border bg-fl-bg text-fl-fg w-full border px-3 py-2 font-sans text-base disabled:opacity-50'
+    'border-fl-border bg-fl-bg text-fl-fg focus-visible:outline-fl-accent min-h-11 w-full border px-3 py-2 font-sans text-base focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50'
 
   return (
     <div className="space-y-3">
@@ -128,6 +129,7 @@ export function FlashcardActions({
             onInteractionChange?.(true)
           }}
         >
+          <Pencil className="size-4 shrink-0" aria-hidden="true" />
           {t('editCard')}
         </button>
         <button
@@ -135,6 +137,11 @@ export function FlashcardActions({
           className={buttonClass}
           onClick={() => void mutate('suspend')}
         >
+          {card.is_suspended ? (
+            <Play className="size-4 shrink-0" aria-hidden="true" />
+          ) : (
+            <Pause className="size-4 shrink-0" aria-hidden="true" />
+          )}
           {card.is_suspended ? t('reactivate') : t('suspend')}
         </button>
         <button
@@ -146,12 +153,13 @@ export function FlashcardActions({
             onInteractionChange?.(true)
           }}
         >
+          <Trash2 className="size-4 shrink-0" aria-hidden="true" />
           {common('delete')}
         </button>
       </div>
       {mode === 'edit' && (
         <form
-          className="border-fl-border space-y-3 border p-4"
+          className="border-fl-border bg-fl-bg space-y-4 border p-4 sm:p-5"
           aria-label={t('editCard')}
           onSubmit={(event) => {
             event.preventDefault()
@@ -203,14 +211,15 @@ export function FlashcardActions({
               {error}
             </p>
           )}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="submit"
               disabled={
                 pending || !draft.word.trim() || !draft.definition.trim()
               }
-              className={buttonClass}
+              className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 focus-visible:outline-fl-accent inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
             >
+              <Check className="size-4 shrink-0" aria-hidden="true" />
               {pending ? common('saving') : common('save')}
             </button>
             <button

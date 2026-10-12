@@ -893,7 +893,10 @@
     "speechConfirmHint": "Confirma para guardar un único repaso. Se compara la transcripción, no se evalúa la pronunciación.",
     "speechContinue": "Guardar resultado y continuar",
     "speechOverride": "La he dicho bien",
-    "speechEmpty": "No se ha entendido ninguna palabra. Vuelve a intentarlo."
+    "speechEmpty": "No se ha entendido ninguna palabra. Vuelve a intentarlo.",
+    "reviewMode": "Modo de repaso",
+    "sessionProgress": "Avance de la sesión",
+    "reviewDetails": "Detalles del repaso"
   },
   "chat": {
     "title": "Lingu, tu tutor",

@@ -893,7 +893,10 @@
     "speechConfirmHint": "Confirmă pentru a salva o singură repetare. Se compară transcrierea, nu se evaluează pronunția.",
     "speechContinue": "Salvează rezultatul și continuă",
     "speechOverride": "Am spus corect",
-    "speechEmpty": "Nu a fost recunoscut niciun cuvânt. Încearcă din nou."
+    "speechEmpty": "Nu a fost recunoscut niciun cuvânt. Încearcă din nou.",
+    "reviewMode": "Mod de recapitulare",
+    "sessionProgress": "Progresul sesiunii",
+    "reviewDetails": "Detalii de recapitulare"
   },
   "chat": {
     "title": "Lingu, tutorele tău",

@@ -893,7 +893,10 @@
     "speechConfirmHint": "Potwierdź, aby zapisać jedną powtórkę. Porównywana jest transkrypcja, nie wymowa.",
     "speechContinue": "Zapisz wynik i kontynuuj",
     "speechOverride": "Wymowa była poprawna",
-    "speechEmpty": "Nie rozpoznano żadnego słowa. Spróbuj ponownie."
+    "speechEmpty": "Nie rozpoznano żadnego słowa. Spróbuj ponownie.",
+    "reviewMode": "Tryb powtórki",
+    "sessionProgress": "Postęp sesji",
+    "reviewDetails": "Szczegóły powtórki"
   },
   "chat": {
     "title": "Lingu, Twój korepetytor",

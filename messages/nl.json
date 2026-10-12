@@ -893,7 +893,10 @@
     "speechConfirmHint": "Bevestig om één herhaling op te slaan. Dit vergelijkt de transcriptie, niet je uitspraak.",
     "speechContinue": "Resultaat opslaan en doorgaan",
     "speechOverride": "Ik zei het goed",
-    "speechEmpty": "Er is geen woord herkend. Probeer het opnieuw."
+    "speechEmpty": "Er is geen woord herkend. Probeer het opnieuw.",
+    "reviewMode": "Herhaalmodus",
+    "sessionProgress": "Sessievoortgang",
+    "reviewDetails": "Herhaaldetails"
   },
   "chat": {
     "title": "Lingu, jouw tutor",

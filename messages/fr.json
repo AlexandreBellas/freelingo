@@ -893,7 +893,10 @@
     "speechConfirmHint": "Confirme pour enregistrer une seule révision. La transcription est comparée, sans évaluation de la prononciation.",
     "speechContinue": "Enregistrer et continuer",
     "speechOverride": "Je l’ai bien dit",
-    "speechEmpty": "Aucun mot reconnu. Réessaie."
+    "speechEmpty": "Aucun mot reconnu. Réessaie.",
+    "reviewMode": "Mode de révision",
+    "sessionProgress": "Progression de la session",
+    "reviewDetails": "Détails de révision"
   },
   "chat": {
     "title": "Lingu, votre tuteur",

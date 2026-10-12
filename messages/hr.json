@@ -893,7 +893,10 @@
     "speechConfirmHint": "Potvrdi za spremanje jednog ponavljanja. Uspoređuje se transkripcija, a ne izgovor.",
     "speechContinue": "Spremi rezultat i nastavi",
     "speechOverride": "Ispravno sam izgovorio",
-    "speechEmpty": "Nije prepoznata nijedna riječ. Pokušaj ponovno."
+    "speechEmpty": "Nije prepoznata nijedna riječ. Pokušaj ponovno.",
+    "reviewMode": "Način ponavljanja",
+    "sessionProgress": "Napredak sesije",
+    "reviewDetails": "Pojedinosti ponavljanja"
   },
   "chat": {
     "title": "Lingu, tvoj učitelj",

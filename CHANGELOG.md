@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Changed
 
+- Aligned Flashcards with the dashboard and Progress styling: clearer headings and controls, visible session-size choices, an accessible progress bar, highlighted summary metrics, structured speaking feedback, library filters and status badges, and collapsible technical review details.
 - Flashcard generation initially selects the active plan's level and reports actual created cards, skipped duplicates and empty model results. Review responses include awarded XP for session summaries.
 
 ### Fixed

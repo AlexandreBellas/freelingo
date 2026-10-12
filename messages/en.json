@@ -893,7 +893,10 @@
     "speechConfirmHint": "Confirm to save a single review. This compares the transcription, not your pronunciation.",
     "speechContinue": "Save result and continue",
     "speechOverride": "I said it correctly",
-    "speechEmpty": "No word was recognised. Please try again."
+    "speechEmpty": "No word was recognised. Please try again.",
+    "reviewMode": "Review mode",
+    "sessionProgress": "Session progress",
+    "reviewDetails": "Review details"
   },
   "chat": {
     "title": "Lingu, your tutor",

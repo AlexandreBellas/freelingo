@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
+import { ArrowLeft, BookOpen, CalendarDays, Pause, Search } from 'lucide-react'
 import { apiFetch } from '@/lib/api'
 import { AudioPlayer } from '@/components/ui/AudioPlayer'
 import { PageLoading } from '@/components/ui/page-loading'
@@ -107,73 +108,87 @@ function VocabularyContent({
   if (noPlan) return <NoPlanBanner />
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4 p-6">
+    <div className="mx-auto max-w-4xl space-y-6 px-4 py-6 font-sans sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-fl-label text-fl-muted-3">●</span>
-          <span className="text-fl-label text-fl-muted-2 font-mono tracking-widest uppercase">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <BookOpen
+            className="text-fl-accent size-6 shrink-0"
+            aria-hidden="true"
+          />
+          <h1 className="text-fl-fg text-2xl font-semibold tracking-tight">
             {t('myVocabulary')}
-          </span>
+          </h1>
           {!loading && (
-            <span className="text-fl-hint text-fl-muted-3 font-mono tracking-widest">
+            <span className="border-fl-border bg-fl-surface text-fl-muted-1 border px-2.5 py-1 text-sm tabular-nums">
               {data?.total ?? 0}
             </span>
           )}
         </div>
         <Link
           href="/flashcards"
-          className="text-fl-label text-fl-muted-3 hover:text-fl-fg border-fl-border hover:border-fl-border-2 border px-4 py-2 font-mono tracking-widest uppercase transition-colors"
+          className="text-fl-fg border-fl-border hover:bg-fl-surface-2 focus-visible:outline-fl-accent inline-flex min-h-11 items-center gap-2 border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
         >
-          ← {t('backToFlashcards')}
+          <ArrowLeft className="size-4 shrink-0" aria-hidden="true" />
+          {t('backToFlashcards')}
         </Link>
       </div>
 
       {/* Search */}
-      <input
-        type="search"
-        aria-label={t('librarySearch')}
-        maxLength={255}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder={t('librarySearch')}
-        className="bg-fl-bg border-fl-border text-fl-fg placeholder:text-fl-border-2 focus:border-fl-border-2 w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
-      />
-      <div className="flex flex-wrap gap-4">
-        <label className="text-fl-muted-1 flex items-center gap-2 text-sm">
-          {t('sourceFilter')}
-          <select
-            value={source}
-            onChange={(event) => {
-              setLoading(true)
-              setSource(event.target.value)
-              setPage(1)
-            }}
-            className="border-fl-border bg-fl-bg text-fl-fg border px-3 py-2"
-          >
-            <option value="all">{t('allCards')}</option>
-            <option value="from_text">{t('savedFromText')}</option>
-          </select>
-        </label>
-        <label className="text-fl-muted-1 flex items-center gap-2 text-sm">
-          {t('statusFilter')}
-          <select
-            value={status}
-            onChange={(event) => {
-              setLoading(true)
-              setStatus(event.target.value)
-              setPage(1)
-            }}
-            className="border-fl-border bg-fl-bg text-fl-fg border px-3 py-2"
-          >
-            <option value="all">{tCommon('all')}</option>
-            <option value="due">{t('due')}</option>
-            <option value="new">{t('newCards')}</option>
-            <option value="suspended">{t('suspended')}</option>
-          </select>
-        </label>
+      <div className="border-fl-border bg-fl-surface space-y-4 border p-4 sm:p-5">
+        <div className="grid items-end gap-4 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
+          <div className="relative min-w-0">
+            <Search
+              className="text-fl-muted-2 pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              aria-label={t('librarySearch')}
+              maxLength={255}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('librarySearch')}
+              className="bg-fl-bg border-fl-border text-fl-fg placeholder:text-fl-muted-2 focus-visible:outline-fl-accent min-h-11 w-full border py-2 pr-3 pl-11 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
+            />
+          </div>
+          <label className="text-fl-muted-1 flex min-w-0 flex-col gap-2 text-sm font-medium">
+            {t('sourceFilter')}
+            <select
+              value={source}
+              onChange={(event) => {
+                setLoading(true)
+                setSource(event.target.value)
+                setPage(1)
+              }}
+              className="border-fl-border bg-fl-bg text-fl-fg focus-visible:outline-fl-accent min-h-11 w-full min-w-0 border px-3 py-2 text-base font-normal focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <option value="all">{t('allCards')}</option>
+              <option value="from_text">{t('savedFromText')}</option>
+            </select>
+          </label>
+          <label className="text-fl-muted-1 flex min-w-0 flex-col gap-2 text-sm font-medium">
+            {t('statusFilter')}
+            <select
+              value={status}
+              onChange={(event) => {
+                setLoading(true)
+                setStatus(event.target.value)
+                setPage(1)
+              }}
+              className="border-fl-border bg-fl-bg text-fl-fg focus-visible:outline-fl-accent min-h-11 w-full min-w-0 border px-3 py-2 text-base font-normal focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <option value="all">{tCommon('all')}</option>
+              <option value="due">{t('due')}</option>
+              <option value="new">{t('newCards')}</option>
+              <option value="suspended">{t('suspended')}</option>
+            </select>
+          </label>
+        </div>
+        <p className="border-fl-border text-fl-muted-2 border-t pt-3 text-sm leading-relaxed">
+          {t('suspendHint')}
+        </p>
       </div>
-      <p className="text-fl-muted-2 text-sm">{t('suspendHint')}</p>
 
       {/* List */}
       <div className="border-fl-border bg-fl-surface border">
@@ -182,27 +197,33 @@ function VocabularyContent({
         ) : loadError ? (
           <FlashcardError onRetry={reload} />
         ) : !data?.items.length ? (
-          <p className="text-fl-muted-3 p-5 font-mono text-xs tracking-widest uppercase">
-            {debouncedSearch || status !== 'all'
-              ? t('libraryNoResults')
-              : source === 'from_text'
-                ? t('myVocabularyEmpty')
-                : t('libraryEmpty')}
-          </p>
+          <div className="px-6 py-10 text-center">
+            <Search
+              className="text-fl-muted-2 mx-auto mb-3 size-6"
+              aria-hidden="true"
+            />
+            <p className="text-fl-muted-1 mx-auto max-w-md text-sm leading-relaxed">
+              {debouncedSearch || status !== 'all'
+                ? t('libraryNoResults')
+                : source === 'from_text'
+                  ? t('myVocabularyEmpty')
+                  : t('libraryEmpty')}
+            </p>
+          </div>
         ) : (
           <div className="divide-fl-border divide-y">
             {data.items.map((item) => (
               <article
                 key={item.id}
                 aria-label={item.word}
-                className="space-y-3 px-5 py-4"
+                className="space-y-4 p-4 sm:p-6"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex min-w-0 items-center gap-3">
                     <TargetLanguageText
                       as="h2"
                       languageCode={targetLanguageCode}
-                      className="text-fl-fg text-lg font-bold"
+                      className="text-fl-fg min-w-0 text-xl font-semibold [overflow-wrap:anywhere] break-words"
                     >
                       {item.word}
                     </TargetLanguageText>
@@ -215,23 +236,31 @@ function VocabularyContent({
                   <TargetLanguageText
                     as="p"
                     languageCode={targetLanguageCode}
-                    className="text-fl-muted-1 mt-2"
+                    className="text-fl-muted-1 mt-3 [overflow-wrap:anywhere] break-words"
                   >
                     {item.definition}
                   </TargetLanguageText>
-                  <p className="text-fl-muted-1 mt-1 font-sans leading-relaxed">
+                  <p className="text-fl-fg-2 mt-2 font-sans leading-relaxed [overflow-wrap:anywhere] break-words">
                     {item.translation}
                   </p>
                   {item.example_sentence && (
                     <TargetLanguageText
                       as="p"
                       languageCode={targetLanguageCode}
-                      className="text-fl-muted-2 mt-2 italic"
+                      className="text-fl-muted-1 mt-3 [overflow-wrap:anywhere] break-words italic"
                     >
                       {item.example_sentence}
                     </TargetLanguageText>
                   )}
-                  <p className="text-fl-muted-2 mt-2 text-sm">
+                  <p className="border-fl-border bg-fl-bg text-fl-muted-1 mt-3 inline-flex max-w-full items-center gap-2 border px-2.5 py-1.5 text-xs">
+                    {item.is_suspended ? (
+                      <Pause className="size-3.5 shrink-0" aria-hidden="true" />
+                    ) : (
+                      <CalendarDays
+                        className="size-3.5 shrink-0"
+                        aria-hidden="true"
+                      />
+                    )}
                     {item.is_suspended
                       ? t('suspended')
                       : t('nextReview', {
@@ -242,11 +271,13 @@ function VocabularyContent({
                         })}
                   </p>
                 </div>
-                <FlashcardActions
-                  card={item}
-                  onUpdate={reload}
-                  onDelete={reload}
-                />
+                <div className="border-fl-border border-t pt-3">
+                  <FlashcardActions
+                    card={item}
+                    onUpdate={reload}
+                    onDelete={reload}
+                  />
+                </div>
               </article>
             ))}
           </div>
@@ -268,7 +299,7 @@ function VocabularyContent({
           page: data?.page ?? 1,
           pages: data?.pages ?? 1,
         })}
-        className="gap-2 border-0 bg-transparent"
+        className="flex-wrap gap-3 border-0 bg-transparent px-0 [&_button]:min-h-11 [&_button]:font-sans [&_button]:text-sm [&_button]:tracking-normal [&_button]:normal-case [&_span]:text-sm [&_span]:tracking-normal"
       />
     </div>
   )

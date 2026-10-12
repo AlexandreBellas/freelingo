@@ -893,7 +893,10 @@
     "speechConfirmHint": "Confirma para guardar uma única revisão. Compara-se a transcrição, não se avalia a pronúncia.",
     "speechContinue": "Guardar resultado e continuar",
     "speechOverride": "Disse a palavra corretamente",
-    "speechEmpty": "Não foi reconhecida nenhuma palavra. Tenta novamente."
+    "speechEmpty": "Não foi reconhecida nenhuma palavra. Tenta novamente.",
+    "reviewMode": "Modo de revisão",
+    "sessionProgress": "Progresso da sessão",
+    "reviewDetails": "Detalhes da revisão"
   },
   "chat": {
     "title": "Lingu, o seu tutor",

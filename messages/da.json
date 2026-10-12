@@ -893,7 +893,10 @@
     "speechConfirmHint": "Bekræft for at gemme én repetition. Transskriptionen sammenlignes, ikke din udtale.",
     "speechContinue": "Gem resultat og fortsæt",
     "speechOverride": "Jeg sagde det rigtigt",
-    "speechEmpty": "Intet ord blev genkendt. Prøv igen."
+    "speechEmpty": "Intet ord blev genkendt. Prøv igen.",
+    "reviewMode": "Repetitionstilstand",
+    "sessionProgress": "Sessionens fremskridt",
+    "reviewDetails": "Repetitionsdetaljer"
   },
   "chat": {
     "title": "Lingu, din sproglærer",

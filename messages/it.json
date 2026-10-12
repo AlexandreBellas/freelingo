@@ -893,7 +893,10 @@
     "speechConfirmHint": "Conferma per salvare un solo ripasso. Si confronta la trascrizione, non si valuta la pronuncia.",
     "speechContinue": "Salva il risultato e continua",
     "speechOverride": "L’ho detta correttamente",
-    "speechEmpty": "Nessuna parola riconosciuta. Riprova."
+    "speechEmpty": "Nessuna parola riconosciuta. Riprova.",
+    "reviewMode": "Modalità di ripasso",
+    "sessionProgress": "Avanzamento della sessione",
+    "reviewDetails": "Dettagli del ripasso"
   },
   "chat": {
     "title": "Lingu, il tuo tutor",

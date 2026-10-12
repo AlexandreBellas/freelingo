@@ -893,7 +893,10 @@
     "speechConfirmHint": "Vahvista tallentaaksesi yhden kertauksen. Vertailu koskee litterointia, ei ääntämistäsi.",
     "speechContinue": "Tallenna tulos ja jatka",
     "speechOverride": "Sanoin sen oikein",
-    "speechEmpty": "Yhtään sanaa ei tunnistettu. Yritä uudelleen."
+    "speechEmpty": "Yhtään sanaa ei tunnistettu. Yritä uudelleen.",
+    "reviewMode": "Kertaustila",
+    "sessionProgress": "Harjoituskerran edistyminen",
+    "reviewDetails": "Kertauksen tiedot"
   },
   "chat": {
     "title": "Lingu, oma opettajasi",

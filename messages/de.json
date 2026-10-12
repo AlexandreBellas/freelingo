@@ -893,7 +893,10 @@
     "speechConfirmHint": "Bestätige, um eine Wiederholung zu speichern. Verglichen wird die Transkription, nicht deine Aussprache.",
     "speechContinue": "Ergebnis speichern und weiter",
     "speechOverride": "Ich habe es richtig gesagt",
-    "speechEmpty": "Kein Wort erkannt. Versuche es erneut."
+    "speechEmpty": "Kein Wort erkannt. Versuche es erneut.",
+    "reviewMode": "Wiederholungsmodus",
+    "sessionProgress": "Sitzungsfortschritt",
+    "reviewDetails": "Wiederholungsdetails"
   },
   "chat": {
     "title": "Lingu, dein Tutor",

@@ -3,6 +3,17 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import {
+  BookOpen,
+  Check,
+  ChevronDown,
+  Clock,
+  Layers,
+  Mic,
+  Plus,
+  RotateCcw,
+  Sparkles,
+} from 'lucide-react'
 import { apiFetch } from '@/lib/api'
 import { AudioPlayer } from '@/components/ui/AudioPlayer'
 import { PageLoading } from '@/components/ui/page-loading'
@@ -266,24 +277,30 @@ function FlashcardsContent({
     }
   }
 
+  const sessionProcessed = completed.length + removed
+
   return (
-    <div className="mx-auto max-w-4xl space-y-4 p-6">
+    <div className="mx-auto max-w-4xl space-y-6 px-4 py-6 font-sans sm:p-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="text-fl-label text-fl-muted-3">●</span>
-          <span className="text-fl-label text-fl-muted-2 font-mono tracking-widest uppercase">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-fl-fg flex items-center gap-3 text-2xl font-semibold tracking-tight">
+            <Layers
+              className="text-fl-accent size-6 shrink-0"
+              aria-hidden="true"
+            />
             {t('title')}
-          </span>
-          <span className="text-fl-hint text-fl-muted-2 font-mono tracking-widest">
+          </h1>
+          <p className="text-fl-muted-2 mt-2 text-sm tabular-nums">
             {total} {t('total')} · {dueCards.length} {t('due')}
-          </span>
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             href="/flashcards/vocabulary"
-            className="text-fl-label border-fl-border text-fl-muted-2 hover:text-fl-fg hover:border-fl-border-2 border px-4 py-2 font-mono tracking-widest uppercase transition-colors"
+            className="border-fl-border text-fl-fg hover:bg-fl-surface-2 focus-visible:outline-fl-accent inline-flex min-h-11 items-center gap-2 border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
           >
+            <BookOpen className="size-4 shrink-0" aria-hidden="true" />
             {t('myVocabularyBtn')}
           </Link>
           <button
@@ -297,13 +314,17 @@ function FlashcardsContent({
             onClick={() => {
               setShowGenerate(!showGenerate)
             }}
-            className={`text-fl-label border px-4 py-2 font-mono tracking-widest uppercase transition-colors ${
+            aria-expanded={showGenerate}
+            aria-label={`+ ${t('generateBtn')}`}
+            aria-controls="flashcard-generate-panel"
+            className={`focus-visible:outline-fl-accent inline-flex min-h-11 items-center gap-2 border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40 ${
               showGenerate
-                ? 'border-fl-border-2 text-fl-fg'
-                : 'border-fl-border text-fl-muted-2 hover:text-fl-fg hover:border-fl-border-2'
+                ? 'border-fl-accent/40 bg-fl-accent/10 text-fl-fg'
+                : 'border-fl-border text-fl-fg hover:bg-fl-surface-2'
             }`}
           >
-            + {t('generateBtn')}
+            <Plus className="size-4 shrink-0" aria-hidden="true" />
+            {t('generateBtn')}
           </button>
         </div>
       </div>
@@ -311,41 +332,53 @@ function FlashcardsContent({
       {generationResult && (
         <div
           role="status"
-          className="border-fl-border text-fl-muted-1 space-y-1 border p-4 text-sm"
+          className="border-fl-accent/35 bg-fl-surface text-fl-muted-1 flex items-start gap-3 border p-4 text-sm"
         >
-          <p>
-            {t('generationCounts', {
-              created: generationResult.created,
-              duplicates: generationResult.skipped_duplicates,
-            })}
-          </p>
-          {generationResult.skipped_empty > 0 && (
+          <Check
+            className="text-fl-accent mt-0.5 size-5 shrink-0"
+            aria-hidden="true"
+          />
+          <div className="space-y-1">
             <p>
-              {t('generationEmpty', { count: generationResult.skipped_empty })}
+              {t('generationCounts', {
+                created: generationResult.created,
+                duplicates: generationResult.skipped_duplicates,
+              })}
             </p>
-          )}
+            {generationResult.skipped_empty > 0 && (
+              <p>
+                {t('generationEmpty', {
+                  count: generationResult.skipped_empty,
+                })}
+              </p>
+            )}
+          </div>
         </div>
       )}
 
       {/* Generate panel */}
       {showGenerate && (
-        <div className="border-fl-border bg-fl-surface border">
+        <div
+          id="flashcard-generate-panel"
+          className="border-fl-border bg-fl-surface border"
+        >
           <div className="border-fl-border flex items-center gap-2 border-b px-5 py-4">
-            <span className="text-fl-label text-fl-muted-3">●</span>
-            <span className="text-fl-label text-fl-muted-2 font-mono tracking-widest uppercase">
-              {t('generate')}
-            </span>
+            <Sparkles className="text-fl-accent size-5" aria-hidden="true" />
+            <h2 className="text-fl-fg font-semibold">{t('generate')}</h2>
           </div>
           {genError && (
-            <div className="border-fl-error/40 text-fl-error-fg mx-5 mt-4 border px-4 py-3 font-mono text-xs">
+            <div
+              role="alert"
+              className="border-fl-error/40 text-fl-error-fg mx-5 mt-4 border px-4 py-3 text-sm"
+            >
               ✕ {genError}
             </div>
           )}
-          <form onSubmit={generateCards} className="space-y-3 p-5">
+          <form onSubmit={generateCards} className="space-y-4 p-5 sm:p-6">
             <div>
               <label
                 htmlFor="flashcard-topic"
-                className="text-fl-muted-3 mb-2 block font-mono text-xs tracking-widest uppercase"
+                className="text-fl-muted-1 mb-2 block text-sm font-medium"
               >
                 {t('topic')}
               </label>
@@ -356,14 +389,14 @@ function FlashcardsContent({
                 onChange={(e) => setGenTopic(e.target.value)}
                 required
                 placeholder={t('topicPlaceholder')}
-                className="bg-fl-bg border-fl-border text-fl-fg placeholder:text-fl-border-2 focus:border-fl-border-2 w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
+                className="bg-fl-bg border-fl-border text-fl-fg placeholder:text-fl-muted-2 focus-visible:outline-fl-accent w-full border px-4 py-3 text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label
                   htmlFor="flashcard-count"
-                  className="text-fl-muted-3 mb-2 block font-mono text-xs tracking-widest uppercase"
+                  className="text-fl-muted-1 mb-2 block text-sm font-medium"
                 >
                   {t('count')}
                 </label>
@@ -371,7 +404,7 @@ function FlashcardsContent({
                   id="flashcard-count"
                   value={genCount}
                   onChange={(e) => setGenCount(Number(e.target.value))}
-                  className="bg-fl-bg border-fl-border text-fl-fg focus:border-fl-border-2 w-full appearance-none border px-4 py-3 font-mono text-sm focus:outline-none"
+                  className="bg-fl-bg border-fl-border text-fl-fg focus-visible:outline-fl-accent min-h-11 w-full border px-3 py-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   {[5, 10, 15, 20].map((n) => (
                     <option key={n} value={n}>
@@ -383,7 +416,7 @@ function FlashcardsContent({
               <div>
                 <label
                   htmlFor="flashcard-level"
-                  className="text-fl-muted-3 mb-2 block font-mono text-xs tracking-widest uppercase"
+                  className="text-fl-muted-1 mb-2 block text-sm font-medium"
                 >
                   {t('level')}
                 </label>
@@ -394,7 +427,7 @@ function FlashcardsContent({
                     genLevelEdited.current = true
                     setGenCefr(e.target.value)
                   }}
-                  className="bg-fl-bg border-fl-border text-fl-fg focus:border-fl-border-2 w-full appearance-none border px-4 py-3 font-mono text-sm focus:outline-none"
+                  className="bg-fl-bg border-fl-border text-fl-fg focus-visible:outline-fl-accent min-h-11 w-full border px-3 py-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   {CEFR_LEVELS.map((l) => (
                     <option key={l} value={l}>
@@ -414,7 +447,7 @@ function FlashcardsContent({
                 !genTopic.trim() ||
                 !genCefr
               }
-              className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 w-full py-3 font-mono text-sm font-bold tracking-widest uppercase transition-colors disabled:opacity-40"
+              className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 focus-visible:outline-fl-accent min-h-11 w-full px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
             >
               {generating ? t('generating') : t('submit')}
             </button>
@@ -424,18 +457,30 @@ function FlashcardsContent({
 
       {/* No cards */}
       {stage === 'setup' && dueCards.length === 0 && (
-        <div className="border-fl-border bg-fl-surface border px-6 py-10 text-center">
-          <p className="text-fl-muted-1 font-mono text-sm">{t('noDue')}</p>
+        <div className="border-fl-border bg-fl-surface border px-6 py-12 text-center">
+          {total === 0 ? (
+            <Layers
+              className="text-fl-accent mx-auto mb-4 size-8"
+              aria-hidden="true"
+            />
+          ) : (
+            <Check
+              className="text-fl-accent mx-auto mb-4 size-8"
+              aria-hidden="true"
+            />
+          )}
+          <h2 className="text-fl-fg text-lg font-semibold">{t('noDue')}</h2>
           {total === 0 && (
-            <p className="text-fl-muted-2 mt-2 font-mono text-xs">
+            <p className="text-fl-muted-2 mx-auto mt-2 max-w-md text-sm leading-relaxed">
               {t('noCardsHint')}
             </p>
           )}
           <button
             onClick={loadDue}
             disabled={generating}
-            className="border-fl-border text-fl-label text-fl-muted-2 hover:text-fl-fg hover:border-fl-border-2 mt-6 border px-6 py-2 font-mono tracking-widest uppercase transition-colors"
+            className="border-fl-border text-fl-fg hover:bg-fl-surface-2 focus-visible:outline-fl-accent mt-6 inline-flex min-h-11 items-center gap-2 border px-5 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40"
           >
+            <RotateCcw className="size-4" aria-hidden="true" />
             {t('refresh')}
           </button>
         </div>
@@ -443,39 +488,62 @@ function FlashcardsContent({
 
       {stage === 'setup' && dueCards.length > 0 && (
         <section
-          className="border-fl-border bg-fl-surface space-y-5 border p-6"
+          className="border-fl-accent/35 border-l-fl-accent bg-fl-surface space-y-6 border border-l-4 p-5 sm:p-8"
           aria-labelledby="flashcard-session-title"
         >
-          <h1
-            id="flashcard-session-title"
-            className="text-fl-fg text-xl font-semibold"
-          >
-            {t('sessionTitle')}
-          </h1>
-          <p className="text-fl-muted-1">
-            {t('sessionComposition', {
-              new: dueCards.filter(isNewCard).length,
-              review: dueCards.filter((card) => !isNewCard(card)).length,
-            })}
-          </p>
-          <label className="text-fl-muted-1 flex flex-wrap items-center gap-3 text-sm">
-            {t('sessionSize')}
-            <select
-              value={sessionSize}
-              disabled={generating}
-              onChange={(event) => setSessionSize(event.target.value)}
-              className="border-fl-border bg-fl-bg text-fl-fg border px-3 py-2"
-            >
-              <option value="5">5 {t('cards')}</option>
-              <option value="10">10 {t('cards')}</option>
-              <option value="all">{t('sessionAll')}</option>
-            </select>
-          </label>
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <div className="space-y-2">
+              <h2
+                id="flashcard-session-title"
+                className="text-fl-fg text-xl font-semibold"
+              >
+                {t('sessionTitle')}
+              </h2>
+              <p className="text-fl-muted-1 text-sm leading-relaxed">
+                {t('sessionComposition', {
+                  new: dueCards.filter(isNewCard).length,
+                  review: dueCards.filter((card) => !isNewCard(card)).length,
+                })}
+              </p>
+            </div>
+            <div className="bg-fl-accent/10 text-fl-accent min-w-24 px-4 py-3 text-center">
+              <p className="text-3xl font-semibold tabular-nums">
+                {dueCards.length}
+              </p>
+              <p className="mt-1 text-sm">{t('due')}</p>
+            </div>
+          </div>
+          <fieldset disabled={generating}>
+            <legend className="text-fl-muted-1 mb-3 text-sm font-medium">
+              {t('sessionSize')}
+            </legend>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {['5', '10', 'all'].map((size) => (
+                <label
+                  key={size}
+                  className={size === 'all' ? 'col-span-2 sm:col-span-1' : ''}
+                >
+                  <input
+                    type="radio"
+                    name="flashcard-session-size"
+                    value={size}
+                    checked={sessionSize === size}
+                    onChange={(event) => setSessionSize(event.target.value)}
+                    className="peer sr-only"
+                  />
+                  <span className="border-fl-border text-fl-muted-1 peer-checked:border-fl-accent peer-checked:bg-fl-accent/10 peer-checked:text-fl-fg peer-focus-visible:outline-fl-accent hover:bg-fl-surface-2 flex min-h-12 cursor-pointer items-center justify-center border px-3 py-3 text-center text-sm font-medium transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-disabled:cursor-not-allowed peer-disabled:opacity-40">
+                    {size === 'all' ? t('sessionAll') : `${size} ${t('cards')}`}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <button
             disabled={generating}
             onClick={startSession}
-            className="bg-fl-accent text-fl-accent-fg px-5 py-3 font-sans font-medium disabled:opacity-40"
+            className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 focus-visible:outline-fl-accent inline-flex min-h-11 w-full items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
+            <BookOpen className="size-4" aria-hidden="true" />
             {t('sessionStart')}
           </button>
         </section>
@@ -483,27 +551,51 @@ function FlashcardsContent({
 
       {stage === 'summary' && (
         <section
-          className="border-fl-border bg-fl-surface space-y-5 border p-6"
+          className="border-fl-border bg-fl-surface space-y-6 border p-5 sm:p-8"
           aria-labelledby="flashcard-summary-title"
         >
-          <h1
+          <h2
             id="flashcard-summary-title"
-            className="text-fl-fg text-xl font-semibold"
+            className="text-fl-fg flex items-center gap-3 text-xl font-semibold"
           >
+            <Check
+              className="text-fl-accent size-6 shrink-0"
+              aria-hidden="true"
+            />
             {t('sessionSummary')}
-          </h1>
-          <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          </h2>
+          <dl className="grid gap-3 sm:grid-cols-3">
             {[
-              { label: 'sessionReviewed', value: completed.length },
+              {
+                label: 'sessionReviewed',
+                value: completed.length,
+                icon: Layers,
+              },
               {
                 label: 'sessionXp',
                 value: completed.reduce((sum, item) => sum + item.xp, 0),
+                icon: Sparkles,
               },
-              { label: 'sessionRemaining', value: dueCards.length },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <dt className="text-fl-muted-1 text-sm">{t(label)}</dt>
-                <dd className="text-fl-fg text-2xl font-semibold">{value}</dd>
+              {
+                label: 'sessionRemaining',
+                value: dueCards.length,
+                icon: Clock,
+              },
+            ].map(({ label, value, icon: Icon }) => (
+              <div
+                key={label}
+                className={`border p-4 sm:p-5 ${label === 'sessionXp' ? 'border-fl-accent/35 bg-fl-accent/10' : 'border-fl-border bg-fl-bg'}`}
+              >
+                <dt className="text-fl-muted-1 flex items-center gap-2 text-sm">
+                  <Icon
+                    className="text-fl-accent size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  {t(label)}
+                </dt>
+                <dd className="text-fl-fg mt-3 text-3xl font-semibold tracking-tight tabular-nums">
+                  {value}
+                </dd>
               </div>
             ))}
           </dl>
@@ -514,21 +606,21 @@ function FlashcardsContent({
           )}
           {completed.some((item) => item.quality <= 3) && (
             <div className="space-y-2">
-              <h2 className="text-fl-fg font-medium">
+              <h3 className="text-fl-fg font-medium">
                 {t('sessionDifficult')}
-              </h2>
-              <ul className="space-y-2">
+              </h3>
+              <ul className="border-fl-border divide-fl-border divide-y border">
                 {completed
                   .filter((item) => item.quality <= 3)
                   .map((item) => (
                     <li
                       key={item.id}
-                      className="text-fl-muted-1 flex flex-wrap items-center justify-between gap-2"
+                      className="text-fl-muted-1 flex flex-wrap items-center justify-between gap-2 px-4 py-3"
                     >
                       <TargetLanguageText languageCode={targetLanguageCode}>
                         {item.word}
                       </TargetLanguageText>
-                      <span className="text-sm">
+                      <span className="border-fl-border bg-fl-bg border px-2 py-1 text-xs">
                         {t(item.quality < 3 ? 'again' : 'hard')}
                       </span>
                     </li>
@@ -539,8 +631,9 @@ function FlashcardsContent({
           <button
             disabled={generating}
             onClick={() => void loadDue()}
-            className="border-fl-border text-fl-fg border px-4 py-2 text-sm disabled:opacity-40"
+            className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 focus-visible:outline-fl-accent inline-flex min-h-11 w-full items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40 sm:w-auto"
           >
+            <RotateCcw className="size-4" aria-hidden="true" />
             {t('sessionReturn')}
           </button>
         </section>
@@ -549,52 +642,82 @@ function FlashcardsContent({
       {/* Card review */}
       {stage === 'review' && cards.length > 0 && (
         <>
-          <div className="text-fl-label text-fl-muted-3 flex items-center justify-between font-mono tracking-widest uppercase">
-            <span>
-              {completed.length + removed + 1} / {sessionTotal} ·{' '}
-              {t(isNewCard(cards[current]) ? 'newCards' : 'sessionReviewCard')}
-            </span>
-            {/* Mode toggle */}
-            <div className="flex gap-1">
+          <div className="space-y-3">
+            <div className="text-fl-muted-1 flex flex-wrap items-center justify-between gap-3 text-sm">
+              <span className="tabular-nums">
+                {sessionProcessed + 1} / {sessionTotal} ·{' '}
+                {t(
+                  isNewCard(cards[current]) ? 'newCards' : 'sessionReviewCard'
+                )}
+              </span>
               <button
+                disabled={reviewing || managing || recording || generating}
+                onClick={() => setStage('summary')}
+                className="text-fl-muted-1 hover:text-fl-fg focus-visible:outline-fl-accent min-h-11 px-2 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40"
+              >
+                {t('sessionFinish')}
+              </button>
+            </div>
+            <div
+              role="progressbar"
+              aria-label={t('sessionProgress')}
+              aria-valuenow={sessionProcessed}
+              aria-valuemin={0}
+              aria-valuemax={sessionTotal}
+              className="bg-fl-border h-1.5 overflow-hidden"
+            >
+              <div
+                className="bg-fl-accent h-full transition-[width] duration-300 motion-reduce:transition-none"
+                style={{
+                  width: `${sessionTotal ? Math.min(100, (sessionProcessed / sessionTotal) * 100) : 0}%`,
+                }}
+              />
+            </div>
+          </div>
+          <div className="border-fl-border bg-fl-surface flex flex-wrap items-end justify-between gap-4 border p-4 sm:px-5">
+            {/* Mode toggle */}
+            <div
+              role="group"
+              aria-label={t('reviewMode')}
+              className="border-fl-border flex max-w-full flex-wrap gap-1 border p-1"
+            >
+              <button
+                aria-pressed={!speakingMode}
                 disabled={reviewing || managing || recording || generating}
                 onClick={() => {
                   setSpeakingMode(false)
                   setFlipped(false)
                 }}
-                className={`text-fl-hint border px-3 py-1 tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${!speakingMode ? 'border-fl-border-2 text-fl-fg' : 'border-fl-border text-fl-muted-3 hover:text-fl-muted-1'}`}
+                className={`focus-visible:outline-fl-accent inline-flex min-h-11 items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40 ${!speakingMode ? 'bg-fl-fg text-fl-bg' : 'text-fl-muted-1 hover:bg-fl-surface-2 hover:text-fl-fg'}`}
               >
+                <BookOpen className="size-4 shrink-0" aria-hidden="true" />
                 {t('standardMode')}
               </button>
               <button
+                aria-pressed={speakingMode}
                 disabled={reviewing || managing || recording || generating}
                 onClick={() => {
                   setSpeakingMode(true)
                   setFlipped(false)
                 }}
-                className={`text-fl-hint border px-3 py-1 tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${speakingMode ? 'border-fl-border-2 text-fl-fg' : 'border-fl-border text-fl-muted-3 hover:text-fl-muted-1'}`}
+                className={`focus-visible:outline-fl-accent inline-flex min-h-11 items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40 ${speakingMode ? 'bg-fl-fg text-fl-bg' : 'text-fl-muted-1 hover:bg-fl-surface-2 hover:text-fl-fg'}`}
               >
+                <Mic className="size-4 shrink-0" aria-hidden="true" />
                 {t('speakingMode')}
               </button>
             </div>
+            {!speakingMode && (
+              <BackPreference value={backContent} onChange={setBackContent} />
+            )}
           </div>
-          <button
-            disabled={reviewing || managing || recording || generating}
-            onClick={() => setStage('summary')}
-            className="text-fl-muted-1 text-sm underline disabled:opacity-40"
-          >
-            {t('sessionFinish')}
-          </button>
 
           {/* ── Standard mode ── */}
           {!speakingMode && (
             <>
-              <BackPreference value={backContent} onChange={setBackContent} />
-              <div className="border-fl-border bg-fl-surface border">
+              <div className="border-fl-accent/35 bg-fl-surface border">
                 <div className="border-fl-border flex items-center justify-between gap-3 border-b px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-fl-label text-fl-muted-3">●</span>
-                    <span className="text-fl-label text-fl-muted-2 font-mono tracking-widest uppercase">
+                    <span className="text-fl-muted-1 text-sm font-medium">
                       {flipped
                         ? t(
                             backContent === 'translation' &&
@@ -618,13 +741,13 @@ function FlashcardsContent({
                   aria-label={flipped ? t('tapToHide') : t('tapToReveal')}
                   disabled={reviewing || managing || generating}
                   onClick={() => setFlipped(!flipped)}
-                  className="hover:bg-fl-surface-2 flex min-h-[220px] w-full flex-col items-center justify-center gap-4 p-10 text-center disabled:opacity-60"
+                  className="hover:bg-fl-surface-2 focus-visible:outline-fl-accent flex min-h-[240px] w-full flex-col items-center justify-center gap-5 p-6 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 sm:min-h-[280px] sm:p-10"
                 >
                   {!flipped ? (
                     <TargetLanguageText
                       as="span"
                       languageCode={targetLanguageCode}
-                      className="text-fl-fg text-3xl font-bold"
+                      className="text-fl-fg max-w-full text-3xl font-semibold [overflow-wrap:anywhere] break-words sm:text-4xl"
                     >
                       {cards[current].word}
                     </TargetLanguageText>
@@ -632,13 +755,13 @@ function FlashcardsContent({
                     <>
                       {backContent === 'translation' &&
                       cards[current].translation.trim() ? (
-                        <span className="text-fl-fg-2 font-sans text-xl leading-relaxed">
+                        <span className="text-fl-fg-2 max-w-full font-sans text-xl leading-relaxed [overflow-wrap:anywhere] break-words">
                           {cards[current].translation}
                         </span>
                       ) : (
                         <TargetLanguageText
                           languageCode={targetLanguageCode}
-                          className="text-fl-fg-2 text-xl"
+                          className="text-fl-fg-2 max-w-full text-xl [overflow-wrap:anywhere] break-words"
                         >
                           {cards[current].definition}
                         </TargetLanguageText>
@@ -669,7 +792,8 @@ function FlashcardsContent({
                         )}
                     </>
                   )}
-                  <span className="text-fl-muted-2 mt-2 text-sm">
+                  <span className="text-fl-muted-2 mt-3 inline-flex items-center gap-2 text-sm">
+                    <RotateCcw className="size-4 shrink-0" aria-hidden="true" />
                     {flipped ? t('tapToHide') : t('tapToReveal')}
                   </span>
                 </button>
@@ -680,7 +804,7 @@ function FlashcardsContent({
                   role="group"
                   aria-labelledby="flashcard-rating-title"
                   aria-describedby="flashcard-rating-help flashcard-rating-again"
-                  className="space-y-3"
+                  className="border-fl-border bg-fl-surface space-y-4 border p-4 sm:p-5"
                 >
                   <div className="space-y-1">
                     <p
@@ -708,14 +832,14 @@ function FlashcardsContent({
                           disabled={reviewing || managing || generating}
                           onClick={() => reviewCard(q)}
                           aria-describedby={`flashcard-rating-${key}-hint`}
-                          className="border-fl-border text-fl-label hover:border-fl-border-2 w-full border px-2 py-3 font-mono tracking-widest uppercase transition-all disabled:cursor-not-allowed disabled:opacity-50"
+                          className="border-fl-border hover:border-fl-border-2 hover:bg-fl-surface-2 focus-visible:outline-fl-accent min-h-11 w-full border px-2 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
                           style={{ color }}
                         >
                           {t(key)}
                         </button>
                         <p
                           id={`flashcard-rating-${key}-hint`}
-                          className="text-fl-muted-1 font-sans text-sm"
+                          className="text-fl-muted-1 text-sm leading-relaxed"
                         >
                           {t(`${key}Hint`)}
                         </p>
@@ -724,7 +848,7 @@ function FlashcardsContent({
                   </div>
                   <p
                     id="flashcard-rating-again"
-                    className="text-fl-muted-2 font-sans text-sm"
+                    className="border-fl-border text-fl-muted-2 border-t pt-3 text-sm leading-relaxed"
                   >
                     {t('againTomorrow')}
                   </p>
@@ -765,30 +889,60 @@ function FlashcardsContent({
               </button>
             </div>
           )}
-          <FlashcardActions
-            key={cards[current].id}
-            card={cards[current]}
-            disabled={reviewing || recording || generating}
-            onInteractionChange={setManaging}
-            onUpdate={(updated) => {
-              if (updated.is_suspended) removeCurrent(false)
-              else
-                setCards((items) =>
+          <div className="border-fl-border bg-fl-surface space-y-3 border p-4 sm:p-5">
+            <FlashcardActions
+              key={cards[current].id}
+              card={cards[current]}
+              disabled={reviewing || recording || generating}
+              onInteractionChange={setManaging}
+              onUpdate={(updated) => {
+                if (updated.is_suspended) removeCurrent(false)
+                else
+                  setCards((items) =>
+                    items.map((item) =>
+                      item.id === updated.id ? updated : item
+                    )
+                  )
+                setDueCards((items) =>
                   items.map((item) => (item.id === updated.id ? updated : item))
                 )
-              setDueCards((items) =>
-                items.map((item) => (item.id === updated.id ? updated : item))
-              )
-            }}
-            onDelete={() => removeCurrent(true)}
-          />
-          <p className="text-fl-muted-2 text-sm">{t('suspendHint')}</p>
+              }}
+              onDelete={() => removeCurrent(true)}
+            />
+            <p className="text-fl-muted-2 text-sm leading-relaxed">
+              {t('suspendHint')}
+            </p>
+          </div>
 
-          <p className="text-fl-hint text-fl-border-2 text-center font-mono tracking-widest uppercase">
-            EF {cards[current].ease_factor.toFixed(2)} · {t('interval')}{' '}
-            {cards[current].interval}d · {t('repetitions')}{' '}
-            {cards[current].repetitions}
-          </p>
+          <details className="border-fl-border bg-fl-surface group border">
+            <summary className="text-fl-muted-1 focus-visible:outline-fl-accent flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+              {t('reviewDetails')}
+              <ChevronDown
+                className="size-4 shrink-0 group-open:rotate-180"
+                aria-hidden="true"
+              />
+            </summary>
+            <dl className="border-fl-border grid grid-cols-3 gap-3 border-t p-4 text-sm">
+              <div>
+                <dt className="text-fl-muted-2 font-code">EF</dt>
+                <dd className="text-fl-fg font-code mt-1 tabular-nums">
+                  {cards[current].ease_factor.toFixed(2)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-fl-muted-2">{t('interval')}</dt>
+                <dd className="text-fl-fg font-code mt-1 tabular-nums">
+                  {cards[current].interval}d
+                </dd>
+              </div>
+              <div>
+                <dt className="text-fl-muted-2">{t('repetitions')}</dt>
+                <dd className="text-fl-fg font-code mt-1 tabular-nums">
+                  {cards[current].repetitions}
+                </dd>
+              </div>
+            </dl>
+          </details>
         </>
       )}
     </div>

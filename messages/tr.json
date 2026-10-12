@@ -893,7 +893,10 @@
     "speechConfirmHint": "Tek bir tekrarı kaydetmek için onayla. Telaffuzun değil, transkripsiyon karşılaştırılır.",
     "speechContinue": "Sonucu kaydet ve devam et",
     "speechOverride": "Doğru söyledim",
-    "speechEmpty": "Hiçbir kelime algılanmadı. Tekrar dene."
+    "speechEmpty": "Hiçbir kelime algılanmadı. Tekrar dene.",
+    "reviewMode": "Tekrar modu",
+    "sessionProgress": "Oturum ilerlemesi",
+    "reviewDetails": "Tekrar ayrıntıları"
   },
   "chat": {
     "title": "Lingu, eğitmeniniz",

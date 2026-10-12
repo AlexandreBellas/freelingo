@@ -275,6 +275,22 @@ successful reviews and management removals update that snapshot independently. E
 completion show acknowledged reviews, backend-reported XP, remaining due cards, removed-card counts
 and words rated as difficult. Another session reloads the due list. No session summary is persisted.
 
+Flashcard screens share the dashboard/progress visual language: solid `fl-*` surfaces, petroleum-blue
+accents, readable Geist Sans interface text, semantic page/section headings and decorative Lucide
+icons. The setup size options are native radio inputs presented as a responsive segmented control.
+The review toolbar groups mode buttons (with `aria-pressed`) and reverse-side preference. A labeled
+progress bar measures handled cards (acknowledged reviews plus management removals) against the
+selected session size; it does not represent XP or mastery. Session summary metrics use bordered
+panels, with XP highlighted by the existing accent. Technical ease, interval and repetition values
+remain accessible in a native details disclosure using `font-code` for their values.
+
+Library search and source/state filters share one responsive toolbar; each entry keeps its audio,
+content, review-date/suspension badge and labeled management actions. Speaking feedback separates
+recognised text and expected word into panels and emphasizes confirmation above retry/correction
+actions. Controls preserve disabled states and visible keyboard focus; long learned-language text
+wraps, and the progress transition respects reduced motion. All controls retain text labels rather
+than relying on icons or color alone.
+
 The standard card uses a native reveal button with keyboard support and separate audio controls.
 `BackPreference` loads and saves the account-wide reverse-side preference through the backend.
 `SpeakingCard` owns transcription feedback and retry state, confirms a result before calling the
