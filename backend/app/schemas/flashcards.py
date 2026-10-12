@@ -95,9 +95,14 @@ class FlashcardFromWordResponse(FlashcardResponse):
     already_saved: bool = False
 
 
+class FlashcardReviewResponse(FlashcardResponse):
+    xp_earned: int = 0
+
+
 class FlashcardListResponse(BaseModel):
     due: list[FlashcardResponse]
     total: int
+    cefr_level: str
 
 
 class VocabularyListResponse(BaseModel):
@@ -116,3 +121,9 @@ class GeneratedFlashcard(BaseModel):
 
 class FlashcardGenerateResponse(BaseModel):
     flashcards: list[GeneratedFlashcard]
+
+
+class FlashcardGenerationResult(FlashcardGenerateResponse):
+    created: int
+    skipped_duplicates: int
+    skipped_empty: int

@@ -269,11 +269,24 @@ vocabulary filters expose selection, and learned-language curriculum text uses `
 
 ## Flashcards
 
-`app/(app)/flashcards/page.tsx` owns the review queue and existing generation form. Its standard card
-uses a native reveal button with keyboard support and separate audio controls. `BackPreference`
-loads and saves the account-wide reverse-side preference through the backend. Speaking continues to
-use the resource-owned `VoiceRecorder`; its optional busy notification prevents management and mode
-changes during recording or transcription.
+`app/(app)/flashcards/page.tsx` owns page-local setup, review and summary states. Setup selects 5, 10
+or all due cards and shows new/review counts. The active queue is a subset of the full due snapshot;
+successful reviews and management removals update that snapshot independently. Early finish and queue
+completion show acknowledged reviews, backend-reported XP, remaining due cards, removed-card counts
+and words rated as difficult. Another session reloads the due list. No session summary is persisted.
+
+The standard card uses a native reveal button with keyboard support and separate audio controls.
+`BackPreference` loads and saves the account-wide reverse-side preference through the backend.
+`SpeakingCard` owns transcription feedback and retry state, confirms a result before calling the
+review handler, and exposes a learner correction for recognition mismatches. It is keyed by card ID
+and editable content so an edit invalidates old feedback. `lib/flashcard-review.ts` implements speech
+normalization and conservative example masking. The resource-owned `VoiceRecorder` busy notification
+prevents management and mode changes during recording or transcription.
+
+Generation is available from setup and summary. Its initial CEFR selection comes from the active
+plan metadata in `/api/flashcards/due`; explicit learner selection is retained until the page context
+resets. Server-computed creation, duplicate and empty-result counts appear after generation. A
+successful request with zero created cards is still a result, not a loading or generation error.
 
 `app/(app)/flashcards/vocabulary/page.tsx` is the full active-plan library. It uses `/api/flashcards/library`
 with source/state filters, debounced word/translation search and pagination. The saved-from-text filter

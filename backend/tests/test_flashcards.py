@@ -138,6 +138,7 @@ async def test_get_due_flashcards(client, test_user, db_session):
     data = response.json()
     assert len(data["due"]) == 1
     assert data["total"] == 1
+    assert data["cefr_level"] == "A1"
     assert data["due"][0]["study_plan_id"] == plan.id
 
 
@@ -169,6 +170,7 @@ async def test_review_flashcard(client, test_user, db_session):
     data = response.json()
     assert data["repetitions"] == 1
     assert data["interval"] == 1
+    assert data["xp_earned"] == 2
 
 
 @pytest.mark.asyncio

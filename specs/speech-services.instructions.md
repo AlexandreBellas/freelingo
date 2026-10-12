@@ -203,9 +203,21 @@ the plan's target language, the user's native language, and the lesson level. Th
 transcribed text, not acoustic phonemes. If LLM evaluation fails, normalized equality or containment
 provides the deterministic fallback.
 
-Flashcard speaking comparison occurs in the frontend after STT. Normalized exact equality yields
-SM-2 quality 5; other results yield quality 2. Review handling remains serialized until the speech
-result is processed.
+Flashcard speaking comparison occurs in the frontend after STT. The UI shows the transcription,
+expected word and expected-word audio before the learner saves the result. Normalized exact equality
+proposes SM-2 quality 5; other results propose quality 2. The learner may retry before confirming or
+correct a recognition mismatch by confirming quality 5. Only confirmation sends a review request;
+recordings and retries do not award XP or alter scheduling. The latest transcription determines the
+proposed quality. Empty normalized transcription keeps the recorder available with a retry message.
+This comparison does not evaluate acoustic pronunciation. A failed save retains the result, and
+concurrent confirmation is blocked until the request settles.
+
+Before feedback, examples replace all exact target-term matches with blanks, ignoring case and
+normalizing Unicode composition and inter-word whitespace. Latin terms use Unicode letter/number
+boundaries; CJK terms can match without spaces. Examples without a maskable term, including inflected
+forms that do not match the stored word, are withheld until feedback. Word, definition, translation
+or example edits discard pending speech feedback. Mode, card, account and language changes unmount
+the previous speech interaction and discard delayed transcription callbacks.
 
 Voice conversation uses its own capture pipeline and WebSocket contract, described in
 `voice-conversation.instructions.md`.

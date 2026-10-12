@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { apiFetch } from '@/lib/api'
 import { AudioPlayer } from '@/components/ui/AudioPlayer'
-import { VoiceRecorder } from '@/components/ui/VoiceRecorder'
 import { PageLoading } from '@/components/ui/page-loading'
 import { TargetLanguageText } from '@/components/TargetLanguageText'
 import { CEFR_LEVELS } from '@/data/curriculum'
@@ -18,8 +17,19 @@ import {
 } from '@/components/flashcards/FlashcardBoundary'
 import { FlashcardActions } from '@/components/flashcards/FlashcardActions'
 import { BackPreference } from '@/components/flashcards/BackPreference'
+import { SpeakingCard } from '@/components/flashcards/SpeakingCard'
 import type { BackContent, Flashcard } from '@/components/flashcards/types'
 import NoPlanBanner from '@/components/plan/NoPlanBanner'
+
+interface ReviewResult {
+  id: number
+  word: string
+  quality: number
+  xp: number
+}
+
+const isNewCard = (card: Flashcard) =>
+  card.interval === 0 && card.repetitions === 0
 
 export default function FlashcardsPage() {
   return (
@@ -38,6 +48,12 @@ function FlashcardsContent({
   const tCommon = useTranslations('common')
   const isCurrent = useFlashcardScope()
   const [cards, setCards] = useState<Flashcard[]>([])
+  const [dueCards, setDueCards] = useState<Flashcard[]>([])
+  const [stage, setStage] = useState<'setup' | 'review' | 'summary'>('setup')
+  const [sessionSize, setSessionSize] = useState('10')
+  const [sessionTotal, setSessionTotal] = useState(0)
+  const [completed, setCompleted] = useState<ReviewResult[]>([])
+  const [removed, setRemoved] = useState(0)
   const [current, setCurrent] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -45,7 +61,13 @@ function FlashcardsContent({
   const [showGenerate, setShowGenerate] = useState(false)
   const [genTopic, setGenTopic] = useState('')
   const [genCount, setGenCount] = useState(10)
-  const [genCefr, setGenCefr] = useState('B1')
+  const [genCefr, setGenCefr] = useState('')
+  const genLevelEdited = useRef(false)
+  const [generationResult, setGenerationResult] = useState<{
+    created: number
+    skipped_duplicates: number
+    skipped_empty: number
+  } | null>(null)
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState('')
   const [speakingMode, setSpeakingMode] = useState(false)
@@ -81,7 +103,12 @@ function FlashcardsContent({
       const data = await res.json()
       if (isCurrent() && !controller.signal.aborted) {
         setNoPlan(false)
-        setCards(data.due)
+        setDueCards(data.due)
+        setCards([])
+        setStage('setup')
+        setCompleted([])
+        setRemoved(0)
+        if (!genLevelEdited.current) setGenCefr(data.cefr_level)
         setTotal(data.total)
         setCurrent(0)
         setFlipped(false)
@@ -101,6 +128,7 @@ function FlashcardsContent({
 
   async function reviewCard(quality: number) {
     if (
+      stage !== 'review' ||
       cards.length === 0 ||
       reviewingRef.current ||
       managing ||
@@ -120,7 +148,13 @@ function FlashcardsContent({
         body: JSON.stringify({ quality }),
       })
       if (!response.ok) throw new Error('Could not review flashcard')
+      const result = await response.json()
       if (!isCurrent()) return
+      setCompleted((previous) => [
+        ...previous,
+        { id: card.id, word: card.word, quality, xp: result.xp_earned },
+      ])
+      setDueCards((items) => items.filter((item) => item.id !== card.id))
       if (!sessionRecorded.current)
         sessionRecorded.current = trackBrowserEvent(
           'flashcard_session_started',
@@ -130,7 +164,7 @@ function FlashcardsContent({
         setCurrent(current + 1)
         setFlipped(false)
       } else {
-        await loadDue()
+        setStage('summary')
       }
     } catch {
       if (isCurrent()) setReviewError(true)
@@ -140,22 +174,30 @@ function FlashcardsContent({
     }
   }
 
-  async function handleSpeakingTranscription(transcription: string) {
-    if (cards.length === 0) return
-    const card = cards[current]
-    const norm = (s: string) =>
-      s
-        .trim()
-        .toLowerCase()
-        .replace(/[\p{P}\p{S}\s]+/gu, '')
-    const isCorrect = norm(transcription) === norm(card.word)
-    await reviewCard(isCorrect ? 5 : 2)
+  function startSession() {
+    if (!isCurrent() || generatingRef.current || !dueCards.length) return
+    const selected = dueCards.slice(
+      0,
+      sessionSize === 'all' ? dueCards.length : Number(sessionSize)
+    )
+    setCards(selected)
+    setSessionTotal(selected.length)
+    setCurrent(0)
+    setCompleted([])
+    setRemoved(0)
+    setFlipped(false)
+    setReviewError(false)
+    sessionRecorded.current = false
+    setStage('review')
+    setShowGenerate(false)
   }
 
   async function generateCards(e: React.FormEvent) {
     e.preventDefault()
     if (
       !genTopic.trim() ||
+      !genCefr ||
+      stage === 'review' ||
       generatingRef.current ||
       reviewingRef.current ||
       managing ||
@@ -166,6 +208,7 @@ function FlashcardsContent({
     generatingRef.current = true
     setGenerating(true)
     setGenError('')
+    setGenerationResult(null)
     try {
       const res = await apiFetch('/api/flashcards/generate', {
         method: 'POST',
@@ -180,7 +223,9 @@ function FlashcardsContent({
         const data = await res.json().catch(() => ({}))
         throw new Error(data.detail || `Error ${res.status}`)
       }
+      const result = await res.json()
       if (!isCurrent()) return
+      setGenerationResult(result)
       setShowGenerate(false)
       setGenTopic('')
       await loadDue()
@@ -209,9 +254,13 @@ function FlashcardsContent({
     setManaging(false)
     setReviewError(false)
     setFlipped(false)
+    setRemoved((value) => value + 1)
+    setDueCards((items) =>
+      items.filter((item) => item.id !== cards[current].id)
+    )
     if (deleted) setTotal((value) => value - 1)
     if (current >= cards.length - 1) {
-      void loadDue()
+      setStage('summary')
     } else {
       setCards((items) => items.filter((item) => item.id !== cards[current].id))
     }
@@ -227,7 +276,7 @@ function FlashcardsContent({
             {t('title')}
           </span>
           <span className="text-fl-hint text-fl-muted-2 font-mono tracking-widest">
-            {total} {t('total')} · {cards.length} {t('due')}
+            {total} {t('total')} · {dueCards.length} {t('due')}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -238,7 +287,13 @@ function FlashcardsContent({
             {t('myVocabularyBtn')}
           </Link>
           <button
-            disabled={reviewing || managing || recording || generating}
+            disabled={
+              stage === 'review' ||
+              reviewing ||
+              managing ||
+              recording ||
+              generating
+            }
             onClick={() => {
               setShowGenerate(!showGenerate)
             }}
@@ -252,6 +307,25 @@ function FlashcardsContent({
           </button>
         </div>
       </div>
+
+      {generationResult && (
+        <div
+          role="status"
+          className="border-fl-border text-fl-muted-1 space-y-1 border p-4 text-sm"
+        >
+          <p>
+            {t('generationCounts', {
+              created: generationResult.created,
+              duplicates: generationResult.skipped_duplicates,
+            })}
+          </p>
+          {generationResult.skipped_empty > 0 && (
+            <p>
+              {t('generationEmpty', { count: generationResult.skipped_empty })}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Generate panel */}
       {showGenerate && (
@@ -316,7 +390,10 @@ function FlashcardsContent({
                 <select
                   id="flashcard-level"
                   value={genCefr}
-                  onChange={(e) => setGenCefr(e.target.value)}
+                  onChange={(e) => {
+                    genLevelEdited.current = true
+                    setGenCefr(e.target.value)
+                  }}
                   className="bg-fl-bg border-fl-border text-fl-fg focus:border-fl-border-2 w-full appearance-none border px-4 py-3 font-mono text-sm focus:outline-none"
                 >
                   {CEFR_LEVELS.map((l) => (
@@ -334,7 +411,8 @@ function FlashcardsContent({
                 reviewing ||
                 managing ||
                 recording ||
-                !genTopic.trim()
+                !genTopic.trim() ||
+                !genCefr
               }
               className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 w-full py-3 font-mono text-sm font-bold tracking-widest uppercase transition-colors disabled:opacity-40"
             >
@@ -345,7 +423,7 @@ function FlashcardsContent({
       )}
 
       {/* No cards */}
-      {cards.length === 0 && (
+      {stage === 'setup' && dueCards.length === 0 && (
         <div className="border-fl-border bg-fl-surface border px-6 py-10 text-center">
           <p className="text-fl-muted-1 font-mono text-sm">{t('noDue')}</p>
           {total === 0 && (
@@ -363,12 +441,118 @@ function FlashcardsContent({
         </div>
       )}
 
+      {stage === 'setup' && dueCards.length > 0 && (
+        <section
+          className="border-fl-border bg-fl-surface space-y-5 border p-6"
+          aria-labelledby="flashcard-session-title"
+        >
+          <h1
+            id="flashcard-session-title"
+            className="text-fl-fg text-xl font-semibold"
+          >
+            {t('sessionTitle')}
+          </h1>
+          <p className="text-fl-muted-1">
+            {t('sessionComposition', {
+              new: dueCards.filter(isNewCard).length,
+              review: dueCards.filter((card) => !isNewCard(card)).length,
+            })}
+          </p>
+          <label className="text-fl-muted-1 flex flex-wrap items-center gap-3 text-sm">
+            {t('sessionSize')}
+            <select
+              value={sessionSize}
+              disabled={generating}
+              onChange={(event) => setSessionSize(event.target.value)}
+              className="border-fl-border bg-fl-bg text-fl-fg border px-3 py-2"
+            >
+              <option value="5">5 {t('cards')}</option>
+              <option value="10">10 {t('cards')}</option>
+              <option value="all">{t('sessionAll')}</option>
+            </select>
+          </label>
+          <button
+            disabled={generating}
+            onClick={startSession}
+            className="bg-fl-accent text-fl-accent-fg px-5 py-3 font-sans font-medium disabled:opacity-40"
+          >
+            {t('sessionStart')}
+          </button>
+        </section>
+      )}
+
+      {stage === 'summary' && (
+        <section
+          className="border-fl-border bg-fl-surface space-y-5 border p-6"
+          aria-labelledby="flashcard-summary-title"
+        >
+          <h1
+            id="flashcard-summary-title"
+            className="text-fl-fg text-xl font-semibold"
+          >
+            {t('sessionSummary')}
+          </h1>
+          <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {[
+              { label: 'sessionReviewed', value: completed.length },
+              {
+                label: 'sessionXp',
+                value: completed.reduce((sum, item) => sum + item.xp, 0),
+              },
+              { label: 'sessionRemaining', value: dueCards.length },
+            ].map(({ label, value }) => (
+              <div key={label}>
+                <dt className="text-fl-muted-1 text-sm">{t(label)}</dt>
+                <dd className="text-fl-fg text-2xl font-semibold">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          {removed > 0 && (
+            <p className="text-fl-muted-2 text-sm">
+              {t('sessionRemoved', { count: removed })}
+            </p>
+          )}
+          {completed.some((item) => item.quality <= 3) && (
+            <div className="space-y-2">
+              <h2 className="text-fl-fg font-medium">
+                {t('sessionDifficult')}
+              </h2>
+              <ul className="space-y-2">
+                {completed
+                  .filter((item) => item.quality <= 3)
+                  .map((item) => (
+                    <li
+                      key={item.id}
+                      className="text-fl-muted-1 flex flex-wrap items-center justify-between gap-2"
+                    >
+                      <TargetLanguageText languageCode={targetLanguageCode}>
+                        {item.word}
+                      </TargetLanguageText>
+                      <span className="text-sm">
+                        {t(item.quality < 3 ? 'again' : 'hard')}
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+          <button
+            disabled={generating}
+            onClick={() => void loadDue()}
+            className="border-fl-border text-fl-fg border px-4 py-2 text-sm disabled:opacity-40"
+          >
+            {t('sessionReturn')}
+          </button>
+        </section>
+      )}
+
       {/* Card review */}
-      {cards.length > 0 && (
+      {stage === 'review' && cards.length > 0 && (
         <>
           <div className="text-fl-label text-fl-muted-3 flex items-center justify-between font-mono tracking-widest uppercase">
             <span>
-              {current + 1} / {cards.length} {t('due')}
+              {completed.length + removed + 1} / {sessionTotal} ·{' '}
+              {t(isNewCard(cards[current]) ? 'newCards' : 'sessionReviewCard')}
             </span>
             {/* Mode toggle */}
             <div className="flex gap-1">
@@ -394,6 +578,13 @@ function FlashcardsContent({
               </button>
             </div>
           </div>
+          <button
+            disabled={reviewing || managing || recording || generating}
+            onClick={() => setStage('summary')}
+            className="text-fl-muted-1 text-sm underline disabled:opacity-40"
+          >
+            {t('sessionFinish')}
+          </button>
 
           {/* ── Standard mode ── */}
           {!speakingMode && (
@@ -544,52 +735,20 @@ function FlashcardsContent({
 
           {/* ── Speaking mode ── */}
           {speakingMode && (
-            <div className="border-fl-border bg-fl-surface border">
-              <div className="border-fl-border flex items-center justify-between border-b px-6 py-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-fl-label text-fl-muted-3">●</span>
-                  <span className="text-fl-label text-fl-muted-2 font-mono tracking-widest uppercase">
-                    {t('speakingMode')}
-                  </span>
-                </div>
-                <span className="text-fl-caption text-fl-muted-1 font-sans leading-relaxed">
-                  {t('sayWord')}
-                </span>
-              </div>
-
-              <div className="flex flex-col items-center justify-center gap-5 p-10 text-center">
-                <TargetLanguageText
-                  as="p"
-                  languageCode={targetLanguageCode}
-                  className="text-fl-fg-2"
-                >
-                  {cards[current].definition}
-                </TargetLanguageText>
-                {cards[current].example_sentence && (
-                  <TargetLanguageText
-                    as="p"
-                    languageCode={targetLanguageCode}
-                    className="text-fl-muted-1 italic"
-                  >
-                    {cards[current].example_sentence}
-                  </TargetLanguageText>
-                )}
-                {cards[current].translation && (
-                  <p className="text-fl-muted-1 border-fl-border mt-1 border-t pt-3 font-sans text-sm leading-relaxed">
-                    {cards[current].translation}
-                  </p>
-                )}
-                <VoiceRecorder
-                  key={cards[current].id}
-                  studyPlanId={cards[current].study_plan_id}
-                  onTranscription={handleSpeakingTranscription}
-                  maxSeconds={5}
-                  disabled={reviewing || managing || generating}
-                  onBusyChange={setRecording}
-                  className="mt-2"
-                />
-              </div>
-            </div>
+            <SpeakingCard
+              key={JSON.stringify([
+                cards[current].id,
+                cards[current].word,
+                cards[current].definition,
+                cards[current].translation,
+                cards[current].example_sentence,
+              ])}
+              card={cards[current]}
+              languageCode={targetLanguageCode}
+              disabled={reviewing || managing || generating}
+              onBusyChange={setRecording}
+              onReview={reviewCard}
+            />
           )}
 
           {reviewError && (
@@ -617,6 +776,9 @@ function FlashcardsContent({
                 setCards((items) =>
                   items.map((item) => (item.id === updated.id ? updated : item))
                 )
+              setDueCards((items) =>
+                items.map((item) => (item.id === updated.id ? updated : item))
+              )
             }}
             onDelete={() => removeCurrent(true)}
           />

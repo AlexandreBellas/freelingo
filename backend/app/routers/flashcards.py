@@ -20,11 +20,12 @@ from app.schemas.flashcards import (
     FlashcardFromWordRequest,
     FlashcardFromWordResponse,
     FlashcardGenerateRequest,
-    FlashcardGenerateResponse,
+    FlashcardGenerationResult,
     FlashcardListResponse,
     FlashcardPreferences,
     FlashcardResponse,
     FlashcardReview,
+    FlashcardReviewResponse,
     FlashcardSuspension,
     VocabularyListResponse,
 )
@@ -35,7 +36,11 @@ from app.services.llm_adapter import (
     LLMTimeoutError,
     LLMUnavailableError,
 )
-from app.services.progress_service import lock_progress_plan, update_daily_progress
+from app.services.progress_service import (
+    XP_FLASHCARD_REVIEW,
+    lock_progress_plan,
+    update_daily_progress,
+)
 from app.services.user_language_service import get_active_language
 
 router = APIRouter(prefix="/api/flashcards", tags=["flashcards"])
@@ -150,7 +155,7 @@ async def get_due_flashcards(
     )
     total = count_result.scalar()
 
-    return FlashcardListResponse(due=due, total=total)
+    return FlashcardListResponse(due=due, total=total, cefr_level=plan.cefr_level)
 
 
 @router.get("/all", response_model=list[FlashcardResponse])
@@ -240,7 +245,7 @@ async def create_flashcards_bulk(
     return FlashcardBulkResponse(created=created)
 
 
-@router.post("/{card_id}/review", response_model=FlashcardResponse)
+@router.post("/{card_id}/review", response_model=FlashcardReviewResponse)
 @limiter.limit("60/minute")
 async def review_flashcard(
     request: Request,
@@ -272,12 +277,13 @@ async def review_flashcard(
         commit=False,
     )
     request.state.vocabulary_reviewed = card.source == "from_text"
-    response = FlashcardResponse.model_validate(card)
+    response = FlashcardReviewResponse.model_validate(card)
+    response.xp_earned = XP_FLASHCARD_REVIEW
     await db.commit()
     return response
 
 
-@router.post("/generate", response_model=FlashcardGenerateResponse)
+@router.post("/generate", response_model=FlashcardGenerationResult)
 @limiter.limit("20/minute")
 async def generate_flashcards_endpoint(
     request: Request,
@@ -304,13 +310,15 @@ async def generate_flashcards_endpoint(
             target_language=plan.target_language,
         )
         unique_flashcards = []
+        skipped_duplicates = 0
+        skipped_empty = 0
         for card_data in result.flashcards:
             normalized_word = _normalize_flashcard_word(card_data.word)
-            if (
-                not normalized_word
-                or normalized_word in existing_words
-                or normalized_word in seen_words
-            ):
+            if not normalized_word:
+                skipped_empty += 1
+                continue
+            if normalized_word in existing_words or normalized_word in seen_words:
+                skipped_duplicates += 1
                 continue
 
             seen_words.add(normalized_word)
@@ -326,9 +334,13 @@ async def generate_flashcards_endpoint(
                 translation=card_data.translation,
             )
             db.add(card)
-        result.flashcards = unique_flashcards
         await db.commit()
-        return result
+        return FlashcardGenerationResult(
+            flashcards=unique_flashcards,
+            created=len(unique_flashcards),
+            skipped_duplicates=skipped_duplicates,
+            skipped_empty=skipped_empty,
+        )
     except LLMTimeoutError:
         raise HTTPException(
             status_code=status.HTTP_504_GATEWAY_TIMEOUT,

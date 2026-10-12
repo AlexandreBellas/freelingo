@@ -76,6 +76,7 @@ describe('Flashcards review', () => {
                 },
               ],
               total: 1,
+              cefr_level: 'A1',
             }),
             { status: 200 }
           )
@@ -84,6 +85,7 @@ describe('Flashcards review', () => {
       return pendingReview
     })
     render(<FlashcardsPage />)
+    fireEvent.click(await screen.findByRole('button', { name: 'sessionStart' }))
 
     const word = await screen.findByText('ciao')
     fireEvent.click(word)
@@ -100,13 +102,18 @@ describe('Flashcards review', () => {
     expect(goodButton).toBeDisabled()
 
     await act(async () => {
-      resolveReview!(new Response(null, { status: 200 }))
+      resolveReview!(
+        new Response(JSON.stringify({ xp_earned: 2 }), { status: 200 })
+      )
     })
     await waitFor(() => {
       const dueCalls = mockApiFetch.mock.calls.filter(
         ([url]) => url === '/api/flashcards/due'
       )
-      expect(dueCalls).toHaveLength(2)
+      expect(dueCalls).toHaveLength(1)
+      expect(
+        screen.getByRole('heading', { name: 'sessionSummary' })
+      ).toBeInTheDocument()
     })
   })
 })

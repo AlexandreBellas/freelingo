@@ -320,10 +320,38 @@ level completion follow `learning-resources.instructions.md`; all awards remain 
 
 SM-2 accepts quality 0-5. Quality below 3 resets repetition and interval; successful repetitions use
 1 day, 6 days, then prior interval times ease factor, with minimum ease 1.3. The standard UI offers
-qualities 0, 3, 4, and 5; speaking mode maps normalized exact match to 5 and other results to 2.
+qualities 0, 3, 4, and 5; speaking mode proposes 5 for normalized exact match and 2 otherwise,
+and saves only after learner confirmation. Learners can correct a recognition error with quality 5.
 
 Due cards are ordered by `next_review`. Generation derives target language from the plan and native
 translation context from the user profile. Reviewing always credits the card's stored plan.
+
+### Flashcard review sessions
+
+The review page starts with a setup view offering 5, 10 (default), or all due cards. A shorter queue
+uses all available cards. The setup distinguishes new cards (`interval=0` and `repetitions=0`) from
+previously reviewed cards, and the active card displays its category. Sessions retain the due-card
+ordering; choosing a size does not reschedule the remaining cards.
+
+The learner can finish early or complete the selected queue. The summary reports acknowledged
+reviews, XP summed from backend review responses, remaining due cards, and words scored 0–3 for
+reinforcement. Deleted or suspended cards are counted separately and earn no review credit. Failed
+requests do not advance the queue or increment the summary. Preparing another session reloads the
+server's due list. Session setup, results and summaries are page-local and reset on navigation,
+reload, account changes or language/plan invalidation; there is no persisted session history.
+
+Speaking presents a masked example before recording and shows the transcription, expected word and
+audio afterwards. A result must be confirmed before saving a review. The learner can retry without
+changing scheduling or earning XP, or mark a recognition mismatch as correctly spoken. Confirmation
+uses the latest result; recording alone does not submit a review. This is transcription comparison,
+not an acoustic pronunciation score. Empty transcriptions require another recording. Example masking
+and resource-owned recognition are defined in `speech-services.instructions.md`.
+
+The generator initially selects the current plan's CEFR level from the due-list response; an explicit
+learner selection is retained for the page's current context. Generation is available from setup and
+summary. Its result reports actual created cards and duplicates skipped, including zero-card results;
+empty model terms are reported separately. Existing selected-word and vocabulary-set additions retain
+their own creation flows.
 
 ### Flashcard library and management
 
@@ -349,8 +377,8 @@ commit in one transaction.
 
 The account-wide `flashcard_back_content` preference chooses definition or translation as the main
 standard-mode answer. Definition is the default and the fallback for missing translations. Examples
-and complementary information remain visible after revealing the card. Speaking evaluation retains
-its existing behavior. Failed loads and mutations expose recoverable errors; obsolete responses are
+and complementary information remain visible after revealing the card. Speaking uses the confirmation
+flow described above. Failed loads and mutations expose recoverable errors; obsolete responses are
 discarded across session, language and plan changes.
 
 ## Language roles and internationalization

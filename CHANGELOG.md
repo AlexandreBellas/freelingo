@@ -4,13 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.10.30] - Unreleased
+## [1.10.30] - 2026-10-12
 
 ### Added
 
 - Full flashcard library with word and translation search, saved-from-text and review-state filters, and next-review dates. Existing card generation, selected-word saving and vocabulary-set additions remain available.
 - Edit, suspend and delete cards from both the library and review screen. Editing preserves review progress; suspension pauses reviews without deleting content and can be reversed from the library. Permanent deletion requires confirmation.
 - Account-wide preference for definition or translation as the main standard-mode answer, with a definition fallback when translation is missing. Includes an additive migration for card suspension and the saved preference.
+- Flashcard sessions of 5, 10 or all due cards, with new/review indicators, early finish and a summary of reviewed cards, difficult words, remaining work and earned XP.
+- Flashcard speaking feedback shows the recognised text and expected word, supports retry and recognition corrections, and saves one review only after confirmation. Examples hide the target word before feedback.
+
+### Changed
+
+- Flashcard generation initially selects the active plan's level and reports actual created cards, skipped duplicates and empty model results. Review responses include awarded XP for session summaries.
 
 ### Fixed
 

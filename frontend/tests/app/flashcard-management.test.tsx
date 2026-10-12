@@ -63,6 +63,11 @@ function library(items: Flashcard[] = [card], page = 1, pages = 1) {
   return json({ items, total: items.length, page, pages })
 }
 
+async function startReview() {
+  show('review')
+  fireEvent.click(await screen.findByRole('button', { name: 'Start review' }))
+}
+
 beforeEach(() => {
   mockApiFetch.mockReset()
   useLanguageStore.setState({
@@ -75,7 +80,8 @@ beforeEach(() => {
   useAuthStore.setState({ sessionVersion: 0 })
   mockApiFetch.mockImplementation(async (url: string) => {
     if (url.startsWith('/api/flashcards/library?')) return library()
-    if (url === '/api/flashcards/due') return json({ due: [card], total: 1 })
+    if (url === '/api/flashcards/due')
+      return json({ due: [card], total: 1, cefr_level: 'A1' })
     if (url === '/api/flashcards/preferences')
       return json({ back_content: 'definition' })
     throw new Error(`Unexpected request: ${url}`)
@@ -250,7 +256,7 @@ describe('flashcard library', () => {
 
 describe('review management', () => {
   it('updates the current card without reviewing it and blocks scoring while editing', async () => {
-    show('review')
+    await startReview()
     fireEvent.click(
       await screen.findByRole('button', { name: 'tap to reveal' })
     )
@@ -284,12 +290,13 @@ describe('review management', () => {
         return json({
           due: [card, { ...card, id: 8, word: 'apple' }],
           total: 2,
+          cefr_level: 'A1',
         })
       if (url === '/api/flashcards/preferences')
         return json({ back_content: 'definition' })
       return json({ ...card, is_suspended: true })
     })
-    show('review')
+    await startReview()
     fireEvent.click(await screen.findByRole('button', { name: 'Suspend' }))
     expect(await screen.findByText('apple')).toBeInTheDocument()
     expect(screen.queryByText('book')).not.toBeInTheDocument()
@@ -300,7 +307,7 @@ describe('review management', () => {
   })
 
   it('does not advance on a failed review and allows retry', async () => {
-    show('review')
+    await startReview()
     fireEvent.click(
       await screen.findByRole('button', { name: 'tap to reveal' })
     )
@@ -314,7 +321,7 @@ describe('review management', () => {
   })
 
   it('persists translation preference and retains definition as complementary content', async () => {
-    show('review')
+    await startReview()
     const preference = await screen.findByLabelText('Main answer on the back')
     await waitFor(() => expect(preference).toBeEnabled())
     mockApiFetch.mockResolvedValueOnce(json({ back_content: 'translation' }))
@@ -338,9 +345,13 @@ describe('review management', () => {
     mockApiFetch.mockImplementation(async (url: string) =>
       url.endsWith('/preferences')
         ? json({ back_content: 'translation' })
-        : json({ due: [{ ...card, translation: '' }], total: 1 })
+        : json({
+            due: [{ ...card, translation: '' }],
+            total: 1,
+            cefr_level: 'A1',
+          })
     )
-    show('review')
+    await startReview()
     await waitFor(() =>
       expect(screen.getByLabelText('Main answer on the back')).toHaveValue(
         'translation'
@@ -365,6 +376,10 @@ describe.each(['review', 'library'] as const)(
           activeLanguage: getLanguageByCode('it-IT')!,
         })
       )
+      if (page === 'review')
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Start review' })
+        )
       await screen.findByText('book')
       await act(async () =>
         old.resolve(
@@ -383,12 +398,20 @@ describe.each(['review', 'library'] as const)(
 
     it('unmounts card actions while switching and recovers on the same language', async () => {
       show(page)
+      if (page === 'review')
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Start review' })
+        )
       await screen.findByText('book')
       act(() => useLanguageStore.setState({ isSwitching: true }))
       expect(
         screen.queryByRole('button', { name: 'Edit card' })
       ).not.toBeInTheDocument()
       act(() => useLanguageStore.setState({ isSwitching: false }))
+      if (page === 'review')
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Start review' })
+        )
       expect(
         await screen.findByRole('button', { name: 'Edit card' })
       ).toBeInTheDocument()
@@ -396,11 +419,19 @@ describe.each(['review', 'library'] as const)(
 
     it('does not let an old save update a new account session', async () => {
       show(page)
+      if (page === 'review')
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Start review' })
+        )
       fireEvent.click(await screen.findByRole('button', { name: 'Edit card' }))
       const save = deferred<Response>()
       mockApiFetch.mockImplementationOnce(() => save.promise)
       fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
       act(() => useAuthStore.setState({ sessionVersion: 1 }))
+      if (page === 'review')
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Start review' })
+        )
       await screen.findByText('book')
       await act(async () => save.resolve(json({ ...card, word: 'obsolete' })))
       expect(screen.queryByText('obsolete')).not.toBeInTheDocument()
