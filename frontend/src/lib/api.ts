@@ -21,17 +21,28 @@ function currentSession(sessionVersion: number) {
 }
 
 // Share the HTTP rotation between session restoration and API recovery. Consumers
-// own state changes so an unmounted initializer cannot log out a newer session.
+// own ordinary state changes. A cross-tab account conflict invalidates this session.
 export function requestAccessToken(): Promise<string> {
-  const { sessionVersion } = useAuthStore.getState()
+  const { sessionVersion, accessToken, user } = useAuthStore.getState()
   if (accessTokenRequest?.sessionVersion === sessionVersion) {
     return accessTokenRequest.promise
   }
   const promise = (async () => {
+    const headers: Record<string, string> = {}
+    if (accessToken) headers.Authorization = `Bearer ${accessToken}`
+    if (user) headers['X-Expected-User-ID'] = String(user.id)
     const res = await fetch(`${BASE_URL}/api/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
+      ...(Object.keys(headers).length ? { headers } : {}),
     })
+    if (res.status === 409) {
+      const state = currentSession(sessionVersion)
+      // Clear only local state, not the shared cookie belonging to the other tab.
+      state.logout()
+      if (typeof window !== 'undefined') window.location.assign('/login')
+      throw new DOMException('Authentication account changed', 'AbortError')
+    }
     if (!res.ok) throw new Error('refresh failed')
     const { access_token } = await res.json()
     currentSession(sessionVersion)

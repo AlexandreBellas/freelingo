@@ -40,6 +40,9 @@ describe('landing subscription authentication', () => {
       expect(fetch).toHaveBeenNthCalledWith(1, '/api/auth/refresh', {
         method: 'POST',
         credentials: 'include',
+        ...(accessToken
+          ? { headers: { Authorization: `Bearer ${accessToken}` } }
+          : {}),
       })
       expect(fetch).toHaveBeenNthCalledWith(2, '/api/auth/me', {
         headers: { Authorization: 'Bearer fresh-token' },

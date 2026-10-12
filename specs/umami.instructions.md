@@ -100,7 +100,9 @@ Product flows use fixed paths and no custom event properties, except the global 
 - Tour: start, final confirmation and dismissal (`tour_started`, `tour_completed`, `tour_skipped`).
 - Dashboard: clicks on lesson, plan, assessment, flashcard, chat and voice shortcuts (`dashboard_*_clicked`).
 - Flashcards and saved vocabulary: review batches begun, cards reviewed, words newly saved/promoted,
-  and saved-vocabulary reviews; no words or grades are exported.
+  and saved-vocabulary reviews; no words or grades are exported. Receipt recovery is not a new review:
+  replayed `review_id` requests enqueue neither `flashcard_reviewed` nor `saved_vocabulary_reviewed`,
+  even though they return 200. New committed attempts retain both events when the card is saved from text.
 - Resources: grammar topic and vocabulary-set consultation, phrasebook consultation and translated
   grammar/phrasebook help; successful audio playback in flashcards, My Vocabulary and Phrasebook.
   The vocabulary-by-topic page has no audio player to instrument.

@@ -21,6 +21,9 @@ class User(Base):
     native_language: Mapped[str] = mapped_column(String(10), nullable=False)
     target_language: Mapped[str] = mapped_column(String(10), nullable=False, default="en-GB")
     ui_locale: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    flashcard_back_content: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="definition", server_default="definition"
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     conversation_max_duration: Mapped[int] = mapped_column(

@@ -78,11 +78,20 @@ The index groups and filters by level and searches set topic or ID; it does not 
 or show deck coverage. Detail shows word, part of speech, IPA, frequency, definition, and example.
 
 The available deck action adds the entire set through flashcard bulk creation. There is no per-entry
-add control. Bulk creation requires the active plan and deduplicates normalized words within it. The
-page currently sends an empty translation and the bulk endpoint does not generate one.
+add control. The detail page captures its explicitly requested content language together with the
+current plan ID; requests for the set and plan must agree on language. Bulk creation requires both
+captured values and rejects a mismatch with the server's active plan before insertion. A conflict
+refreshes the language context and set for inspection; it never automatically resubmits the import.
+Late set responses and add results are discarded after context changes. Browsing without a plan is
+allowed, but adding requires one. Bulk creation deduplicates normalized words within the resolved
+plan. The page sends an empty translation and the bulk endpoint does not generate one.
 
 Vocabulary native help begins collapsed and is generated on request. Progress treats an item as
 covered only when its plan-owned flashcard has `repetitions > 0`.
+The detail view binds help requests to the loaded set, target/native languages, authentication
+session and view version. Context changes clear help and cancel its pending request. Late successes,
+errors and completion callbacks are ignored, so an old request cannot replace the new help, expose
+an obsolete error or clear the new request's loading state. Current-context failures allow retry.
 
 ## Phrasebook
 

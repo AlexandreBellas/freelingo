@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import FlashcardsPage from '@/app/(app)/flashcards/page'
+import { useLanguageStore } from '@/store/language'
+import { getLanguageByCode } from '@/lib/target-languages'
 
 const { mockApiFetch } = vi.hoisted(() => ({
   mockApiFetch: vi.fn(),
@@ -14,11 +16,6 @@ vi.mock('@/lib/api', () => ({
 vi.mock('next-intl', () => ({
   useLocale: () => 'en',
   useTranslations: () => (key: string) => key,
-}))
-
-vi.mock('@/store/language', () => ({
-  useLanguageStore: (selector: (state: object) => unknown) =>
-    selector({ activeLanguage: { code: 'it-IT' } }),
 }))
 
 vi.mock('@/components/ui/AudioPlayer', () => ({
@@ -34,12 +31,20 @@ vi.mock('@/components/ui/page-loading', () => ({
 }))
 
 vi.mock('@/components/TargetLanguageText', () => ({
-  TargetLanguageText: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+  TargetLanguageText: ({ children }: { children: ReactNode }) => (
+    <span>{children}</span>
+  ),
 }))
 
 describe('Flashcards review', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    useLanguageStore.setState({
+      activeLanguage: getLanguageByCode('it-IT')!,
+      needsRefresh: false,
+      isSwitching: false,
+      userLanguages: [],
+    })
   })
 
   it('prevents concurrent reviews while one update is pending', async () => {
@@ -48,6 +53,11 @@ describe('Flashcards review', () => {
       resolveReview = resolve
     })
     mockApiFetch.mockImplementation((url: string) => {
+      if (url === '/api/flashcards/preferences') {
+        return Promise.resolve(
+          new Response(JSON.stringify({ back_content: 'definition' }))
+        )
+      }
       if (url === '/api/flashcards/due') {
         return Promise.resolve(
           new Response(
@@ -66,6 +76,7 @@ describe('Flashcards review', () => {
                 },
               ],
               total: 1,
+              cefr_level: 'A1',
             }),
             { status: 200 }
           )
@@ -74,6 +85,7 @@ describe('Flashcards review', () => {
       return pendingReview
     })
     render(<FlashcardsPage />)
+    fireEvent.click(await screen.findByRole('button', { name: 'sessionStart' }))
 
     const word = await screen.findByText('ciao')
     fireEvent.click(word)
@@ -90,13 +102,18 @@ describe('Flashcards review', () => {
     expect(goodButton).toBeDisabled()
 
     await act(async () => {
-      resolveReview!(new Response(null, { status: 200 }))
+      resolveReview!(
+        new Response(JSON.stringify({ xp_earned: 2 }), { status: 200 })
+      )
     })
     await waitFor(() => {
       const dueCalls = mockApiFetch.mock.calls.filter(
         ([url]) => url === '/api/flashcards/due'
       )
-      expect(dueCalls).toHaveLength(2)
+      expect(dueCalls).toHaveLength(1)
+      expect(
+        screen.getByRole('heading', { name: 'sessionSummary' })
+      ).toBeInTheDocument()
     })
   })
 })

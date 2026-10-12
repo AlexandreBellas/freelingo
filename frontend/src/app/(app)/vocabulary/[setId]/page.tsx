@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use, useCallback } from 'react'
+import { useState, useEffect, useRef, use, useCallback } from 'react'
 import { notFound, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -33,10 +33,24 @@ export default function VocabularySetPage({
   const t = useTranslations('vocabulary')
   const tCommon = useTranslations('common')
   const tLang = useTranslations('languages')
+  const tFlashcards = useTranslations('flashcards')
   const activeLanguage = useLanguageStore((s) => s.activeLanguage)
+  const isSwitching = useLanguageStore((s) => s.isSwitching)
+  const needsRefresh = useLanguageStore((s) => s.needsRefresh)
+  const invalidationVersion = useLanguageStore((s) => s.invalidationVersion)
+  const sessionVersion = useAuthStore((s) => s.sessionVersion)
   const user = useAuthStore((s) => s.user)
-  const [vocabSet, setVocabSet] = useState<VocabularySet | null>(null)
+  const [loadedSet, setLoadedSet] = useState<{
+    set: VocabularySet
+    language: string
+    studyPlanId: number | null
+  } | null>(null)
+  const vocabSet = loadedSet?.set ?? null
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+  const [reload, setReload] = useState(0)
+  const viewVersion = useRef(0)
+  const addRequest = useRef<symbol | null>(null)
   const [adding, setAdding] = useState(false)
   const [addedCount, setAddedCount] = useState<number | null>(null)
   const [error, setError] = useState('')
@@ -45,59 +59,221 @@ export default function VocabularySetPage({
     null
   )
   const [loadingNativeHelp, setLoadingNativeHelp] = useState(false)
+  const nativeHelpRequest = useRef<AbortController | null>(null)
   const [nativeHelpError, setNativeHelpError] = useState(false)
   const nativeLanguageName = user?.native_language
     ? tLang(user.native_language)
     : ''
 
+  const acceptsContext = useCallback(() => {
+    const state = useLanguageStore.getState()
+    return (
+      useAuthStore.getState().sessionVersion === sessionVersion &&
+      state.activeLanguage?.code === activeLanguage?.code &&
+      state.invalidationVersion === invalidationVersion &&
+      !state.isSwitching &&
+      !state.needsRefresh
+    )
+  }, [activeLanguage?.code, invalidationVersion, sessionVersion])
+
   useEffect(() => {
-    const lang = activeLanguage?.code ?? 'en-GB'
+    const controller = new AbortController()
+    const version = ++viewVersion.current
+    const cleanup = () => {
+      controller.abort()
+      if (viewVersion.current === version) ++viewVersion.current
+    }
     setLoading(true)
-    apiFetch(`/api/vocabulary/${encodeURIComponent(setId)}?language=${lang}`)
-      .then((r) => {
-        if (!r.ok) throw new Error('not found')
-        return r.json()
-      })
-      .then((d: { set: VocabularySet }) => setVocabSet(d.set))
-      .catch(() => setVocabSet(null))
-      .finally(() => setLoading(false))
-  }, [setId, activeLanguage?.code])
+    setLoadError(false)
+    setAddedCount(null)
+    setAdding(false)
+    addRequest.current = null
+    if (isSwitching) return cleanup
+    if (!activeLanguage || needsRefresh) {
+      void useLanguageStore
+        .getState()
+        .fetchLanguages(controller.signal)
+        .then((ok) => {
+          if (
+            (!ok || !useLanguageStore.getState().activeLanguage) &&
+            !controller.signal.aborted
+          ) {
+            setLoadError(true)
+            setLoading(false)
+          }
+        })
+      return cleanup
+    }
+    const language = activeLanguage.code
+    const current = () =>
+      !controller.signal.aborted &&
+      version === viewVersion.current &&
+      acceptsContext()
+    void (async () => {
+      try {
+        const [setResponse, planResponse] = await Promise.all([
+          apiFetch(
+            `/api/vocabulary/${encodeURIComponent(setId)}?language=${encodeURIComponent(language)}`,
+            { signal: controller.signal }
+          ),
+          apiFetch('/api/study-plan/current', { signal: controller.signal }),
+        ])
+        if (setResponse.status === 404) {
+          if (current()) setLoadedSet(null)
+          return
+        }
+        if (!setResponse.ok || !planResponse.ok)
+          throw new Error('Could not load vocabulary context')
+        const [data, plan] = await Promise.all([
+          setResponse.json() as Promise<{ set: VocabularySet }>,
+          planResponse.json() as Promise<{
+            id: number
+            target_language: string
+          } | null>,
+        ])
+        if (!current()) return
+        if (plan && plan.target_language !== language) {
+          setError(tFlashcards('contextChanged'))
+          throw new Error('Vocabulary context changed')
+        }
+        setLoadedSet({ set: data.set, language, studyPlanId: plan?.id ?? null })
+      } catch {
+        if (current()) setLoadError(true)
+      } finally {
+        if (current()) setLoading(false)
+      }
+    })()
+    return cleanup
+  }, [
+    setId,
+    activeLanguage,
+    isSwitching,
+    needsRefresh,
+    invalidationVersion,
+    sessionVersion,
+    reload,
+    acceptsContext,
+    tFlashcards,
+  ])
+
+  async function refreshContext() {
+    setLoading(true)
+    const ok = await useLanguageStore.getState().fetchLanguages()
+    if (useAuthStore.getState().sessionVersion !== sessionVersion) return
+    if (!ok) {
+      setLoadError(true)
+      setLoading(false)
+      return
+    }
+    setReload((value) => value + 1)
+  }
 
   useEffect(() => {
     setNativeHelpOpen(false)
     setNativeHelp(null)
     setNativeHelpError(false)
-  }, [setId, activeLanguage?.code])
+    setLoadingNativeHelp(false)
+    return () => {
+      nativeHelpRequest.current?.abort()
+      nativeHelpRequest.current = null
+    }
+  }, [
+    setId,
+    activeLanguage,
+    sessionVersion,
+    invalidationVersion,
+    isSwitching,
+    needsRefresh,
+    reload,
+    tFlashcards,
+    user?.native_language,
+  ])
 
   const targetLanguageCode = activeLanguage?.code ?? 'en-GB'
 
   const generateNativeHelp = useCallback(async () => {
-    if (loadingNativeHelp) return
+    if (
+      nativeHelpRequest.current ||
+      loading ||
+      !acceptsContext() ||
+      loadedSet?.language !== targetLanguageCode ||
+      loadedSet.set.id !== setId
+    )
+      return
+    const controller = new AbortController()
+    nativeHelpRequest.current = controller
+    const version = viewVersion.current
+    const nativeLanguage = user?.native_language
+    const current = () =>
+      !controller.signal.aborted &&
+      nativeHelpRequest.current === controller &&
+      version === viewVersion.current &&
+      acceptsContext() &&
+      useAuthStore.getState().user?.native_language === nativeLanguage
     setLoadingNativeHelp(true)
     setNativeHelpError(false)
     try {
       const res = await apiFetch(
         `/api/vocabulary/${encodeURIComponent(setId)}/native-help?language=${targetLanguageCode}`,
-        { method: 'POST' }
+        { method: 'POST', signal: controller.signal }
       )
       if (!res.ok) throw new Error('native help failed')
       const data = (await res.json()) as { native_help: VocabularyNativeHelp }
-      setNativeHelp(data.native_help)
+      if (current()) setNativeHelp(data.native_help)
     } catch {
-      setNativeHelpError(true)
+      if (current()) setNativeHelpError(true)
     } finally {
-      setLoadingNativeHelp(false)
+      if (current()) setLoadingNativeHelp(false)
+      if (nativeHelpRequest.current === controller)
+        nativeHelpRequest.current = null
     }
-  }, [loadingNativeHelp, setId, targetLanguageCode])
+  }, [
+    loading,
+    acceptsContext,
+    loadedSet,
+    setId,
+    targetLanguageCode,
+    user?.native_language,
+  ])
 
   if (loading) {
     return <PageLoading />
   }
 
+  if (loadError)
+    return (
+      <div className="mx-auto max-w-4xl space-y-4 p-6">
+        <p role="alert" className="text-fl-error-fg">
+          {error || tCommon('errorMessage')}
+        </p>
+        <button
+          onClick={() => void refreshContext()}
+          className="border-fl-border border px-4 py-2"
+        >
+          {tCommon('retry')}
+        </button>
+      </div>
+    )
+
   if (!vocabSet) notFound()
 
   async function handleAddAll() {
-    if (!vocabSet) return
+    if (
+      !vocabSet ||
+      !loadedSet ||
+      addRequest.current ||
+      !acceptsContext() ||
+      loadedSet.language !== activeLanguage?.code ||
+      vocabSet.id !== setId
+    )
+      return
+    if (loadedSet.studyPlanId === null) {
+      setError(tCommon('noActivePlan'))
+      return
+    }
+    const version = viewVersion.current
+    const token = Symbol('add-vocabulary')
+    addRequest.current = token
     setAdding(true)
     setError('')
     try {
@@ -110,10 +286,21 @@ export default function VocabularySetPage({
       const res = await apiFetch('/api/flashcards/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flashcards: cards }),
+        body: JSON.stringify({
+          flashcards: cards,
+          study_plan_id: loadedSet.studyPlanId,
+          target_language: loadedSet.language,
+        }),
       })
+      if (!acceptsContext() || version !== viewVersion.current) return
       if (!res.ok) {
         const d = await res.json().catch(() => ({}))
+        if (!acceptsContext() || version !== viewVersion.current) return
+        if (res.status === 409 && d.detail === 'flashcard_context_changed') {
+          setError(tFlashcards('contextChanged'))
+          await refreshContext()
+          return
+        }
         throw new Error(
           (d as { detail?: string }).detail === 'No active study plan found'
             ? 'No active study plan found'
@@ -121,8 +308,10 @@ export default function VocabularySetPage({
         )
       }
       const data = (await res.json()) as { created: number }
-      setAddedCount(data.created)
+      if (acceptsContext() && version === viewVersion.current)
+        setAddedCount(data.created)
     } catch (err) {
+      if (!acceptsContext() || version !== viewVersion.current) return
       const msg = err instanceof Error ? err.message : ''
       setError(
         msg === 'No active study plan found'
@@ -130,7 +319,11 @@ export default function VocabularySetPage({
           : t('addFailed')
       )
     } finally {
-      setAdding(false)
+      if (addRequest.current === token) {
+        addRequest.current = null
+        if (acceptsContext() && version === viewVersion.current)
+          setAdding(false)
+      }
     }
   }
 

@@ -58,6 +58,7 @@ Registration, authentication, and user preferences.
 - `native_language` — string such as `"es"` or `"fr"`; used for flashcard translations and tutor feedback.
 - `target_language` — BCP-47 compatibility mirror, default `en-GB`; active context comes from `UserLanguage` and resource context from `StudyPlan`.
 - `ui_locale` — nullable UI locale code.
+- `flashcard_back_content` — varchar(20), non-null, default `definition` (ORM and database). Account-wide standard flashcard reverse-side preference: `definition` or `translation`, validated by the preferences API.
 - `is_active` — boolean; `false` means the account is disabled by an admin.
 - `is_verified` — boolean email-verification flag; ORM default `false`.
 - `conversation_max_duration` — integer max voice session duration in seconds. Default comes from `DEFAULT_CONVERSATION_MAX_DURATION` (`1800`).
@@ -203,11 +204,31 @@ SM-2 spaced repetition cards, per user per language.
 - example_sentence — Type: text; Notes: Usage example
 - translation — Type: text; Notes: Translation to user's native language
 - source — Type: varchar(20); Notes: Origin of the card: `NULL` (generated), `"from_text"` (saved from reading exercise)
+- is_suspended — Type: boolean; Notes: Non-null, ORM and database default `false`. Excludes the card from scheduled reviews without modifying its scheduling fields or vocabulary progress.
 - ease_factor — Type: float; Notes: SM-2 ease factor (default 2.5)
 - interval — Type: integer; Notes: Days until next review (default 0)
 - repetitions — Type: integer; Notes: Consecutive correct reviews (default 0)
 - next_review — Type: date; Notes: Date of next review (default today)
 - created_at — Type: datetime; Notes: —
+
+Content edits preserve ownership, source and scheduling fields. Suspension retains `next_review`, so
+reactivation immediately restores overdue cards to the review queue. The account's reverse-side
+preference is independent of card ownership and study language. The versioned schema is defined by
+`0056_flashcard_management`, following `0055_sentence_order`; defaults apply to existing rows.
+
+## FlashcardReviewReceipt (`flashcard_review_receipts`)
+
+Durable idempotency results for accepted flashcard review attempts.
+
+- `flashcard_id` — integer FK to `flashcards.id`, `ON DELETE CASCADE`.
+- `review_id` — varchar(36), canonical UUID supplied by the client. Together with `flashcard_id`, forms the composite primary key.
+- `quality` — non-null integer containing the accepted rating.
+- `response` — non-null JSON snapshot of the original `FlashcardReviewResponse`, including scheduling and awarded XP.
+
+The owning card controls authorization and plan/user cascade deletion. Receipts commit atomically
+with scheduling and progress, are immutable after acceptance, and remain available after later
+reviews or edits. They support response recovery rather than a session-history interface. The table
+is defined by revision `0057_flashcard_review_receipts`, following `0056_flashcard_management`.
 
 ## Progress (`progress`)
 
