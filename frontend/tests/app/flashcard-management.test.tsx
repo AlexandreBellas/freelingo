@@ -382,33 +382,72 @@ describe('flashcard library', () => {
   })
 
   it('reloads the clamped page after deleting its last item', async () => {
-    mockApiFetch.mockResolvedValueOnce(library([card], 2, 2))
-    show()
-    await screen.findByRole('heading', { name: 'book' })
-    await waitFor(() =>
-      expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    const firstPage = Array.from({ length: 10 }, (_, index) => ({
+      ...card,
+      id: 20 + index,
+      word: `apple ${index + 1}`,
+    }))
+    let deleted = false
+    const refreshedPages: number[] = []
     mockApiFetch.mockImplementation(
       async (url: string, options?: RequestInit) => {
-        if (options?.method === 'DELETE')
+        if (url === '/api/flashcards/7' && options?.method === 'DELETE') {
+          deleted = true
           return new Response(null, { status: 204 })
-        if (url.startsWith('/api/flashcards/library?')) return library([], 1, 1)
+        }
+        if (url.startsWith('/api/flashcards/library?')) {
+          const requestedPage = Number(
+            new URLSearchParams(url.split('?')[1]).get('page')
+          )
+          if (deleted) refreshedPages.push(requestedPage)
+          const page = deleted ? 1 : requestedPage
+          return json({
+            items: page === 1 ? firstPage : [card],
+            total: deleted ? 10 : 11,
+            page,
+            pages: deleted ? 1 : 2,
+          })
+        }
         throw new Error('Unexpected request')
       }
     )
+    show()
+    const next = await screen.findByRole('button', { name: 'Next →' })
+    await waitFor(() => expect(next).toBeEnabled())
+    fireEvent.click(next)
+    const row = await screen.findByRole('article', { name: 'book' })
+    const deleteButton = within(row).getByRole('button', { name: 'Delete' })
+    await waitFor(() => expect(deleteButton).toBeEnabled())
+    expect(screen.getByText('Page 2 of 2')).toBeInTheDocument()
+    fireEvent.click(deleteButton)
     fireEvent.click(
       within(screen.getByRole('alertdialog')).getByRole('button', {
         name: 'Delete',
       })
     )
     expect(
-      await screen.findByText(messages.flashcards.libraryEmpty)
+      await screen.findByRole('article', { name: 'apple 1' })
     ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(refreshedPages).toEqual([2, 1])
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    })
+    expect(mockApiFetch).toHaveBeenCalledWith(
+      '/api/flashcards/7',
+      expect.objectContaining({ method: 'DELETE' })
+    )
+    expect(screen.getAllByRole('article')).toHaveLength(10)
+    expect(
+      screen.getByRole('heading', { name: messages.flashcards.myVocabulary })
+        .nextElementSibling
+    ).toHaveTextContent(/^10$/)
     expect(
       screen.queryByRole('heading', { name: 'book' })
     ).not.toBeInTheDocument()
-    expect(screen.queryByText('Page 2 of 1')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Next →' })
+    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('reactivates suspended cards and refreshes the filtered list', async () => {
