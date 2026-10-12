@@ -166,6 +166,8 @@ async def test_generate_flashcards_success(client, test_user, db_session):
     assert response.status_code == 200
     data = response.json()
     assert len(data["flashcards"]) == 2
+    assert data["created"] == 2
+    assert data["skipped_duplicates"] == data["skipped_empty"] == 0
     words = [c["word"] for c in data["flashcards"]]
     assert "ubiquitous" in words
     assert generate_mock.await_args.kwargs["target_language"] == "en-US"
@@ -178,6 +180,50 @@ async def test_generate_flashcards_success(client, test_user, db_session):
     result = await db_session.execute(select(Flashcard).where(Flashcard.user_id == user.id))
     saved = result.scalars().all()
     assert len(saved) == 2
+
+
+async def test_generation_counts_only_actual_duplicates_not_missing_llm_results(
+    client, test_user, db_session
+):
+    from app.models.flashcard import Flashcard
+
+    user, headers = test_user
+    plan = await _seed_plan(db_session, user.id)
+    db_session.add(
+        Flashcard(
+            user_id=user.id,
+            study_plan_id=plan.id,
+            word="ubiquitous",
+            definition="existing",
+            example_sentence="",
+            translation="",
+            is_suspended=True,
+        )
+    )
+    await db_session.commit()
+    generated = _FAKE_GENERATED.model_copy(deep=True)
+    generated.flashcards.extend(
+        [
+            generated.flashcards[1].model_copy(update={"word": " EPHEMERAL "}),
+            generated.flashcards[0].model_copy(update={"word": " "}),
+        ]
+    )
+    with patch("app.routers.flashcards.generate_flashcards", AsyncMock(return_value=generated)):
+        res = await client.post(
+            "/api/flashcards/generate", headers=headers, json={"topic": "test", "count": 5}
+        )
+        assert res.status_code == 200
+        assert res.json()["created"] == 1
+        assert res.json()["skipped_duplicates"] == 2
+        assert res.json()["skipped_empty"] == 1
+        assert res.json()["flashcards"][0]["word"] == "ephemeral"
+        res = await client.post(
+            "/api/flashcards/generate", headers=headers, json={"topic": "test", "count": 5}
+        )
+        assert res.status_code == 200
+        assert res.json()["created"] == 0
+        assert res.json()["skipped_duplicates"] == 3
+        assert res.json()["skipped_empty"] == 1
 
 
 @pytest.mark.asyncio

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/auth'
 import { getLogger } from '@/lib/logger'
 import { trackBrowserEvent } from '@/lib/analytics'
+import { apiFetch } from '@/lib/api'
 
 const TTS_TIMEOUT_MS = 15_000
 const ttsLogger = getLogger('tts')
@@ -58,7 +59,7 @@ export function AudioPlayer({
   const urlRef = useRef<string | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const recoveryRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const accessToken = useAuthStore((s) => s.accessToken)
+  const sessionVersion = useAuthStore((s) => s.sessionVersion)
   const t = useTranslations('audioPlayer')
 
   // Resolve voice: explicit prop > user localStorage preference > backend default
@@ -91,6 +92,7 @@ export function AudioPlayer({
     resolvedVoice,
     studyPlanId,
     conversationId,
+    sessionVersion,
     releaseAudio,
   ])
 
@@ -136,16 +138,10 @@ export function AudioPlayer({
       const t0 = performance.now()
 
       const fetchStart = performance.now()
-      const res = await fetch(
+      const res = await apiFetch(
         audioUrl ?? '/api/tts',
         audioMethod === 'GET'
           ? {
-              headers: {
-                ...(accessToken
-                  ? { Authorization: `Bearer ${accessToken}` }
-                  : {}),
-              },
-              credentials: 'include' as RequestCredentials,
               cache: 'no-store',
               signal: controller.signal,
             }
@@ -154,9 +150,6 @@ export function AudioPlayer({
               headers: {
                 'Content-Type': 'application/json',
                 'X-TTS-Trace-ID': traceId,
-                ...(accessToken
-                  ? { Authorization: `Bearer ${accessToken}` }
-                  : {}),
               },
               body: JSON.stringify({
                 text,
@@ -173,7 +166,11 @@ export function AudioPlayer({
       const blobStart = performance.now()
       const blob = await res.blob()
       clearTimeout(timeoutId)
-      if (controller.signal.aborted || controllerRef.current !== controller)
+      if (
+        controller.signal.aborted ||
+        controllerRef.current !== controller ||
+        useAuthStore.getState().sessionVersion !== analyticsSession
+      )
         return
       const blobMs = performance.now() - blobStart
 

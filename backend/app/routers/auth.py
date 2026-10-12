@@ -4,10 +4,12 @@ import os
 import uuid
 from datetime import UTC, datetime
 
+import jwt
 from fastapi import (
     APIRouter,
     Depends,
     File,
+    Header,
     HTTPException,
     Request,
     Response,
@@ -205,6 +207,9 @@ async def refresh(
     response: Response,
     redis: Redis = Depends(get_redis),
     db: AsyncSession = Depends(get_db),
+    expected_user_id: int | None = Header(
+        default=None, alias="X-Expected-User-ID", ge=1, le=2_147_483_647
+    ),
 ):
     token = request.cookies.get("refresh_token")
     if not token:
@@ -218,6 +223,27 @@ async def refresh(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token",
         )
+
+    # The shared cookie may have been replaced by a login in another tab. These
+    # expectations only restrict renewal; the valid Redis cookie still authorizes it.
+    authorization = request.headers.get("Authorization")
+    if authorization is not None:
+        scheme, _, previous_token = authorization.partition(" ")
+        try:
+            if scheme.lower() != "bearer" or not previous_token:
+                raise jwt.InvalidTokenError("Invalid bearer context")
+            previous = jwt.decode(
+                previous_token,
+                settings.SECRET_KEY,
+                algorithms=["HS256"],
+                options={"verify_exp": False, "require": ["sub", "exp"]},
+            )
+        except jwt.InvalidTokenError:
+            raise HTTPException(status_code=401, detail="Invalid refresh context")
+        if previous["sub"] != str(user_id):
+            raise HTTPException(status_code=409, detail="auth_context_changed")
+    if expected_user_id is not None and str(expected_user_id) != str(user_id):
+        raise HTTPException(status_code=409, detail="auth_context_changed")
 
     await redis.delete(f"refresh:{token}")
 

@@ -70,13 +70,19 @@ retry. A response belonging to a replaced session cannot start recovery or clear
 In-flight refreshes are shared only within the same session; obsolete completion cannot clear a newer
 session's pending refresh. Delayed 401s within the same session reuse an already rotated access token.
 Avatar recovery and landing/checkout restoration also use `requestAccessToken` for this shared HTTP
-rotation. `restoreAccessToken` publishes a missing token only for the original, uncancelled session;
+rotation. Renewal carries the known bearer and profile ID (`X-Expected-User-ID`) so the backend can
+reject a cookie belonging to another tab's account before rotation. On 409 `auth_context_changed`,
+the shared client path clears only the originating local session, redirects to login and aborts
+waiting consumers; it neither replays their operations nor invalidates the other account's cookie.
+A late conflict cannot invalidate a newer local login. Initial restoration without a known token or
+profile remains cookie-based. `restoreAccessToken` publishes a missing token only for the original, uncancelled session;
 restoration errors remain owned by the caller. Avatar failures retain the image fallback without
 independently logging out. Avatar cache entries and pending work are session-scoped. Profile consumers
 check session identity after reading response bodies before updating the global user; login and
 conversation profile requests are also aborted on unmount.
 Landing subscription lookup obtains a fresh token through the shared refresh before `/me`, even if
-an in-memory token exists. Public-page failures do not force logout or redirect; only successful
+an in-memory token exists. Ordinary public-page failures do not force logout or redirect; account
+identity conflicts follow the shared invalidation rule. Only successful
 subscription responses are cached for the session, so a failed lookup can be retried on a later visit.
 
 Ordinary JSON APIs use same-origin `/api` requests proxied by Next.js rewrites to `BACKEND_URL`. The chat handler preserves
@@ -266,6 +272,79 @@ zero-XP days as active. Accessible day labels expose dates, activity and XP; the
 is decorative. `RewardGuide.tsx` provides a localized, collapsible explanation of existing XP rules
 and links to the corresponding activities. Competency/vocabulary/skill bars expose numeric progress,
 vocabulary filters expose selection, and learned-language curriculum text uses `TargetLanguageText`.
+
+## Flashcards
+
+`app/(app)/flashcards/page.tsx` owns page-local setup, review and summary states. Setup selects 5, 10
+or all due cards and shows new/review counts. The active queue is a subset of the full due snapshot;
+successful reviews and management removals update that snapshot independently. Early finish and queue
+completion show acknowledged reviews, backend-reported XP, remaining due cards, removed-card counts
+and words rated as difficult. Another session reloads the due list. No session summary is persisted.
+
+Flashcard screens share the dashboard/progress visual language: solid `fl-*` surfaces, petroleum-blue
+accents, readable Geist Sans interface text, semantic page/section headings and decorative Lucide
+icons. The setup size options are native radio inputs presented as a responsive segmented control.
+The review toolbar groups mode buttons (with `aria-pressed`) and reverse-side preference. A labeled
+progress bar measures handled cards (acknowledged reviews plus management removals) against the
+selected session size; it does not represent XP or mastery. Session summary metrics use bordered
+panels, with XP highlighted by the existing accent. Technical ease, interval and repetition values
+remain accessible in a native details disclosure using `font-code` for their values.
+
+Library search and source/state filters share one responsive toolbar; each entry keeps its audio,
+content, review-date/suspension badge and labeled management actions. Speaking feedback separates
+recognised text and expected word into panels and emphasizes confirmation above retry/correction
+actions. Controls preserve disabled states and visible keyboard focus; long learned-language text
+wraps, and the progress transition respects reduced motion. All controls retain text labels rather
+than relying on icons or color alone.
+
+The standard card uses a native reveal button with keyboard support and separate audio controls.
+`useBackPreference` subscribes to the account-session store in `store/flashcard-preferences.ts`;
+`BackPreference` renders its selector and errors. Reads and writes are serialized across mounted
+views. The store owns pending requests across mode, language, plan and page changes; a returning view
+subscribes to an in-flight operation instead of issuing a competing GET. Later visits revalidate the
+saved value. Failed operations expose retry through a fresh read. A new authentication session gets
+an isolated store, and old responses cannot update it. Token rotation preserves the account session.
+`SpeakingCard` owns transcription feedback and retry state, confirms a result before calling the
+review handler, and exposes a learner correction for recognition mismatches. It is keyed by card ID
+and editable content so an edit invalidates old feedback. `lib/flashcard-review.ts` implements speech
+normalization and conservative example masking. The resource-owned `VoiceRecorder` busy notification
+prevents management and mode changes during recording or transcription.
+
+Generation is available from setup and summary. Its initial CEFR selection comes from the active
+plan metadata in `/api/flashcards/due`; explicit learner selection is retained until the page context
+resets. Server-computed creation, duplicate and empty-result counts appear after generation. A
+successful request with zero created cards is still a result, not a loading or generation error.
+
+`app/(app)/flashcards/vocabulary/page.tsx` is the full active-plan library. It uses `/api/flashcards/library`
+with source/state filters, debounced word/translation search and pagination. The saved-from-text filter
+retains the previous vocabulary view. Learned words, definitions and examples use `TargetLanguageText`;
+next-review dates use the interface locale without shifting date-only values across time zones.
+
+`components/flashcards/FlashcardActions.tsx` shares inline content editing, suspension/reactivation
+and confirmed deletion between both pages. Pending mutations disable repeat submissions; errors
+retain the draft or confirmation dialog. Successful management updates the queue or reloads the
+library without awarding review credit. Content edits retain the current review position.
+
+The library supplies controlled action state keyed by card ID and a page-owned context guard. Its
+drafts, errors and pending operations therefore survive row unmounts and background refreshes. Settled
+mutations reconcile the list through a request-version guard, including operations whose row left the
+current filter. Existing rows remain mounted during background loading/error states; closed, idle
+action states are released. Review-screen actions retain local state scoped to the current card.
+Acknowledged deletion removes a visible row and decreases the current total only if that snapshot
+still contains the row. If a refresh or filter change has already removed it, the late acknowledgment
+does not decrease the total again. Server refreshes remain authoritative for pagination and totals.
+
+Review submission retains the card, original rating and UUID while a response is unresolved. The
+dedicated save retry sends that same payload, while other review actions stay disabled. Only a
+successful response advances the queue or adds the attempt's XP to the local summary. A definitive
+client rejection can also refresh the queue. Receipt persistence and conflict rules belong to the
+backend contract; no attempt identity or review receipt is written to browser storage.
+
+`FlashcardBoundary` reconciles missing/invalidated language context and keys content by session,
+language, plan and invalidation version. Switching unmounts old content. `useFlashcardScope` also
+checks the current stores before accepting delayed responses; list requests are canceled on cleanup
+and supersession. Load errors offer retry, missing plans use `NoPlanBanner`, and mutation errors do
+not advance the queue. No flashcard content or preference is persisted in browser storage.
 
 ## Public landing
 

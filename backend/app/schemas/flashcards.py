@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Optional
+from typing import Literal, Optional
+from uuid import UUID
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
 
 class FlashcardCreate(BaseModel):
-    word: str
+    word: str = Field(max_length=100)
     definition: str
     example_sentence: str
-    translation: str
+    translation: str = Field(max_length=255)
 
 
 class FlashcardBulkCreate(BaseModel):
     flashcards: list[FlashcardCreate]
+    study_plan_id: int = Field(strict=True, ge=1, le=2_147_483_647)
+    target_language: str = Field(min_length=1, max_length=10)
 
 
 class FlashcardBulkResponse(BaseModel):
@@ -22,11 +25,38 @@ class FlashcardBulkResponse(BaseModel):
 
 
 class FlashcardReview(BaseModel):
-    quality: int
+    quality: int = Field(strict=True, ge=0, le=5)
+    review_id: UUID
+
+
+class FlashcardEdit(BaseModel):
+    word: str = Field(min_length=1, max_length=100)
+    definition: str = Field(min_length=1, max_length=10000)
+    example_sentence: str = Field(max_length=10000)
+    translation: str = Field(max_length=255)
+
+    model_config = {"extra": "forbid"}
+
+    @field_validator("word", "definition", "example_sentence", "translation", mode="before")
+    @classmethod
+    def trim_content(cls, value: object) -> object:
+        return value.strip() if isinstance(value, str) else value
+
+
+class FlashcardSuspension(BaseModel):
+    is_suspended: bool = Field(strict=True)
+
+    model_config = {"extra": "forbid"}
+
+
+class FlashcardPreferences(BaseModel):
+    back_content: Literal["definition", "translation"]
+
+    model_config = {"extra": "forbid"}
 
 
 class FlashcardFromWordRequest(BaseModel):
-    word: str
+    word: str = Field(max_length=100)
     context: str = ""
     cefr_level: str = "B1"
     lesson_id: int | None = Field(default=None, strict=True, ge=1, le=2_147_483_647)
@@ -47,6 +77,7 @@ class FlashcardResponse(BaseModel):
     example_sentence: str
     translation: str
     source: Optional[str] = None
+    is_suspended: bool = False
     ease_factor: float
     interval: int
     repetitions: int
@@ -68,9 +99,14 @@ class FlashcardFromWordResponse(FlashcardResponse):
     already_saved: bool = False
 
 
+class FlashcardReviewResponse(FlashcardResponse):
+    xp_earned: int = 0
+
+
 class FlashcardListResponse(BaseModel):
     due: list[FlashcardResponse]
     total: int
+    cefr_level: str
 
 
 class VocabularyListResponse(BaseModel):
@@ -80,12 +116,15 @@ class VocabularyListResponse(BaseModel):
     pages: int
 
 
-class GeneratedFlashcard(BaseModel):
-    word: str
-    definition: str
-    example_sentence: str
-    translation: str
+class GeneratedFlashcard(FlashcardCreate):
+    pass
 
 
 class FlashcardGenerateResponse(BaseModel):
     flashcards: list[GeneratedFlashcard]
+
+
+class FlashcardGenerationResult(FlashcardGenerateResponse):
+    created: int
+    skipped_duplicates: int
+    skipped_empty: int

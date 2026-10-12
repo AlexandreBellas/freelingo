@@ -139,6 +139,129 @@ describe('AudioPlayer', () => {
 
   // ───────────── PLAY FLOW ─────────────
 
+  it.each([undefined, '/api/phrasebook/audio/greetings/0?language=es'])(
+    'recovers expired authentication for %s without changing the audio request',
+    async (audioUrl) => {
+      useAuthStore.getState().startSession('expired')
+      const requests: RequestInit[] = []
+      fetchMock.mockImplementation(
+        async (url: string, options: RequestInit) => {
+          if (url === '/api/auth/refresh')
+            return new Response(JSON.stringify({ access_token: 'renewed' }))
+          requests.push({ ...options, headers: { ...options.headers } })
+          return requests.length === 1
+            ? new Response(null, { status: 401 })
+            : makeOkResponse()
+        }
+      )
+      render(<AudioPlayer text="Hello" audioUrl={audioUrl} studyPlanId={42} />)
+      await act(async () => fireEvent.click(screen.getByRole('button')))
+      expect(screen.getByText(PAUSE)).toBeDefined()
+      expect(
+        fetchMock.mock.calls.filter(([url]) => url === '/api/auth/refresh')
+      ).toHaveLength(1)
+      expect(requests).toHaveLength(2)
+      expect(new Headers(requests[0].headers).get('Authorization')).toBe(
+        'Bearer expired'
+      )
+      expect(new Headers(requests[1].headers).get('Authorization')).toBe(
+        'Bearer renewed'
+      )
+      expect(requests[1].body).toBe(requests[0].body)
+      expect(requests[1].method).toBe(requests[0].method)
+      expect(requests[1].signal).toBe(requests[0].signal)
+      if (!audioUrl)
+        expect(JSON.parse(String(requests[1].body))).toMatchObject({
+          text: 'Hello',
+          study_plan_id: 42,
+        })
+      expect(currentAudioMock!.play).toHaveBeenCalledTimes(1)
+    }
+  )
+
+  it('cancels one audio consumer during shared renewal without canceling its sibling', async () => {
+    useAuthStore.getState().startSession('expired')
+    let renew!: (response: Response) => void
+    const renewal = new Promise<Response>((resolve) => {
+      renew = resolve
+    })
+    const texts: string[] = []
+    fetchMock.mockImplementation(async (url: string, options: RequestInit) => {
+      if (url === '/api/auth/refresh') return renewal
+      texts.push(JSON.parse(String(options.body)).text)
+      return new Headers(options.headers).get('Authorization') ===
+        'Bearer expired'
+        ? new Response(null, { status: 401 })
+        : makeOkResponse()
+    })
+    const view = render(
+      <>
+        <AudioPlayer text="First" />
+        <AudioPlayer text="Second" />
+      </>
+    )
+    await act(async () => {
+      screen.getAllByRole('button').forEach((button) => fireEvent.click(button))
+    })
+    expect(
+      fetchMock.mock.calls.filter(([url]) => url === '/api/auth/refresh')
+    ).toHaveLength(1)
+    view.rerender(
+      <>
+        <AudioPlayer text="Changed" />
+        <AudioPlayer text="Second" />
+      </>
+    )
+    await act(async () =>
+      renew(new Response(JSON.stringify({ access_token: 'renewed' })))
+    )
+    expect(texts).toEqual(['First', 'Second', 'Second'])
+    expect(screen.getAllByRole('button')[0]).toHaveTextContent(PLAY)
+    expect(screen.getAllByRole('button')[1]).toHaveTextContent(PAUSE)
+  })
+
+  it('keeps the audio timeout active while waiting for token renewal', async () => {
+    vi.useFakeTimers()
+    try {
+      useAuthStore.getState().startSession('expired')
+      let renew!: (response: Response) => void
+      const renewal = new Promise<Response>((resolve) => {
+        renew = resolve
+      })
+      fetchMock
+        .mockResolvedValueOnce(new Response(null, { status: 401 }))
+        .mockReturnValueOnce(renewal)
+      render(<AudioPlayer text="Hello" timeoutMs={100} />)
+      await act(async () => fireEvent.click(screen.getByRole('button')))
+      await act(async () => vi.advanceTimersByTimeAsync(100))
+      expect(screen.getByText(ERROR)).toBeDefined()
+      await act(async () =>
+        renew(new Response(JSON.stringify({ access_token: 'renewed' })))
+      )
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(currentAudioMock!.play).not.toHaveBeenCalled()
+      expect(useAuthStore.getState().accessToken).toBe('renewed')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('discards audio delivered after the account session changes', async () => {
+    useAuthStore.getState().startSession('first-account')
+    let deliver!: (response: ReturnType<typeof makeOkResponse>) => void
+    fetchMock.mockReturnValueOnce(
+      new Promise((resolve) => {
+        deliver = resolve
+      })
+    )
+    render(<AudioPlayer text="Hello" />)
+    fireEvent.click(screen.getByRole('button'))
+    act(() => useAuthStore.getState().startSession('second-account'))
+    await act(async () => deliver(makeOkResponse()))
+    expect(currentAudioMock!.play).not.toHaveBeenCalled()
+    expect(screen.getByText(PLAY)).toBeDefined()
+  })
+
   it('calls POST /api/tts with correct body and headers on click', async () => {
     fetchMock.mockResolvedValueOnce(makeOkResponse())
 

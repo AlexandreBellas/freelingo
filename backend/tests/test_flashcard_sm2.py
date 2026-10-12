@@ -192,7 +192,11 @@ class TestLookupWord:
 
         with patch(
             "app.services.flashcard_sm2.llm_adapter.structured_output",
-            AsyncMock(return_value=mock_response),
+            AsyncMock(
+                side_effect=lambda messages, schema: schema.model_validate(
+                    mock_response.model_dump()
+                )
+            ),
         ):
             result = await lookup_word(
                 word="library",
@@ -220,7 +224,11 @@ class TestLookupWord:
 
         with patch(
             "app.services.flashcard_sm2.llm_adapter.structured_output",
-            AsyncMock(return_value=mock_response),
+            AsyncMock(
+                side_effect=lambda messages, schema: schema.model_validate(
+                    mock_response.model_dump()
+                )
+            ),
         ):
             result = await lookup_word(
                 word="hello",

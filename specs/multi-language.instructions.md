@@ -103,6 +103,12 @@ Flashcard generation derives the target language from the active persisted plan 
 state. A review credits progress to the `study_plan_id` stored on the card, even if the user changes
 their active language while the review is pending.
 
+Vocabulary-set imports carry the `study_plan_id` and target language captured with their loaded
+content. The backend compares both with the authenticated active plan and rejects stale context
+before inserting cards; it does not redirect old-language content into a newly selected plan.
+Import conflicts refresh the client context for a new explicit user action. Review retry UUIDs and
+their response receipts belong to the persisted card and cannot transfer XP across plans or users.
+
 Word saves from lesson-linked voice practice carry `lesson_id`. The backend requires an owned
 completed lesson and resolves language, CEFR level, deduplication scope, and flashcard ownership from
 its persisted plan. A switch in another tab, a newer active plan for the same language, or an active

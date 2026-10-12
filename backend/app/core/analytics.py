@@ -56,6 +56,10 @@ def schedule_http_analytics(request: Request, status_code: int) -> None:
         return
     route = getattr(request.scope.get("route"), "path", None)
     key = (request.method, route)
+    if key == ("POST", "/api/flashcards/{card_id}/review") and getattr(
+        request.state, "flashcard_review_replayed", False
+    ):
+        return
     events = []
     if event := _SUCCESS_EVENTS.get(key):
         events.append(event)

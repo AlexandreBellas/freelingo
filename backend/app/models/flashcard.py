@@ -3,7 +3,18 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from typing import Optional
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    false,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -21,6 +32,9 @@ class Flashcard(Base):
     example_sentence: Mapped[str] = mapped_column(Text, nullable=False)
     translation: Mapped[str] = mapped_column(String(255), nullable=False)
     source: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    is_suspended: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default=false()
+    )
     ease_factor: Mapped[float] = mapped_column(Float, nullable=False, default=2.5)
     interval: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     repetitions: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -34,3 +48,16 @@ class Flashcard(Base):
         nullable=False,
         index=True,
     )
+
+
+class FlashcardReviewReceipt(Base):
+    """Committed results for replaying a card review without applying it twice."""
+
+    __tablename__ = "flashcard_review_receipts"
+
+    flashcard_id: Mapped[int] = mapped_column(
+        ForeignKey("flashcards.id", ondelete="CASCADE"), primary_key=True
+    )
+    review_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    quality: Mapped[int] = mapped_column(Integer, nullable=False)
+    response: Mapped[dict] = mapped_column(JSON, nullable=False)

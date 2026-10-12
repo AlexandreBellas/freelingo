@@ -73,8 +73,21 @@ session. These checks protect client state; backend authentication and refresh-c
 authoritative.
 
 `requestAccessToken()` shares one in-flight refresh HTTP request between shell initialization and
-`apiFetch` recovery within the same session version. It returns the token without changing auth state
-itself; each consumer owns those state changes. Shell initialization aborts its `/me` request on cleanup
+`apiFetch` recovery within the same session version. It sends the known access token as bearer context
+and the known profile ID as `X-Expected-User-ID`. The backend compares both supplied expectations with
+the account resolved from the valid refresh cookie before rotating it. Bearer context requires a valid
+HS256 signature and subject/expiration claims; expiration alone is ignored for this comparison, not
+for access to authenticated resources. The cookie remains the authority for renewal. A fresh page with
+neither token nor profile may restore from the cookie without an expected identity.
+
+An identity mismatch returns 409 `auth_context_changed` without consuming or replacing the cookie.
+The shared client renewal invalidates the originating local session, redirects to login and rejects
+waiting consumers with an abort error, preventing their original operations from being replayed under
+another account. It does not call server logout or clear the other tab's cookie. Conflicts belonging
+to an already replaced local session cannot clear or redirect the newer session.
+
+Successful renewal returns the token without publishing it; each consumer owns that state change.
+Shell initialization aborts its `/me` request on cleanup
 and ignores results and errors after cancellation or session replacement. API recovery also checks
 session identity before applying a pending renewal's success/failure, so an obsolete initializer cannot
 replace the profile, clear the newer session, or redirect it. Completing an old refresh does not clear
@@ -89,12 +102,13 @@ responses and chat consumption cannot update a replacement session.
 Avatar recovery, landing subscription checks, onboarding checkout, pricing checkout, and billing-return
 restoration use the same refresh HTTP coordination. `restoreAccessToken` fills a missing access token
 only if its session is unchanged and its caller has not been cancelled; it preserves any token already
-published by another consumer. Failed restoration is handled by the caller rather than forcing logout.
+published by another consumer. Ordinary restoration failures are handled by the caller; account
+conflicts always follow the shared session-invalidation rule.
 Avatar renewal failures fall back to the image placeholder. Avatar cache publication checks session
 identity after reading the blob, and obsolete completion cannot clear newer pending work.
 Landing subscription checks refresh before reading `/me`, including when the stored access token may
 have expired while browsing public pages. They cache successful reads by session identity, not failed
-authentication/network responses. Failures retain the public-page fallback without logout or redirect;
+authentication/network responses. Ordinary failures retain the public-page fallback without logout or redirect;
 an obsolete response cannot clear a newer session's cached lookup.
 
 Login, conversation-trial profile refresh, billing confirmation, onboarding profile updates, and profile/
@@ -320,10 +334,95 @@ level completion follow `learning-resources.instructions.md`; all awards remain 
 
 SM-2 accepts quality 0-5. Quality below 3 resets repetition and interval; successful repetitions use
 1 day, 6 days, then prior interval times ease factor, with minimum ease 1.3. The standard UI offers
-qualities 0, 3, 4, and 5; speaking mode maps normalized exact match to 5 and other results to 2.
+qualities 0, 3, 4, and 5; speaking mode proposes 5 for normalized exact match and 2 otherwise,
+and saves only after learner confirmation. Learners can correct a recognition error with quality 5.
 
 Due cards are ordered by `next_review`. Generation derives target language from the plan and native
 translation context from the user profile. Reviewing always credits the card's stored plan.
+
+### Flashcard review sessions
+
+The review page starts with a setup view offering 5, 10 (default), or all due cards. A shorter queue
+uses all available cards. The setup distinguishes new cards (`interval=0` and `repetitions=0`) from
+previously reviewed cards, and the active card displays its category. Sessions retain the due-card
+ordering; choosing a size does not reschedule the remaining cards.
+
+The learner can finish early or complete the selected queue. The summary reports acknowledged
+reviews, XP summed from backend review responses, remaining due cards, and words scored 0–3 for
+reinforcement. Deleted or suspended cards are counted separately and earn no review credit. Failed
+requests do not advance the queue or increment the summary. Preparing another session reloads the
+server's due list. Session setup, results and summaries are page-local and reset on navigation,
+reload, account changes or language/plan invalidation; there is no persisted session history.
+
+Each submitted review captures a UUID, card and rating before sending. An unresolved save retains
+that identity and offers a dedicated retry; ratings, management, mode changes and session finish
+stay disabled until recovery. Transport failures and server errors do not create a new attempt.
+Definitive client-error responses other than timeouts or rate limits also allow refreshing the queue.
+Backend receipts replay the original response without reapplying SM-2 or XP, so the session counts
+the recovered result once. Attempt state is page-local; durable response receipts belong to the card.
+
+Speaking presents a masked example before recording and shows the transcription, expected word and
+audio afterwards. A result must be confirmed before saving a review. The learner can retry without
+changing scheduling or earning XP, or mark a recognition mismatch as correctly spoken. Confirmation
+uses the latest result; recording alone does not submit a review. This is transcription comparison,
+not an acoustic pronunciation score. Empty transcriptions require another recording. Example masking
+and resource-owned recognition are defined in `speech-services.instructions.md`.
+
+The generator initially selects the current plan's CEFR level from the due-list response; an explicit
+learner selection is retained for the page's current context. Generation is available from setup and
+summary. Its result reports actual created cards and duplicates skipped, including zero-card results;
+empty model terms are reported separately. Existing selected-word and vocabulary-set additions retain
+their own creation flows.
+Creation content is limited to 100 characters for words and 255 for translations, matching storage.
+Oversized manual/bulk input or selected words return 422 before persistence. Generated content uses
+the same limits through structured-output validation: one corrective model retry is allowed, and
+continued invalid output returns the existing 502 `ai_service_error` without partially saving a batch.
+Content is not truncated to fit the columns.
+Single-word lookup cleans the model's term inside its structured-output validator and requires a
+nonempty result. Whitespace-, quote- or annotation-only terms therefore use the corrective retry and
+cannot reach deduplication or persistence. Batch generation retains its separate empty-term counter.
+
+### Flashcard library and management
+
+The library lists all cards belonging to the active plan, with a saved-from-text view that retains
+the original personal vocabulary subset. Word and translation search, source and state filters,
+pagination, and next-review dates are available. New cards have both zero interval and zero
+repetitions; due/new filters exclude suspended cards. The legacy saved-vocabulary endpoint retains
+its original scope. Generation, selected-word saving and bulk vocabulary-set creation retain their
+existing flows and deduplication behavior.
+
+Learners can edit word, definition, translation and example from both the library and review page.
+Word and definition must remain non-empty; translation and example can be empty. Edits preserve
+source, persisted plan, suspension, ease, interval, repetitions and review date. Renaming to another
+normalized word already in that plan returns a duplicate conflict; existing duplicate words do not
+prevent other content edits. Deduplication remains best-effort under concurrent writes.
+
+Deletion is permanent and requires frontend confirmation. Suspension is reversible, excludes the
+card from scheduled reviews and leaves its schedule and vocabulary progress intact. Reactivation
+retains the previous review date, including overdue dates. Re-saving an existing suspended word
+does not reactivate it. Neither editing nor suspension awards XP. Reviewing a suspended card is
+rejected by the backend. Review input requires a strict integer from 0 to 5; SM-2 and plan-owned XP
+commit with a UUID-keyed response receipt in one transaction. A replay of an already accepted attempt
+can recover its original result even if the card is now suspended; this does not reactivate it.
+
+Library drafts, dialog errors and pending action state belong to the page and are keyed by card ID.
+Refreshing after another card's mutation retains existing rows and drafts. A pending action can
+finish and request reconciliation even if its row has left a filter/page. Mutations invalidate older
+list responses; background-load errors keep the current editors available. These drafts reset when
+the library page's account, language or plan context is unmounted.
+Deletion acknowledgments decrement the displayed total only when removing a row still present in
+that snapshot; acknowledgments arriving after server reconciliation do not decrement it again.
+
+The account-wide `flashcard_back_content` preference chooses definition or translation as the main
+standard-mode answer. Definition is the default and the fallback for missing translations. Examples
+and complementary information remain visible after revealing the card. Speaking uses the confirmation
+flow described above. Failed loads and mutations expose recoverable errors; obsolete responses are
+discarded across session, language and plan changes.
+Preference requests and their value belong to the account session. Reads and writes are serialized;
+mode, language, plan and page changes retain pending operations and let returning views subscribe to
+their result. New visits revalidate when no request is pending. Errors remain recoverable through a
+fresh read. Account changes isolate the new preference state from old responses; access-token renewal
+does not change this session identity.
 
 ## Language roles and internationalization
 
