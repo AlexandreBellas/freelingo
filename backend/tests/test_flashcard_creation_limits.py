@@ -110,3 +110,57 @@ async def test_invalid_model_content_uses_existing_retry_and_never_partially_per
         assert response.status_code == 502
         assert response.json()["detail"] == "ai_service_error"
         assert await db_session.scalar(select(func.count()).select_from(Flashcard)) == 0
+
+
+@pytest.mark.parametrize("word", ["", " \u3000 ", "(noun)", '""', "'  '"])
+@pytest.mark.parametrize("recovers", [True, False])
+async def test_lookup_validates_cleaned_word_inside_model_retry(
+    client, test_user, db_session, plan, monkeypatch, word, recovers
+):
+    invalid = json.dumps(content(word=word))
+    call = AsyncMock(
+        side_effect=[invalid, json.dumps(content(word="  book (noun)  ")) if recovers else invalid]
+    )
+    monkeypatch.setattr(llm_adapter, "_call_with_retry", call)
+    response = await client.post(
+        "/api/flashcards/from-word", headers=test_user[1], json={"word": "book"}
+    )
+    assert call.await_count == 2
+    if recovers:
+        assert response.status_code == 200
+        assert response.json()["word"] == "book"
+    else:
+        assert response.status_code == 502
+        assert response.json()["detail"] == "ai_service_error"
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    async with AsyncSession(bind=db_session.bind) as persisted:
+        cards = (await persisted.scalars(select(Flashcard))).all()
+        assert len(cards) == int(recovers)
+        assert all(card.word.strip() and card.source == "from_text" for card in cards)
+
+
+async def test_generation_keeps_empty_and_duplicate_counters(
+    client, test_user, db_session, plan, monkeypatch
+):
+    call = AsyncMock(
+        return_value=json.dumps(
+            {
+                "flashcards": [
+                    content(word="(noun)"),
+                    content(word="book"),
+                    content(word="book (noun)"),
+                ]
+            }
+        )
+    )
+    monkeypatch.setattr(llm_adapter, "_call_with_retry", call)
+    response = await client.post(
+        "/api/flashcards/generate", headers=test_user[1], json={"topic": "objects", "count": 3}
+    )
+    assert response.status_code == 200
+    result = response.json()
+    assert (result["created"], result["skipped_empty"], result["skipped_duplicates"]) == (1, 1, 1)
+    assert [card["word"] for card in result["flashcards"]] == ["book"]
+    call.assert_awaited_once()
+    assert await db_session.scalar(select(func.count()).select_from(Flashcard)) == 1

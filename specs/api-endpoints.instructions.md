@@ -88,7 +88,7 @@ source IDs remain private; failed attempts never reveal the solution.
 
 - **POST `/register`** — Rate limit: 5/min (+ invite-gated). Creates account (respects `ALLOW_REGISTRATION`, invite token, and `BLOCKED_EMAIL_DOMAINS`). Password policy: 10–25 chars, at least one uppercase letter, one number, and one symbol. Returns `access_token` + sets httpOnly refresh cookie — no separate login step needed. Rejects blocked domains or invalid password with HTTP 422.
 - **POST `/login`** — Rate limit: 10/min. Returns access_token (JWT, 15 min) + refresh_token in httpOnly cookie (30 days)
-- **POST `/refresh`** — Rate limit: 60/min. Rotates refresh token, returns new access_token
+- **POST `/refresh`** — Rate limit: 60/min. Requires a valid refresh cookie, rotates it and returns a new `access_token`. Optional `Authorization: Bearer ...` and `X-Expected-User-ID` (positive PostgreSQL-range integer; invalid values return 422) restrict renewal to the client's known account. The bearer must have a valid HS256 signature and `sub`/`exp` claims; expiry is ignored only for this context comparison. Invalid bearer context returns 401. Each supplied expectation must match the account in Redis; a mismatch returns 409 `auth_context_changed` before consuming the refresh token or setting a replacement cookie. Expectations never authorize renewal without a valid cookie. Omitting both supports initial restoration with no known client identity.
 - **POST `/logout`** — Rate limit: 60/min. Deletes refresh token from Redis, clears cookie
 - **GET `/me`** — Rate limit: 60/min. Returns authenticated user profile, including subscription fields (`subscription_status`, `subscription_ends_at`, `cancel_at_period_end`, `trial_used`, `assessment_voice_trial_used`), freemium fields (`freemium_trial_ends_at`, `freemium_trial_used`), and nullable `dismissed_dashboard_banner_revision`.
 - **PATCH `/me`** — Rate limit: 60/min. Updates display name, email, password, native language, target language, UI locale, bio, learning goals, and conversation settings (`conversation_max_duration` ∈ {900, 1800}, `conversation_inactivity_timeout` ∈ {60, 180, 300}, `conversation_speech_pause` ∈ {0, 1000, 2000, 3000} milliseconds, where `0` means automatic). `native_language` is validated against the same supported UI-language codes used at registration (`en`, `es`, `fr`, `pt`, `de`, `it`, `ru`, `nl`, `pl`, `ro`, `tr`, `sv`, `da`, `fi`, `hr`); unsupported codes return HTTP 422 even when the API is called outside the selector-based frontend.
@@ -235,6 +235,9 @@ Creation schemas limit `word` to 100 characters and `translation` to 255; the se
 including when other bulk items are valid. LLM output for `/generate` and `/from-word` shares these
 limits: structured-output validation requests one corrective retry, then returns 502
 `ai_service_error` if still invalid. No truncation or partial batch persistence is performed.
+For `/from-word`, structured-output validation also cleans the returned word and rejects an empty
+cleaned result before deduplication and insertion. This uses the same corrective retry and 502 error
+path. `/generate` retains its `skipped_empty` behavior for empty normalized batch terms.
 
 - **GET `/due`** — Rate limit: 60/min. Returns `{due,total,cefr_level}` for the active persisted plan. `due` contains non-suspended cards pending review today in SM-2 order; `total` includes suspended cards. `cefr_level` provides the initial generator selection. Session-size selection is local and does not alter the full due-card response.
 - **GET `/all`** — Rate limit: 60/min. All user's flashcards

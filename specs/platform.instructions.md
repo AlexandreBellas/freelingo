@@ -73,8 +73,21 @@ session. These checks protect client state; backend authentication and refresh-c
 authoritative.
 
 `requestAccessToken()` shares one in-flight refresh HTTP request between shell initialization and
-`apiFetch` recovery within the same session version. It returns the token without changing auth state
-itself; each consumer owns those state changes. Shell initialization aborts its `/me` request on cleanup
+`apiFetch` recovery within the same session version. It sends the known access token as bearer context
+and the known profile ID as `X-Expected-User-ID`. The backend compares both supplied expectations with
+the account resolved from the valid refresh cookie before rotating it. Bearer context requires a valid
+HS256 signature and subject/expiration claims; expiration alone is ignored for this comparison, not
+for access to authenticated resources. The cookie remains the authority for renewal. A fresh page with
+neither token nor profile may restore from the cookie without an expected identity.
+
+An identity mismatch returns 409 `auth_context_changed` without consuming or replacing the cookie.
+The shared client renewal invalidates the originating local session, redirects to login and rejects
+waiting consumers with an abort error, preventing their original operations from being replayed under
+another account. It does not call server logout or clear the other tab's cookie. Conflicts belonging
+to an already replaced local session cannot clear or redirect the newer session.
+
+Successful renewal returns the token without publishing it; each consumer owns that state change.
+Shell initialization aborts its `/me` request on cleanup
 and ignores results and errors after cancellation or session replacement. API recovery also checks
 session identity before applying a pending renewal's success/failure, so an obsolete initializer cannot
 replace the profile, clear the newer session, or redirect it. Completing an old refresh does not clear
@@ -89,12 +102,13 @@ responses and chat consumption cannot update a replacement session.
 Avatar recovery, landing subscription checks, onboarding checkout, pricing checkout, and billing-return
 restoration use the same refresh HTTP coordination. `restoreAccessToken` fills a missing access token
 only if its session is unchanged and its caller has not been cancelled; it preserves any token already
-published by another consumer. Failed restoration is handled by the caller rather than forcing logout.
+published by another consumer. Ordinary restoration failures are handled by the caller; account
+conflicts always follow the shared session-invalidation rule.
 Avatar renewal failures fall back to the image placeholder. Avatar cache publication checks session
 identity after reading the blob, and obsolete completion cannot clear newer pending work.
 Landing subscription checks refresh before reading `/me`, including when the stored access token may
 have expired while browsing public pages. They cache successful reads by session identity, not failed
-authentication/network responses. Failures retain the public-page fallback without logout or redirect;
+authentication/network responses. Ordinary failures retain the public-page fallback without logout or redirect;
 an obsolete response cannot clear a newer session's cached lookup.
 
 Login, conversation-trial profile refresh, billing confirmation, onboarding profile updates, and profile/
@@ -364,6 +378,9 @@ Oversized manual/bulk input or selected words return 422 before persistence. Gen
 the same limits through structured-output validation: one corrective model retry is allowed, and
 continued invalid output returns the existing 502 `ai_service_error` without partially saving a batch.
 Content is not truncated to fit the columns.
+Single-word lookup cleans the model's term inside its structured-output validator and requires a
+nonempty result. Whitespace-, quote- or annotation-only terms therefore use the corrective retry and
+cannot reach deduplication or persistence. Batch generation retains its separate empty-term counter.
 
 ### Flashcard library and management
 

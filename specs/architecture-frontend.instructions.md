@@ -70,13 +70,19 @@ retry. A response belonging to a replaced session cannot start recovery or clear
 In-flight refreshes are shared only within the same session; obsolete completion cannot clear a newer
 session's pending refresh. Delayed 401s within the same session reuse an already rotated access token.
 Avatar recovery and landing/checkout restoration also use `requestAccessToken` for this shared HTTP
-rotation. `restoreAccessToken` publishes a missing token only for the original, uncancelled session;
+rotation. Renewal carries the known bearer and profile ID (`X-Expected-User-ID`) so the backend can
+reject a cookie belonging to another tab's account before rotation. On 409 `auth_context_changed`,
+the shared client path clears only the originating local session, redirects to login and aborts
+waiting consumers; it neither replays their operations nor invalidates the other account's cookie.
+A late conflict cannot invalidate a newer local login. Initial restoration without a known token or
+profile remains cookie-based. `restoreAccessToken` publishes a missing token only for the original, uncancelled session;
 restoration errors remain owned by the caller. Avatar failures retain the image fallback without
 independently logging out. Avatar cache entries and pending work are session-scoped. Profile consumers
 check session identity after reading response bodies before updating the global user; login and
 conversation profile requests are also aborted on unmount.
 Landing subscription lookup obtains a fresh token through the shared refresh before `/me`, even if
-an in-memory token exists. Public-page failures do not force logout or redirect; only successful
+an in-memory token exists. Ordinary public-page failures do not force logout or redirect; account
+identity conflicts follow the shared invalidation rule. Only successful
 subscription responses are cached for the session, so a failed lookup can be retried on a later visit.
 
 Ordinary JSON APIs use same-origin `/api` requests proxied by Next.js rewrites to `BACKEND_URL`. The chat handler preserves

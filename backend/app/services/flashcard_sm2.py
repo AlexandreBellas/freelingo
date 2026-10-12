@@ -1,6 +1,8 @@
 import re
 from datetime import date, timedelta
 
+from pydantic import field_validator
+
 from app.models.flashcard import Flashcard
 from app.schemas.flashcards import (
     FlashcardCreate,
@@ -45,6 +47,16 @@ def _clean_generated_word(value: str) -> str:
     cleaned = value.strip().strip("\"'")
     cleaned = re.sub(r"\s*\([^)]*\)", "", cleaned)
     return re.sub(r"\s+", " ", cleaned).strip()
+
+
+class _LookupFlashcard(FlashcardCreate):
+    @field_validator("word")
+    @classmethod
+    def clean_lookup_word(cls, value: str) -> str:
+        cleaned = _clean_generated_word(value)
+        if not cleaned:
+            raise ValueError("Lookup word must not be empty after cleaning")
+        return cleaned
 
 
 def _get_lang_hint(target_language: str) -> str:
@@ -106,7 +118,6 @@ async def lookup_word(
     )
     result = await llm_adapter.structured_output(
         [{"role": "system", "content": prompt}],
-        FlashcardCreate,
+        _LookupFlashcard,
     )
-    result.word = _clean_generated_word(result.word)
     return result
