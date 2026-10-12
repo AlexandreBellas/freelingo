@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from unittest.mock import AsyncMock, patch
+from uuid import uuid4
 
 import pytest
 
@@ -164,7 +165,7 @@ async def test_review_flashcard(client, test_user, db_session):
     response = await client.post(
         f"/api/flashcards/{card.id}/review",
         headers=headers,
-        json={"quality": 4},
+        json={"quality": 4, "review_id": str(uuid4())},
     )
     assert response.status_code == 200
     data = response.json()
@@ -206,7 +207,7 @@ async def test_review_flashcard_credits_owning_plan_after_language_switch(
         response = await client.post(
             f"/api/flashcards/{card.id}/review",
             headers=headers,
-            json={"quality": 5},
+            json={"quality": 5, "review_id": str(uuid4())},
         )
 
     assert response.status_code == 200

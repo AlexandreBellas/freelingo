@@ -37,7 +37,8 @@ def test_upgrade_is_connected_additive_and_matches_model_defaults(monkeypatch):
     config = Config(str(root / "alembic.ini"), output_buffer=output)
     config.set_main_option("script_location", str(root / "alembic"))
     scripts = ScriptDirectory.from_config(config)
-    assert scripts.get_heads() == [REVISION]
+    assert len(scripts.get_heads()) == 1
+    assert REVISION in {revision.revision for revision in scripts.walk_revisions()}
     assert scripts.get_revision(REVISION).down_revision == BASE
     command.upgrade(config, f"{BASE}:{REVISION}", sql=True)
     sql = output.getvalue()

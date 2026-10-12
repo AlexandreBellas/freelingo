@@ -896,7 +896,10 @@
     "speechEmpty": "Aucun mot reconnu. Réessaie.",
     "reviewMode": "Mode de révision",
     "sessionProgress": "Progression de la session",
-    "reviewDetails": "Détails de révision"
+    "reviewDetails": "Détails de révision",
+    "retryReview": "Réessayer l’enregistrement",
+    "reviewRetryHint": "Réessaie pour récupérer la même évaluation sans compter deux fois la révision.",
+    "contextChanged": "La langue ou le programme a changé. Vérifie la liste de vocabulaire avant de l’ajouter à nouveau."
   },
   "chat": {
     "title": "Lingu, votre tuteur",

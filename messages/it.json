@@ -896,7 +896,10 @@
     "speechEmpty": "Nessuna parola riconosciuta. Riprova.",
     "reviewMode": "Modalità di ripasso",
     "sessionProgress": "Avanzamento della sessione",
-    "reviewDetails": "Dettagli del ripasso"
+    "reviewDetails": "Dettagli del ripasso",
+    "retryReview": "Riprova il salvataggio",
+    "reviewRetryHint": "Riprova per recuperare la stessa valutazione senza contare due volte il ripasso.",
+    "contextChanged": "La lingua o il piano è cambiato. Controlla il set di vocabolario prima di aggiungerlo di nuovo."
   },
   "chat": {
     "title": "Lingu, il tuo tutor",

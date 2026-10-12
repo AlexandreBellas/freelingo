@@ -89,6 +89,153 @@ beforeEach(() => {
 })
 
 describe('flashcard library', () => {
+  it('preserves an unsaved editor while another card saves and the library refreshes', async () => {
+    const second = { ...card, id: 8, word: 'apple' }
+    let items = [card, second]
+    let reads = 0
+    const refresh = deferred<Response>()
+    mockApiFetch.mockImplementation(
+      async (url: string, options?: RequestInit) => {
+        if (url.startsWith('/api/flashcards/library?')) {
+          reads++
+          return reads === 2 ? refresh.promise : library(items)
+        }
+        if (url === '/api/flashcards/8' && options?.method === 'PUT') {
+          const updated = { ...second, ...JSON.parse(String(options.body)) }
+          items = [card, updated]
+          return json(updated)
+        }
+        throw new Error('Unexpected request')
+      }
+    )
+    show()
+    const firstRow = await screen.findByRole('article', { name: 'book' })
+    const secondRow = screen.getByRole('article', { name: 'apple' })
+    fireEvent.click(within(firstRow).getByRole('button', { name: 'Edit card' }))
+    fireEvent.change(within(firstRow).getByLabelText('Definition'), {
+      target: { value: 'Unsaved first draft' },
+    })
+    fireEvent.click(
+      within(secondRow).getByRole('button', { name: 'Edit card' })
+    )
+    fireEvent.change(within(secondRow).getByLabelText('Definition'), {
+      target: { value: 'Saved second definition' },
+    })
+    fireEvent.click(
+      within(secondRow).getByRole('button', { name: 'Save changes' })
+    )
+    await waitFor(() => expect(reads).toBe(2))
+    expect(within(firstRow).getByLabelText('Definition')).toHaveValue(
+      'Unsaved first draft'
+    )
+    await act(async () => refresh.resolve(library(items)))
+    expect(
+      within(screen.getByRole('article', { name: 'book' })).getByLabelText(
+        'Definition'
+      )
+    ).toHaveValue('Unsaved first draft')
+    expect(screen.getByText('Saved second definition')).toBeInTheDocument()
+    expect(screen.getAllByRole('form', { name: 'Edit card' })).toHaveLength(1)
+  })
+
+  it('reconciles an operation even if its row leaves the filtered page while saving', async () => {
+    const second = { ...card, id: 8, word: 'apple', source: 'from_text' }
+    const pending = deferred<Response>()
+    let reads = 0
+    mockApiFetch.mockImplementation(
+      async (url: string, options?: RequestInit) => {
+        if (url.startsWith('/api/flashcards/library?')) {
+          reads++
+          return library(
+            url.includes('source=from_text') ? [second] : [card, second]
+          )
+        }
+        if (options?.method === 'PUT') return pending.promise
+        throw new Error('Unexpected request')
+      }
+    )
+    show()
+    const row = await screen.findByRole('article', { name: 'book' })
+    fireEvent.click(within(row).getByRole('button', { name: 'Edit card' }))
+    fireEvent.change(within(row).getByLabelText('Definition'), {
+      target: { value: 'Keep this draft' },
+    })
+    fireEvent.click(within(row).getByRole('button', { name: 'Save changes' }))
+    fireEvent.change(screen.getByLabelText('Source'), {
+      target: { value: 'from_text' },
+    })
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('article', { name: 'book' })
+      ).not.toBeInTheDocument()
+    )
+    const before = reads
+    await act(async () => pending.resolve(json({}, 503)))
+    await waitFor(() => expect(reads).toBe(before + 1))
+    fireEvent.change(screen.getByLabelText('Source'), {
+      target: { value: 'all' },
+    })
+    const returned = await screen.findByRole('article', { name: 'book' })
+    expect(within(returned).getByLabelText('Definition')).toHaveValue(
+      'Keep this draft'
+    )
+    expect(within(returned).getByRole('alert')).toHaveTextContent(
+      messages.common.errorMessage
+    )
+    await waitFor(() =>
+      expect(
+        within(returned).getByRole('button', { name: 'Save changes' })
+      ).toBeEnabled()
+    )
+  })
+
+  it('discards a library snapshot captured before a second mutation completes', async () => {
+    const second = { ...card, id: 8, word: 'apple' }
+    let items = [card, second]
+    const pendingFirst = deferred<Response>()
+    const oldRead = deferred<unknown>()
+    let reads = 0
+    mockApiFetch.mockImplementation(
+      async (url: string, options?: RequestInit) => {
+        if (url.startsWith('/api/flashcards/library?')) {
+          reads++
+          return reads === 2
+            ? { ok: true, json: () => oldRead.promise }
+            : library(items)
+        }
+        if (url === '/api/flashcards/7' && options?.method === 'PUT')
+          return pendingFirst.promise
+        if (url === '/api/flashcards/8' && options?.method === 'PUT') {
+          items = [items[0], { ...second, definition: 'Second saved' }]
+          return json(items[1])
+        }
+        throw new Error('Unexpected request')
+      }
+    )
+    show()
+    for (const [word, definition] of [
+      ['book', 'First saved'],
+      ['apple', 'Second saved'],
+    ]) {
+      const row = await screen.findByRole('article', { name: word })
+      fireEvent.click(within(row).getByRole('button', { name: 'Edit card' }))
+      fireEvent.change(within(row).getByLabelText('Definition'), {
+        target: { value: definition },
+      })
+      fireEvent.click(within(row).getByRole('button', { name: 'Save changes' }))
+    }
+    await waitFor(() => expect(reads).toBe(2))
+    items = [{ ...card, definition: 'First saved' }, items[1]]
+    await act(async () => pendingFirst.resolve(json(items[0])))
+    await waitFor(() => expect(reads).toBe(3))
+    await act(async () =>
+      oldRead.resolve({ items: [card, second], page: 1, pages: 1, total: 2 })
+    )
+    expect(screen.getByText('First saved')).toBeInTheDocument()
+    expect(screen.getByText('Second saved')).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
   it('loads every source and supports saved-word, status and translation search filters', async () => {
     show()
     expect(
@@ -134,7 +281,13 @@ describe('flashcard library', () => {
     )
     expect(screen.getByLabelText('Translation')).toHaveValue('manzana')
     expect(screen.getByRole('heading', { name: 'book' })).toBeInTheDocument()
-    expect(JSON.parse(mockApiFetch.mock.calls.at(-1)![1].body)).toEqual({
+    expect(
+      JSON.parse(
+        mockApiFetch.mock.calls.findLast(
+          ([, options]) => options?.method === 'PUT'
+        )![1].body
+      )
+    ).toEqual({
       word: 'apple',
       definition: card.definition,
       translation: 'manzana',
@@ -255,6 +408,71 @@ describe('flashcard library', () => {
 })
 
 describe('review management', () => {
+  it('retries a lost review response with the same identifier and credits the summary once', async () => {
+    await startReview()
+    fireEvent.click(screen.getByRole('button', { name: 'tap to reveal' }))
+    mockApiFetch.mockRejectedValueOnce(
+      new TypeError('Response lost after commit')
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Good' }))
+    await screen.findByRole('alert')
+    expect(screen.getByRole('button', { name: 'Easy' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Edit card' })).toBeDisabled()
+    mockApiFetch.mockResolvedValueOnce(json({ ...card, xp_earned: 2 }))
+    fireEvent.click(screen.getByRole('button', { name: 'Retry saving' }))
+    await screen.findByRole('heading', { name: 'Session summary' })
+    const calls = mockApiFetch.mock.calls.filter(([url]) =>
+      url.endsWith('/review')
+    )
+    expect(calls).toHaveLength(2)
+    expect(JSON.parse(calls[0][1].body)).toEqual(JSON.parse(calls[1][1].body))
+    expect(JSON.parse(calls[0][1].body)).toMatchObject({
+      quality: 4,
+      review_id: expect.stringMatching(/^[0-9a-f-]{36}$/),
+    })
+    expect(
+      screen.getByText('Cards reviewed').nextElementSibling
+    ).toHaveTextContent('1')
+    expect(screen.getByText('XP earned').nextElementSibling).toHaveTextContent(
+      '2'
+    )
+  })
+
+  it('keeps preference writes alive across speaking and standard mode switches', async () => {
+    const save = deferred<Response>()
+    let reads = 0
+    mockApiFetch.mockImplementation(
+      async (url: string, options?: RequestInit) => {
+        if (url === '/api/flashcards/due')
+          return json({ due: [card], total: 1, cefr_level: 'A1' })
+        if (url === '/api/flashcards/preferences') {
+          if (options?.method === 'PUT') return save.promise
+          reads++
+          return json({ back_content: 'definition' })
+        }
+        throw new Error('Unexpected request')
+      }
+    )
+    await startReview()
+    const selector = screen.getByLabelText('Main answer on the back')
+    await waitFor(() => expect(selector).toBeEnabled())
+    fireEvent.change(selector, { target: { value: 'translation' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Speaking' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Standard' }))
+    expect(screen.getByLabelText('Main answer on the back')).toBeDisabled()
+    expect(reads).toBe(1)
+    await act(async () => save.resolve(json({ back_content: 'translation' })))
+    expect(screen.getByLabelText('Main answer on the back')).toHaveValue(
+      'translation'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'tap to reveal' }))
+    expect(
+      within(screen.getByRole('button', { name: 'tap to hide' })).getByText(
+        'libro'
+      )
+    ).toHaveClass('text-xl')
+  })
+
   it('updates the current card without reviewing it and blocks scoring while editing', async () => {
     await startReview()
     fireEvent.click(
@@ -323,7 +541,8 @@ describe('review management', () => {
       messages.common.errorMessage
     )
     expect(screen.getByText(card.definition)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Good' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Good' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Retry saving' })).toBeEnabled()
   })
 
   it('persists translation preference and retains definition as complementary content', async () => {

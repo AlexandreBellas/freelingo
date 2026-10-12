@@ -896,7 +896,10 @@
     "speechEmpty": "Kein Wort erkannt. Versuche es erneut.",
     "reviewMode": "Wiederholungsmodus",
     "sessionProgress": "Sitzungsfortschritt",
-    "reviewDetails": "Wiederholungsdetails"
+    "reviewDetails": "Wiederholungsdetails",
+    "retryReview": "Speichern erneut versuchen",
+    "reviewRetryHint": "Versuche es erneut, um dieselbe Bewertung abzurufen, ohne die Wiederholung doppelt zu zählen.",
+    "contextChanged": "Die Sprache oder der Lernplan hat sich geändert. Prüfe das Vokabelset, bevor du es erneut hinzufügst."
   },
   "chat": {
     "title": "Lingu, dein Tutor",

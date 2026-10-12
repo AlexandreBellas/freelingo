@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type SetStateAction } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { ArrowLeft, BookOpen, CalendarDays, Pause, Search } from 'lucide-react'
@@ -15,7 +15,11 @@ import {
   FlashcardError,
   useFlashcardScope,
 } from '@/components/flashcards/FlashcardBoundary'
-import { FlashcardActions } from '@/components/flashcards/FlashcardActions'
+import {
+  FlashcardActions,
+  initialFlashcardActionState,
+  type FlashcardActionState,
+} from '@/components/flashcards/FlashcardActions'
 import type { Flashcard } from '@/components/flashcards/types'
 
 const LIMIT = 10
@@ -52,6 +56,10 @@ function VocabularyContent({
   const [loadError, setLoadError] = useState(false)
   const [noPlan, setNoPlan] = useState(false)
   const [revision, setRevision] = useState(0)
+  const requestVersion = useRef(0)
+  const [actionStates, setActionStates] = useState<
+    Record<number, FlashcardActionState>
+  >({})
 
   // Debounce search input: reset to page 1 on new query
   useEffect(() => {
@@ -65,6 +73,11 @@ function VocabularyContent({
 
   useEffect(() => {
     const controller = new AbortController()
+    const version = ++requestVersion.current
+    const acceptsResponse = () =>
+      isCurrent() &&
+      !controller.signal.aborted &&
+      version === requestVersion.current
     async function load() {
       setLoading(true)
       setLoadError(false)
@@ -80,20 +93,20 @@ function VocabularyContent({
           signal: controller.signal,
         })
         if (res.status === 404) {
-          if (isCurrent() && !controller.signal.aborted) setNoPlan(true)
+          if (acceptsResponse()) setNoPlan(true)
           return
         }
         if (!res.ok) throw new Error('Could not load library')
         const result = await res.json()
-        if (isCurrent() && !controller.signal.aborted) {
+        if (acceptsResponse()) {
           setData(result)
           setPage(result.page)
           setNoPlan(false)
         }
       } catch {
-        if (isCurrent() && !controller.signal.aborted) setLoadError(true)
+        if (acceptsResponse()) setLoadError(true)
       } finally {
-        if (isCurrent() && !controller.signal.aborted) setLoading(false)
+        if (acceptsResponse()) setLoading(false)
       }
     }
     void load()
@@ -101,8 +114,27 @@ function VocabularyContent({
   }, [page, debouncedSearch, source, status, revision, isCurrent])
 
   function reload() {
+    if (!isCurrent()) return
+    ++requestVersion.current
     setLoading(true)
     setRevision((value) => value + 1)
+  }
+
+  function updateActionState(
+    card: Flashcard,
+    update: SetStateAction<FlashcardActionState>
+  ) {
+    if (!isCurrent()) return
+    setActionStates((previous) => {
+      const next =
+        typeof update === 'function'
+          ? update(previous[card.id] ?? initialFlashcardActionState(card))
+          : update
+      const states = { ...previous }
+      if (!next.mode && !next.pending && !next.error) delete states[card.id]
+      else states[card.id] = next
+      return states
+    })
   }
 
   if (noPlan) return <NoPlanBanner />
@@ -191,10 +223,16 @@ function VocabularyContent({
       </div>
 
       {/* List */}
+      {data && loading && (
+        <p role="status" className="text-fl-muted-2 text-sm">
+          {tCommon('loading')}
+        </p>
+      )}
+      {data && loadError && <FlashcardError onRetry={reload} />}
       <div className="border-fl-border bg-fl-surface border">
-        {loading ? (
+        {loading && !data ? (
           <PageLoading fullScreen={false} className="block p-5" />
-        ) : loadError ? (
+        ) : loadError && !data ? (
           <FlashcardError onRetry={reload} />
         ) : !data?.items.length ? (
           <div className="px-6 py-10 text-center">
@@ -274,8 +312,36 @@ function VocabularyContent({
                 <div className="border-fl-border border-t pt-3">
                   <FlashcardActions
                     card={item}
-                    onUpdate={reload}
-                    onDelete={reload}
+                    state={actionStates[item.id]}
+                    onStateChange={(update) => updateActionState(item, update)}
+                    isOwnerCurrent={isCurrent}
+                    onSettled={reload}
+                    disabled={loading}
+                    onUpdate={(updated) => {
+                      if (isCurrent())
+                        setData(
+                          (previous) =>
+                            previous && {
+                              ...previous,
+                              items: previous.items.map((card) =>
+                                card.id === updated.id ? updated : card
+                              ),
+                            }
+                        )
+                    }}
+                    onDelete={(id) => {
+                      if (isCurrent())
+                        setData(
+                          (previous) =>
+                            previous && {
+                              ...previous,
+                              total: Math.max(0, previous.total - 1),
+                              items: previous.items.filter(
+                                (card) => card.id !== id
+                              ),
+                            }
+                        )
+                    }}
                   />
                 </div>
               </article>

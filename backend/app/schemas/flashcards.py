@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from typing import Literal, Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
@@ -15,6 +16,8 @@ class FlashcardCreate(BaseModel):
 
 class FlashcardBulkCreate(BaseModel):
     flashcards: list[FlashcardCreate]
+    study_plan_id: int = Field(strict=True, ge=1, le=2_147_483_647)
+    target_language: str = Field(min_length=1, max_length=10)
 
 
 class FlashcardBulkResponse(BaseModel):
@@ -23,6 +26,7 @@ class FlashcardBulkResponse(BaseModel):
 
 class FlashcardReview(BaseModel):
     quality: int = Field(strict=True, ge=0, le=5)
+    review_id: UUID
 
 
 class FlashcardEdit(BaseModel):

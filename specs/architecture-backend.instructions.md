@@ -76,12 +76,15 @@ manual JSON parsing for free-write and level-test flows.
 
 ### Routers
 
-`routers/flashcards.py` retains existing creation and saved-vocabulary contracts and exposes a
+`routers/flashcards.py` exposes card creation and saved vocabulary alongside a
 paginated all-source library, owned-card content editing and suspension, and account-wide reverse-side
 preferences. `schemas/flashcards.py` separates editable content from scheduling and ownership fields.
 Review takes the plan progress lock before the card lock; review, suspension, editing and deletion
-serialize on the owned card. Review scheduling and progress credit commit together. Library filters
-and suspended-card review rejection are backend-enforced. See `api-endpoints.instructions.md` and
+serialize on the owned card. Review scheduling, progress credit and an immutable response receipt
+commit together. The receipt lookup occurs after the card lock, so repeated UUIDs on that card are
+replayed rather than applied twice; mismatched ratings conflict. Bulk import validates the expected
+plan and language against the server-resolved active plan before inserting content. Library filters
+and suspended-card rejection for new reviews are backend-enforced. See `api-endpoints.instructions.md` and
 `platform.instructions.md` for contracts and behavior.
 
 Routers own transport concerns: authentication dependencies, path/query/body parsing, rate-limit

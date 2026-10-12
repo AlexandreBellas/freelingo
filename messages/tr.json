@@ -896,7 +896,10 @@
     "speechEmpty": "Hiçbir kelime algılanmadı. Tekrar dene.",
     "reviewMode": "Tekrar modu",
     "sessionProgress": "Oturum ilerlemesi",
-    "reviewDetails": "Tekrar ayrıntıları"
+    "reviewDetails": "Tekrar ayrıntıları",
+    "retryReview": "Kaydetmeyi yeniden dene",
+    "reviewRetryHint": "Tekrarı iki kez saymadan aynı değerlendirmeyi almak için yeniden dene.",
+    "contextChanged": "Dil veya çalışma planı değişti. Tekrar eklemeden önce kelime setini kontrol et."
   },
   "chat": {
     "title": "Lingu, eğitmeniniz",

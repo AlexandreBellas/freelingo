@@ -896,7 +896,10 @@
     "speechEmpty": "Nie rozpoznano żadnego słowa. Spróbuj ponownie.",
     "reviewMode": "Tryb powtórki",
     "sessionProgress": "Postęp sesji",
-    "reviewDetails": "Szczegóły powtórki"
+    "reviewDetails": "Szczegóły powtórki",
+    "retryReview": "Ponów zapis",
+    "reviewRetryHint": "Spróbuj ponownie, aby odzyskać tę samą ocenę bez podwójnego naliczania powtórki.",
+    "contextChanged": "Język lub plan nauki się zmienił. Sprawdź zestaw słownictwa przed ponownym dodaniem."
   },
   "chat": {
     "title": "Lingu, Twój korepetytor",

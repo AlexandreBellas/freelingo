@@ -896,7 +896,10 @@
     "speechEmpty": "Yhtään sanaa ei tunnistettu. Yritä uudelleen.",
     "reviewMode": "Kertaustila",
     "sessionProgress": "Harjoituskerran edistyminen",
-    "reviewDetails": "Kertauksen tiedot"
+    "reviewDetails": "Kertauksen tiedot",
+    "retryReview": "Yritä tallennusta uudelleen",
+    "reviewRetryHint": "Yritä uudelleen palauttaaksesi saman arvion laskematta kertausta kahdesti.",
+    "contextChanged": "Kieli tai opintosuunnitelma muuttui. Tarkista sanasto ennen kuin lisäät sen uudelleen."
   },
   "chat": {
     "title": "Lingu, oma opettajasi",

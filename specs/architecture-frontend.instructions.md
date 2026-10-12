@@ -292,7 +292,9 @@ wraps, and the progress transition respects reduced motion. All controls retain 
 than relying on icons or color alone.
 
 The standard card uses a native reveal button with keyboard support and separate audio controls.
-`BackPreference` loads and saves the account-wide reverse-side preference through the backend.
+`useBackPreference` runs in the stable review-page owner and loads/saves the account-wide reverse-side
+preference through the backend; `BackPreference` renders its selector and errors. Mode changes can
+unmount the selector without canceling ownership of a pending write or starting a stale competing GET.
 `SpeakingCard` owns transcription feedback and retry state, confirms a result before calling the
 review handler, and exposes a learner correction for recognition mismatches. It is keyed by card ID
 and editable content so an edit invalidates old feedback. `lib/flashcard-review.ts` implements speech
@@ -313,6 +315,18 @@ next-review dates use the interface locale without shifting date-only values acr
 and confirmed deletion between both pages. Pending mutations disable repeat submissions; errors
 retain the draft or confirmation dialog. Successful management updates the queue or reloads the
 library without awarding review credit. Content edits retain the current review position.
+
+The library supplies controlled action state keyed by card ID and a page-owned context guard. Its
+drafts, errors and pending operations therefore survive row unmounts and background refreshes. Settled
+mutations reconcile the list through a request-version guard, including operations whose row left the
+current filter. Existing rows remain mounted during background loading/error states; closed, idle
+action states are released. Review-screen actions retain local state scoped to the current card.
+
+Review submission retains the card, original rating and UUID while a response is unresolved. The
+dedicated save retry sends that same payload, while other review actions stay disabled. Only a
+successful response advances the queue or adds the attempt's XP to the local summary. A definitive
+client rejection can also refresh the queue. Receipt persistence and conflict rules belong to the
+backend contract; no attempt identity or review receipt is written to browser storage.
 
 `FlashcardBoundary` reconciles missing/invalidated language context and keys content by session,
 language, plan and invalidation version. Switching unmounts old content. `useFlashcardScope` also

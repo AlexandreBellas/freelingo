@@ -896,7 +896,10 @@
     "speechEmpty": "Intet ord blev genkendt. Prøv igen.",
     "reviewMode": "Repetitionstilstand",
     "sessionProgress": "Sessionens fremskridt",
-    "reviewDetails": "Repetitionsdetaljer"
+    "reviewDetails": "Repetitionsdetaljer",
+    "retryReview": "Prøv at gemme igen",
+    "reviewRetryHint": "Prøv igen for at hente den samme vurdering uden at tælle repetitionen to gange.",
+    "contextChanged": "Sproget eller studieplanen er ændret. Kontrollér ordforrådssættet, før du tilføjer det igen."
   },
   "chat": {
     "title": "Lingu, din sproglærer",

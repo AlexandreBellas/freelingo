@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.core.limiter import limiter
-from app.models.flashcard import Flashcard
+from app.models.flashcard import Flashcard, FlashcardReviewReceipt
 from app.models.study_plan import StudyPlan
 from app.models.user import User
 from app.schemas.flashcards import (
@@ -209,6 +209,8 @@ async def create_flashcards_bulk(
     db: AsyncSession = Depends(get_db),
 ):
     plan = await _get_active_plan_or_404(db, current_user.id)
+    if plan.id != data.study_plan_id or plan.target_language != data.target_language:
+        raise HTTPException(status_code=409, detail="flashcard_context_changed")
     existing = await db.execute(
         select(Flashcard.word).where(
             Flashcard.user_id == current_user.id,
@@ -264,6 +266,11 @@ async def review_flashcard(
     # Follow plan-before-resource lock order, including concurrent plan deletion.
     await lock_progress_plan(db, current_user.id, owner)
     card = await _get_owned_card_for_update(db, current_user.id, card_id)
+    receipt = await db.get(FlashcardReviewReceipt, (card.id, str(data.review_id)))
+    if receipt is not None:
+        if receipt.quality != data.quality:
+            raise HTTPException(status_code=409, detail="flashcard_review_conflict")
+        return FlashcardReviewResponse.model_validate(receipt.response)
     if card.is_suspended:
         raise HTTPException(status_code=409, detail="flashcard_suspended")
     card = sm2_update(card, data.quality)
@@ -279,6 +286,14 @@ async def review_flashcard(
     request.state.vocabulary_reviewed = card.source == "from_text"
     response = FlashcardReviewResponse.model_validate(card)
     response.xp_earned = XP_FLASHCARD_REVIEW
+    db.add(
+        FlashcardReviewReceipt(
+            flashcard_id=card.id,
+            review_id=str(data.review_id),
+            quality=data.quality,
+            response=response.model_dump(mode="json"),
+        )
+    )
     await db.commit()
     return response
 

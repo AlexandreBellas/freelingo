@@ -896,7 +896,10 @@
     "speechEmpty": "Inget ord kunde uppfattas. Försök igen.",
     "reviewMode": "Repetitionsläge",
     "sessionProgress": "Sessionens framsteg",
-    "reviewDetails": "Repetitionsdetaljer"
+    "reviewDetails": "Repetitionsdetaljer",
+    "retryReview": "Försök spara igen",
+    "reviewRetryHint": "Försök igen för att hämta samma bedömning utan att räkna repetitionen två gånger.",
+    "contextChanged": "Språket eller studieplanen har ändrats. Kontrollera ordlistan innan du lägger till den igen."
   },
   "chat": {
     "title": "Lingu, din handledare",

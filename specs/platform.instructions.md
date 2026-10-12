@@ -340,6 +340,13 @@ requests do not advance the queue or increment the summary. Preparing another se
 server's due list. Session setup, results and summaries are page-local and reset on navigation,
 reload, account changes or language/plan invalidation; there is no persisted session history.
 
+Each submitted review captures a UUID, card and rating before sending. An unresolved save retains
+that identity and offers a dedicated retry; ratings, management, mode changes and session finish
+stay disabled until recovery. Transport failures and server errors do not create a new attempt.
+Definitive client-error responses other than timeouts or rate limits also allow refreshing the queue.
+Backend receipts replay the original response without reapplying SM-2 or XP, so the session counts
+the recovered result once. Attempt state is page-local; durable response receipts belong to the card.
+
 Speaking presents a masked example before recording and shows the transcription, expected word and
 audio afterwards. A result must be confirmed before saving a review. The learner can retry without
 changing scheduling or earning XP, or mark a recognition mismatch as correctly spoken. Confirmation
@@ -373,13 +380,22 @@ card from scheduled reviews and leaves its schedule and vocabulary progress inta
 retains the previous review date, including overdue dates. Re-saving an existing suspended word
 does not reactivate it. Neither editing nor suspension awards XP. Reviewing a suspended card is
 rejected by the backend. Review input requires a strict integer from 0 to 5; SM-2 and plan-owned XP
-commit in one transaction.
+commit with a UUID-keyed response receipt in one transaction. A replay of an already accepted attempt
+can recover its original result even if the card is now suspended; this does not reactivate it.
+
+Library drafts, dialog errors and pending action state belong to the page and are keyed by card ID.
+Refreshing after another card's mutation retains existing rows and drafts. A pending action can
+finish and request reconciliation even if its row has left a filter/page. Mutations invalidate older
+list responses; background-load errors keep the current editors available. These drafts reset when
+the library page's account, language or plan context is unmounted.
 
 The account-wide `flashcard_back_content` preference chooses definition or translation as the main
 standard-mode answer. Definition is the default and the fallback for missing translations. Examples
 and complementary information remain visible after revealing the card. Speaking uses the confirmation
 flow described above. Failed loads and mutations expose recoverable errors; obsolete responses are
 discarded across session, language and plan changes.
+Preference requests and their loaded value belong to the review page, not the standard-mode selector;
+switching to oral mode and back does not abandon a pending save or start a competing preference read.
 
 ## Language roles and internationalization
 

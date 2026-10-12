@@ -2,6 +2,7 @@
 
 from datetime import date, timedelta
 from unittest.mock import AsyncMock
+from uuid import uuid4
 
 import pytest
 from sqlalchemy import func, select
@@ -221,7 +222,9 @@ async def test_suspension_preserves_progress_and_blocks_review_then_reactivates(
             f"{path}/suspension", json={"is_suspended": True}, headers=test_user[1]
         )
         assert res.status_code == 200 and res.json()["is_suspended"] is True
-    res = await client.post(f"{path}/review", json={"quality": 5}, headers=test_user[1])
+    res = await client.post(
+        f"{path}/review", json={"quality": 5, "review_id": str(uuid4())}, headers=test_user[1]
+    )
     assert res.status_code == 409
     await db_session.refresh(card)
     assert scheduling(card) == before
@@ -250,7 +253,13 @@ async def test_saving_suspended_word_preserves_user_edits_and_does_not_reactivat
     assert res.json()["repetitions"] == 2
     lookup.assert_not_awaited()
     res = await client.post(
-        "/api/flashcards/bulk", json={"flashcards": [content()]}, headers=test_user[1]
+        "/api/flashcards/bulk",
+        json={
+            "flashcards": [content()],
+            "study_plan_id": plan.id,
+            "target_language": plan.target_language,
+        },
+        headers=test_user[1],
     )
     assert res.json()["created"] == 0
 
@@ -262,7 +271,9 @@ async def test_review_rejects_invalid_scores_without_awarding_xp(
     card = await card_in(db_session, plan)
     before = scheduling(card)
     res = await client.post(
-        f"/api/flashcards/{card.id}/review", json={"quality": quality}, headers=test_user[1]
+        f"/api/flashcards/{card.id}/review",
+        json={"quality": quality, "review_id": str(uuid4())},
+        headers=test_user[1],
     )
     assert res.status_code == 422
     await db_session.refresh(card)
@@ -281,7 +292,9 @@ async def test_failed_progress_update_does_not_commit_review(
     )
     with pytest.raises(RuntimeError, match="failed"):
         await client.post(
-            f"/api/flashcards/{card.id}/review", json={"quality": 4}, headers=test_user[1]
+            f"/api/flashcards/{card.id}/review",
+            json={"quality": 4, "review_id": str(uuid4())},
+            headers=test_user[1],
         )
     await db_session.rollback()
     await db_session.refresh(card)

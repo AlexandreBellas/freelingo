@@ -896,7 +896,10 @@
     "speechEmpty": "No word was recognised. Please try again.",
     "reviewMode": "Review mode",
     "sessionProgress": "Session progress",
-    "reviewDetails": "Review details"
+    "reviewDetails": "Review details",
+    "retryReview": "Retry saving",
+    "reviewRetryHint": "Retry to recover the same rating without counting the review twice.",
+    "contextChanged": "The language or study plan changed. Check the vocabulary set before adding it again."
   },
   "chat": {
     "title": "Lingu, your tutor",

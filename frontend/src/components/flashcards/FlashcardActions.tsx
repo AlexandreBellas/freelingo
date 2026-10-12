@@ -1,6 +1,13 @@
 'use client'
 
-import { useEffect, useId, useRef, useState } from 'react'
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, Pause, Pencil, Play, Trash2 } from 'lucide-react'
 import { apiFetch } from '@/lib/api'
@@ -8,12 +15,42 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useFlashcardScope } from './FlashcardBoundary'
 import type { Flashcard } from './types'
 
+export interface FlashcardActionState {
+  mode: 'edit' | 'delete' | null
+  pending: boolean
+  error: string
+  draft: Pick<
+    Flashcard,
+    'word' | 'definition' | 'example_sentence' | 'translation'
+  >
+}
+
+export function initialFlashcardActionState(
+  card: Flashcard
+): FlashcardActionState {
+  return {
+    mode: null,
+    pending: false,
+    error: '',
+    draft: {
+      word: card.word,
+      definition: card.definition,
+      example_sentence: card.example_sentence,
+      translation: card.translation,
+    },
+  }
+}
+
 interface Props {
   card: Flashcard
   disabled?: boolean
   onUpdate: (card: Flashcard) => void
   onDelete: (id: number) => void
   onInteractionChange?: (active: boolean) => void
+  state?: FlashcardActionState
+  onStateChange?: Dispatch<SetStateAction<FlashcardActionState>>
+  isOwnerCurrent?: () => boolean
+  onSettled?: () => void
 }
 
 export function FlashcardActions({
@@ -22,20 +59,29 @@ export function FlashcardActions({
   onUpdate,
   onDelete,
   onInteractionChange,
+  state,
+  onStateChange,
+  isOwnerCurrent,
+  onSettled,
 }: Props) {
   const t = useTranslations('flashcards')
   const common = useTranslations('common')
-  const isCurrent = useFlashcardScope()
-  const [mode, setMode] = useState<'edit' | 'delete' | null>(null)
-  const [pending, setPending] = useState(false)
+  const isComponentCurrent = useFlashcardScope()
+  const isCurrent = isOwnerCurrent ?? isComponentCurrent
+  const [localState, setLocalState] = useState(() =>
+    initialFlashcardActionState(card)
+  )
+  const { mode, pending, error, draft } = state ?? localState
+  const setState = onStateChange ?? setLocalState
+  const setMode = (mode: FlashcardActionState['mode']) =>
+    setState((previous) => ({ ...previous, mode }))
+  const setPending = (pending: boolean) =>
+    setState((previous) => ({ ...previous, pending }))
+  const setError = (error: string) =>
+    setState((previous) => ({ ...previous, error }))
+  const setDraft = (draft: FlashcardActionState['draft']) =>
+    setState((previous) => ({ ...previous, draft }))
   const pendingRef = useRef(false)
-  const [error, setError] = useState('')
-  const [draft, setDraft] = useState({
-    word: card.word,
-    definition: card.definition,
-    example_sentence: card.example_sentence,
-    translation: card.translation,
-  })
   const firstInput = useRef<HTMLInputElement>(null)
   const editButton = useRef<HTMLButtonElement>(null)
   const previousMode = useRef<typeof mode>(null)
@@ -48,14 +94,14 @@ export function FlashcardActions({
   }, [mode])
 
   function close() {
-    if (pendingRef.current) return
+    if (pendingRef.current || pending) return
     setMode(null)
     setError('')
     onInteractionChange?.(false)
   }
 
   async function mutate(action: 'edit' | 'delete' | 'suspend') {
-    if (pendingRef.current || disabled || !isCurrent()) return
+    if (pendingRef.current || pending || disabled || !isCurrent()) return
     pendingRef.current = true
     setPending(true)
     setError('')
@@ -101,7 +147,10 @@ export function FlashcardActions({
       }
     } finally {
       pendingRef.current = false
-      if (isCurrent()) setPending(false)
+      if (isCurrent()) {
+        setPending(false)
+        onSettled?.()
+      }
     }
   }
 
@@ -215,7 +264,10 @@ export function FlashcardActions({
             <button
               type="submit"
               disabled={
-                pending || !draft.word.trim() || !draft.definition.trim()
+                disabled ||
+                pending ||
+                !draft.word.trim() ||
+                !draft.definition.trim()
               }
               className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 focus-visible:outline-fl-accent inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
             >

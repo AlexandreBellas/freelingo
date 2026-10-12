@@ -896,7 +896,10 @@
     "speechEmpty": "Não foi reconhecida nenhuma palavra. Tenta novamente.",
     "reviewMode": "Modo de revisão",
     "sessionProgress": "Progresso da sessão",
-    "reviewDetails": "Detalhes da revisão"
+    "reviewDetails": "Detalhes da revisão",
+    "retryReview": "Tentar guardar novamente",
+    "reviewRetryHint": "Tenta novamente para recuperar a mesma avaliação sem contar a revisão duas vezes.",
+    "contextChanged": "O idioma ou o plano mudou. Confirma o conjunto de vocabulário antes de o adicionares novamente."
   },
   "chat": {
     "title": "Lingu, o seu tutor",

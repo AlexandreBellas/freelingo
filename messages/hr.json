@@ -896,7 +896,10 @@
     "speechEmpty": "Nije prepoznata nijedna riječ. Pokušaj ponovno.",
     "reviewMode": "Način ponavljanja",
     "sessionProgress": "Napredak sesije",
-    "reviewDetails": "Pojedinosti ponavljanja"
+    "reviewDetails": "Pojedinosti ponavljanja",
+    "retryReview": "Ponovi spremanje",
+    "reviewRetryHint": "Pokušaj ponovno dohvatiti istu ocjenu bez dvostrukog brojanja ponavljanja.",
+    "contextChanged": "Jezik ili plan učenja se promijenio. Provjeri skup vokabulara prije ponovnog dodavanja."
   },
   "chat": {
     "title": "Lingu, tvoj učitelj",

@@ -19,12 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Aligned Flashcards with the dashboard and Progress styling: clearer headings and controls, visible session-size choices, an accessible progress bar, highlighted summary metrics, structured speaking feedback, library filters and status badges, and collapsible technical review details.
 - Flashcard generation initially selects the active plan's level and reports actual created cards, skipped duplicates and empty model results. Review responses include awarded XP for session summaries.
 
-### Fixed
-
-- Flashcard pages discard obsolete account, language and plan responses, show recoverable loading and mutation errors, and keep the current card on failed reviews. Library pagination adjusts after deletions.
-- Flashcard reviews reject suspended cards and invalid quality scores, and save scheduling and plan-owned XP atomically. Management actions are disabled during recording and transcription.
-- Keyboard-accessible card reveal controls, labeled forms and multilingual library typography, with management text localized across all fifteen interface languages.
-
 ## [1.10.25] - 2026-10-10
 
 ### Changed

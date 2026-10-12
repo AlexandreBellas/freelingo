@@ -896,7 +896,10 @@
     "speechEmpty": "No se ha entendido ninguna palabra. Vuelve a intentarlo.",
     "reviewMode": "Modo de repaso",
     "sessionProgress": "Avance de la sesión",
-    "reviewDetails": "Detalles del repaso"
+    "reviewDetails": "Detalles del repaso",
+    "retryReview": "Reintentar guardado",
+    "reviewRetryHint": "Reintenta para recuperar la misma valoración sin contabilizar dos veces el repaso.",
+    "contextChanged": "El idioma o el plan ha cambiado. Revisa el conjunto de vocabulario antes de volver a añadirlo."
   },
   "chat": {
     "title": "Lingu, tu tutor",

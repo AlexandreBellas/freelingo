@@ -27,9 +27,12 @@ import {
   useFlashcardScope,
 } from '@/components/flashcards/FlashcardBoundary'
 import { FlashcardActions } from '@/components/flashcards/FlashcardActions'
-import { BackPreference } from '@/components/flashcards/BackPreference'
+import {
+  BackPreference,
+  useBackPreference,
+} from '@/components/flashcards/BackPreference'
 import { SpeakingCard } from '@/components/flashcards/SpeakingCard'
-import type { BackContent, Flashcard } from '@/components/flashcards/types'
+import type { Flashcard } from '@/components/flashcards/types'
 import NoPlanBanner from '@/components/plan/NoPlanBanner'
 
 interface ReviewResult {
@@ -84,6 +87,13 @@ function FlashcardsContent({
   const [speakingMode, setSpeakingMode] = useState(false)
   const [reviewing, setReviewing] = useState(false)
   const reviewingRef = useRef(false)
+  const reviewAttempt = useRef<{
+    cardId: number
+    word: string
+    quality: number
+    reviewId: string
+  } | null>(null)
+  const [reviewCanRefresh, setReviewCanRefresh] = useState(false)
   const sessionRecorded = useRef(false)
   const loadRequest = useRef<AbortController | null>(null)
   const [loadError, setLoadError] = useState(false)
@@ -91,7 +101,8 @@ function FlashcardsContent({
   const [reviewError, setReviewError] = useState(false)
   const [managing, setManaging] = useState(false)
   const [recording, setRecording] = useState(false)
-  const [backContent, setBackContent] = useState<BackContent>('definition')
+  const preference = useBackPreference(stage === 'review')
+  const backContent = preference.value
   const generatingRef = useRef(false)
 
   const loadDue = useCallback(async () => {
@@ -151,19 +162,47 @@ function FlashcardsContent({
     setReviewing(true)
     setReviewError(false)
     const card = cards[current]
+    const attempt = reviewAttempt.current ?? {
+      cardId: card.id,
+      word: card.word,
+      quality,
+      reviewId: crypto.randomUUID(),
+    }
+    reviewAttempt.current = attempt
+    setReviewCanRefresh(false)
     const sessionVersion = useAuthStore.getState().sessionVersion
     try {
-      const response = await apiFetch(`/api/flashcards/${card.id}/review`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quality }),
-      })
-      if (!response.ok) throw new Error('Could not review flashcard')
+      const response = await apiFetch(
+        `/api/flashcards/${attempt.cardId}/review`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quality: attempt.quality,
+            review_id: attempt.reviewId,
+          }),
+        }
+      )
+      if (!response.ok) {
+        if (isCurrent())
+          setReviewCanRefresh(
+            response.status >= 400 &&
+              response.status < 500 &&
+              ![408, 429].includes(response.status)
+          )
+        throw new Error('Could not review flashcard')
+      }
       const result = await response.json()
       if (!isCurrent()) return
+      reviewAttempt.current = null
       setCompleted((previous) => [
         ...previous,
-        { id: card.id, word: card.word, quality, xp: result.xp_earned },
+        {
+          id: card.id,
+          word: attempt.word,
+          quality: attempt.quality,
+          xp: result.xp_earned,
+        },
       ])
       setDueCards((items) => items.filter((item) => item.id !== card.id))
       if (!sessionRecorded.current)
@@ -651,7 +690,13 @@ function FlashcardsContent({
                 )}
               </span>
               <button
-                disabled={reviewing || managing || recording || generating}
+                disabled={
+                  reviewing ||
+                  reviewError ||
+                  managing ||
+                  recording ||
+                  generating
+                }
                 onClick={() => setStage('summary')}
                 className="text-fl-muted-1 hover:text-fl-fg focus-visible:outline-fl-accent min-h-11 px-2 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-40"
               >
@@ -683,7 +728,13 @@ function FlashcardsContent({
             >
               <button
                 aria-pressed={!speakingMode}
-                disabled={reviewing || managing || recording || generating}
+                disabled={
+                  reviewing ||
+                  reviewError ||
+                  managing ||
+                  recording ||
+                  generating
+                }
                 onClick={() => {
                   setSpeakingMode(false)
                   setFlipped(false)
@@ -695,7 +746,13 @@ function FlashcardsContent({
               </button>
               <button
                 aria-pressed={speakingMode}
-                disabled={reviewing || managing || recording || generating}
+                disabled={
+                  reviewing ||
+                  reviewError ||
+                  managing ||
+                  recording ||
+                  generating
+                }
                 onClick={() => {
                   setSpeakingMode(true)
                   setFlipped(false)
@@ -706,9 +763,7 @@ function FlashcardsContent({
                 {t('speakingMode')}
               </button>
             </div>
-            {!speakingMode && (
-              <BackPreference value={backContent} onChange={setBackContent} />
-            )}
+            {!speakingMode && <BackPreference preference={preference} />}
           </div>
 
           {/* ── Standard mode ── */}
@@ -739,7 +794,7 @@ function FlashcardsContent({
                   type="button"
                   aria-expanded={flipped}
                   aria-label={flipped ? t('tapToHide') : t('tapToReveal')}
-                  disabled={reviewing || managing || generating}
+                  disabled={reviewing || reviewError || managing || generating}
                   onClick={() => setFlipped(!flipped)}
                   className="hover:bg-fl-surface-2 focus-visible:outline-fl-accent flex min-h-[240px] w-full flex-col items-center justify-center gap-5 p-6 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 sm:min-h-[280px] sm:p-10"
                 >
@@ -829,7 +884,9 @@ function FlashcardsContent({
                     ].map(({ key, q, color }) => (
                       <div key={q} className="space-y-2 text-center">
                         <button
-                          disabled={reviewing || managing || generating}
+                          disabled={
+                            reviewing || reviewError || managing || generating
+                          }
                           onClick={() => reviewCard(q)}
                           aria-describedby={`flashcard-rating-${key}-hint`}
                           className="border-fl-border hover:border-fl-border-2 hover:bg-fl-surface-2 focus-visible:outline-fl-accent min-h-11 w-full border px-2 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
@@ -869,7 +926,7 @@ function FlashcardsContent({
               ])}
               card={cards[current]}
               languageCode={targetLanguageCode}
-              disabled={reviewing || managing || generating}
+              disabled={reviewing || reviewError || managing || generating}
               onBusyChange={setRecording}
               onReview={reviewCard}
             />
@@ -878,22 +935,36 @@ function FlashcardsContent({
           {reviewError && (
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <p role="alert" className="text-fl-error-fg">
-                {tCommon('errorMessage')}
+                {tCommon('errorMessage')} {t('reviewRetryHint')}
               </p>
               <button
                 className="underline"
                 disabled={reviewing || managing || recording || generating}
-                onClick={() => void loadDue()}
+                onClick={() =>
+                  void reviewCard(reviewAttempt.current?.quality ?? 4)
+                }
               >
-                {t('refresh')}
+                {t('retryReview')}
               </button>
+              {reviewCanRefresh && (
+                <button
+                  className="underline"
+                  disabled={reviewing}
+                  onClick={() => {
+                    reviewAttempt.current = null
+                    void loadDue()
+                  }}
+                >
+                  {t('refresh')}
+                </button>
+              )}
             </div>
           )}
           <div className="border-fl-border bg-fl-surface space-y-3 border p-4 sm:p-5">
             <FlashcardActions
               key={cards[current].id}
               card={cards[current]}
-              disabled={reviewing || recording || generating}
+              disabled={reviewing || reviewError || recording || generating}
               onInteractionChange={setManaging}
               onUpdate={(updated) => {
                 if (updated.is_suspended) removeCurrent(false)

@@ -6,22 +6,18 @@ import { apiFetch } from '@/lib/api'
 import { useFlashcardScope } from './FlashcardBoundary'
 import type { BackContent } from './types'
 
-export function BackPreference({
-  value,
-  onChange,
-}: {
-  value: BackContent
-  onChange: (value: BackContent) => void
-}) {
-  const t = useTranslations('flashcards')
-  const common = useTranslations('common')
+// The page owns requests, including when the standard-mode selector is hidden.
+export function useBackPreference(enabled: boolean) {
   const isCurrent = useFlashcardScope()
+  const [value, setValue] = useState<BackContent>('definition')
   const [loading, setLoading] = useState(true)
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const pending = useRef(false)
+  const loadedRef = useRef(false)
   useEffect(() => {
+    if (!enabled || loadedRef.current) return
     const controller = new AbortController()
     void (async () => {
       try {
@@ -31,7 +27,8 @@ export function BackPreference({
         if (!res.ok) throw new Error('Preferences unavailable')
         const data = await res.json()
         if (!isCurrent() || controller.signal.aborted) return
-        onChange(data.back_content)
+        setValue(data.back_content)
+        loadedRef.current = true
         setLoaded(true)
         setError(false)
       } catch {
@@ -41,7 +38,7 @@ export function BackPreference({
       }
     })()
     return () => controller.abort()
-  }, [attempt, isCurrent, onChange])
+  }, [attempt, enabled, isCurrent])
 
   async function save(next: BackContent) {
     if (pending.current || !isCurrent()) return
@@ -55,7 +52,7 @@ export function BackPreference({
         body: JSON.stringify({ back_content: next }),
       })
       if (!res.ok) throw new Error('Could not save preference')
-      if (isCurrent()) onChange(next)
+      if (isCurrent()) setValue(next)
     } catch {
       if (isCurrent()) setError(true)
     } finally {
@@ -63,6 +60,25 @@ export function BackPreference({
       if (isCurrent()) setLoading(false)
     }
   }
+
+  function retry() {
+    if (pending.current) return
+    loadedRef.current = false
+    setLoading(true)
+    setAttempt((n) => n + 1)
+  }
+
+  return { value, loading, loaded, error, save, retry }
+}
+
+export function BackPreference({
+  preference,
+}: {
+  preference: ReturnType<typeof useBackPreference>
+}) {
+  const t = useTranslations('flashcards')
+  const common = useTranslations('common')
+  const { value, loading, loaded, error, save, retry } = preference
 
   return (
     <div className="min-w-0 space-y-2">
@@ -85,10 +101,7 @@ export function BackPreference({
           </p>
           <button
             className="focus-visible:outline-fl-accent min-h-11 px-1 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
-            onClick={() => {
-              setLoading(true)
-              setAttempt((n) => n + 1)
-            }}
+            onClick={retry}
           >
             {common('retry')}
           </button>

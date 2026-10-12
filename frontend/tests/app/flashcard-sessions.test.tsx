@@ -188,8 +188,12 @@ describe('review sessions', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Session progress' })
     ).toHaveAttribute('aria-valuenow', '0')
-    fireEvent.click(screen.getByRole('button', { name: 'Finish session' }))
-    expect(metric('Cards reviewed')).toHaveTextContent('0')
+    expect(
+      screen.getByRole('button', { name: 'Finish session' })
+    ).toBeDisabled()
+    expect(
+      screen.queryByRole('heading', { name: 'Session summary' })
+    ).not.toBeInTheDocument()
     act(() =>
       useLanguageStore.setState({ activeLanguage: getLanguageByCode('it-IT')! })
     )
@@ -226,7 +230,10 @@ describe('speaking feedback', () => {
     )
     await screen.findByRole('heading', { name: 'Session summary' })
     expect(reviews()).toHaveLength(1)
-    expect(JSON.parse(reviews()[0][1].body)).toEqual({ quality: 5 })
+    expect(JSON.parse(reviews()[0][1].body)).toMatchObject({
+      quality: 5,
+      review_id: expect.any(String),
+    })
     expect(metric('XP earned')).toHaveTextContent('2')
   })
 
@@ -241,7 +248,10 @@ describe('speaking feedback', () => {
     fireEvent.click(screen.getByRole('button', { name: label as string }))
     await screen.findByRole('heading', { name: 'Session summary' })
     expect(reviews()).toHaveLength(1)
-    expect(JSON.parse(reviews()[0][1].body)).toEqual({ quality })
+    expect(JSON.parse(reviews()[0][1].body)).toMatchObject({
+      quality,
+      review_id: expect.any(String),
+    })
   })
 
   it('retains feedback after a failed save and rejects empty transcription', async () => {
@@ -266,7 +276,8 @@ describe('speaking feedback', () => {
     expect(screen.getByText('The transcription matches')).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Save result and continue' })
-    ).toBeEnabled()
+    ).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Retry saving' })).toBeEnabled()
   })
 
   it('discards old speech feedback after editing the card or switching language', async () => {

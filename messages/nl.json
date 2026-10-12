@@ -896,7 +896,10 @@
     "speechEmpty": "Er is geen woord herkend. Probeer het opnieuw.",
     "reviewMode": "Herhaalmodus",
     "sessionProgress": "Sessievoortgang",
-    "reviewDetails": "Herhaaldetails"
+    "reviewDetails": "Herhaaldetails",
+    "retryReview": "Opslaan opnieuw proberen",
+    "reviewRetryHint": "Probeer opnieuw om dezelfde beoordeling op te halen zonder de herhaling dubbel te tellen.",
+    "contextChanged": "De taal of het leerplan is gewijzigd. Controleer de woordenschatset voordat je die opnieuw toevoegt."
   },
   "chat": {
     "title": "Lingu, jouw tutor",

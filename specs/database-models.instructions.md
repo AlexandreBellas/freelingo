@@ -216,6 +216,20 @@ reactivation immediately restores overdue cards to the review queue. The account
 preference is independent of card ownership and study language. The versioned schema is defined by
 `0056_flashcard_management`, following `0055_sentence_order`; defaults apply to existing rows.
 
+## FlashcardReviewReceipt (`flashcard_review_receipts`)
+
+Durable idempotency results for accepted flashcard review attempts.
+
+- `flashcard_id` — integer FK to `flashcards.id`, `ON DELETE CASCADE`.
+- `review_id` — varchar(36), canonical UUID supplied by the client. Together with `flashcard_id`, forms the composite primary key.
+- `quality` — non-null integer containing the accepted rating.
+- `response` — non-null JSON snapshot of the original `FlashcardReviewResponse`, including scheduling and awarded XP.
+
+The owning card controls authorization and plan/user cascade deletion. Receipts commit atomically
+with scheduling and progress, are immutable after acceptance, and remain available after later
+reviews or edits. They support response recovery rather than a session-history interface. The table
+is defined by revision `0057_flashcard_review_receipts`, following `0056_flashcard_management`.
+
 ## Progress (`progress`)
 
 Daily progress record, one row per user per day per plan.

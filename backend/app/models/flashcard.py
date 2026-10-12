@@ -3,7 +3,18 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, false
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    false,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -37,3 +48,16 @@ class Flashcard(Base):
         nullable=False,
         index=True,
     )
+
+
+class FlashcardReviewReceipt(Base):
+    """Committed results for replaying a card review without applying it twice."""
+
+    __tablename__ = "flashcard_review_receipts"
+
+    flashcard_id: Mapped[int] = mapped_column(
+        ForeignKey("flashcards.id", ondelete="CASCADE"), primary_key=True
+    )
+    review_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    quality: Mapped[int] = mapped_column(Integer, nullable=False)
+    response: Mapped[dict] = mapped_column(JSON, nullable=False)

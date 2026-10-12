@@ -896,7 +896,10 @@
     "speechEmpty": "Nu a fost recunoscut niciun cuvânt. Încearcă din nou.",
     "reviewMode": "Mod de recapitulare",
     "sessionProgress": "Progresul sesiunii",
-    "reviewDetails": "Detalii de recapitulare"
+    "reviewDetails": "Detalii de recapitulare",
+    "retryReview": "Reîncearcă salvarea",
+    "reviewRetryHint": "Reîncearcă pentru a recupera aceeași evaluare fără a număra repetarea de două ori.",
+    "contextChanged": "Limba sau planul de studiu s-a schimbat. Verifică setul de vocabular înainte de a-l adăuga din nou."
   },
   "chat": {
     "title": "Lingu, tutorele tău",
