@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.30] - Unreleased
+
+### Added
+
+- Full flashcard library with word and translation search, saved-from-text and review-state filters, and next-review dates. Existing card generation, selected-word saving and vocabulary-set additions remain available.
+- Edit, suspend and delete cards from both the library and review screen. Editing preserves review progress; suspension pauses reviews without deleting content and can be reversed from the library. Permanent deletion requires confirmation.
+- Account-wide preference for definition or translation as the main standard-mode answer, with a definition fallback when translation is missing. Includes an additive migration for card suspension and the saved preference.
+
+### Fixed
+
+- Flashcard pages discard obsolete account, language and plan responses, show recoverable loading and mutation errors, and keep the current card on failed reviews. Library pagination adjusts after deletions.
+- Flashcard reviews reject suspended cards and invalid quality scores, and save scheduling and plan-owned XP atomically. Management actions are disabled during recording and transcription.
+- Keyboard-accessible card reveal controls, labeled forms and multilingual library typography, with management text localized across all fifteen interface languages.
+
 ## [1.10.25] - 2026-10-10
 
 ### Changed

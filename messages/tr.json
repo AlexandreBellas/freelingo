@@ -839,7 +839,37 @@
     "tapToHide": "gizlemek için dokunun",
     "tapToReveal": "görmek için dokunun",
     "interval": "Aralık",
-    "repetitions": "Tekrar"
+    "repetitions": "Tekrar",
+    "librarySearch": "Kelime veya çeviri ara...",
+    "sourceFilter": "Kaynak",
+    "allCards": "Tüm kartlar",
+    "savedFromText": "Metinlerden kaydedilenler",
+    "statusFilter": "Durum",
+    "newCards": "Yeni",
+    "suspended": "Duraklatılmış",
+    "nextReview": "Sonraki tekrar: {date}",
+    "libraryNoResults": "Bu filtrelerle eşleşen kart yok.",
+    "libraryEmpty": "Oluşturduğunuz kartlar, kaydettiğiniz kelimeler ve eklediğiniz kelime setleri burada görünür.",
+    "editCard": "Kartı düzenle",
+    "field_word": "Kelime",
+    "field_definition": "Tanım",
+    "field_translation": "Çeviri",
+    "field_example_sentence": "Örnek cümle",
+    "editKeepsProgress": "Düzenleme, ilerlemenizi ve tekrar takviminizi korur.",
+    "duplicateWord": "Bu planda aynı kelimeyle başka bir kart zaten var. Farklı bir kelime seçin.",
+    "suspend": "Duraklat",
+    "reactivate": "Yeniden etkinleştir",
+    "deleteTitle": "Kartı sil",
+    "deleteMessage": "“{word}” ve tekrar takvimi kalıcı olarak silinsin mi? Bu işlem geri alınamaz.",
+    "suspendHint": "Bir kelimeyi zaten biliyor musunuz? Kartı silmeden tekrarları duraklatın. Kelimelerim bölümünde yeniden etkinleştirebilirsiniz.",
+    "backPreference": "Arka yüzdeki ana yanıt",
+    "ratingTitle": "Hatırlamak ne kadar zordu?",
+    "ratingHelp": "Yanıtı görmeden önce ne hatırladığını değerlendir. Seçimin sonraki tekrarları ayarlar.",
+    "againHint": "Hatırlayamadım",
+    "hardHint": "Çok zorlanarak",
+    "goodHint": "Hatırladım",
+    "easyHint": "Tereddüt etmeden",
+    "againTomorrow": "“Tekrar”, kartı bu oturum için değil, yarın için planlar."
   },
   "chat": {
     "title": "Lingu, eğitmeniniz",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Yenilikler",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Anladım",
     "entry1": {
-      "label": "Derslerini Lingu ile pekiştir",
-      "desc": "Tamamlanmış bir dersten sesli konuşma başlat. Lingu öğrendiklerini kullanmana yardımcı olur ve konuşma, pratik yaptığın konunun başlığıyla kaydedilir."
+      "label": "Kartların, senin tercihin",
+      "desc": "Tüm kartlarını görüntüle ve filtrele, içeriklerini düzenle ve tekrar sırasında tanım mı yoksa çeviri mi görmek istediğini seç. Kartları silebilir veya zaten bildiklerini ilerlemeni kaybetmeden duraklatabilir, istediğin zaman yeniden etkinleştirebilirsin."
     },
     "entry2": {
-      "label": "XP kazanmanın daha fazla yolu",
-      "desc": "<bold>Sesli konuşma, sohbet, aralıklı okuma ve dinleme tekrarları ile ünite ve seviye tamamlama</bold> sayesinde XP kazan. Yenilenen panel bugünkü XP’ni, serini ve son etkinliklerini öne çıkarır."
-    },
-    "entry3": {
-      "label": "Yeni Oyunlar bölümü",
-      "desc": "Oyunlarla dil pratiği yapmak için yeni bir alan. Mevcut etkinlikleri görmek için Oyunlar bölümüne göz at; yeni seçenekler ekleyeceğiz."
-    },
-    "entry4": {
       "label": "Daha akıcı bir deneyim",
       "desc": "FreeLingo ile günlük öğreniminizi daha keyifli hâle getirmek için küçük hataları da düzelttik ve bazı ayrıntıları iyileştirdik."
     }

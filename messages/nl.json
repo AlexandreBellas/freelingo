@@ -839,7 +839,37 @@
     "tapToHide": "tik om te verbergen",
     "tapToReveal": "tik om te tonen",
     "interval": "Interval",
-    "repetitions": "Herh"
+    "repetitions": "Herh",
+    "librarySearch": "Zoek woorden of vertalingen...",
+    "sourceFilter": "Herkomst",
+    "allCards": "Alle kaarten",
+    "savedFromText": "Opgeslagen uit teksten",
+    "statusFilter": "Status",
+    "newCards": "Nieuw",
+    "suspended": "Gepauzeerd",
+    "nextReview": "Volgende herhaling: {date}",
+    "libraryNoResults": "Geen kaarten komen overeen met deze filters.",
+    "libraryEmpty": "Hier verschijnen gegenereerde kaarten, opgeslagen woorden en toegevoegde woordenschatsets.",
+    "editCard": "Kaart bewerken",
+    "field_word": "Woord",
+    "field_definition": "Definitie",
+    "field_translation": "Vertaling",
+    "field_example_sentence": "Voorbeeldzin",
+    "editKeepsProgress": "Bewerken behoudt je voortgang en herhaalschema.",
+    "duplicateWord": "Er bestaat al een andere kaart met dit woord in dit leerplan. Kies een ander woord.",
+    "suspend": "Pauzeren",
+    "reactivate": "Hervatten",
+    "deleteTitle": "Kaart verwijderen",
+    "deleteMessage": "‘{word}’ en het herhaalschema definitief verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "suspendHint": "Ken je een woord al goed? Pauzeer de kaart zonder deze te verwijderen. Je kunt deze hervatten in Mijn woordenschat.",
+    "backPreference": "Hoofdantwoord op de achterkant",
+    "ratingTitle": "Hoe moeilijk was het om te onthouden?",
+    "ratingHelp": "Beoordeel wat je nog wist voordat je het antwoord bekeek. Je beoordeling past de volgende herhalingen aan.",
+    "againHint": "Ik wist het niet meer",
+    "hardHint": "Met veel moeite",
+    "goodHint": "Ik wist het nog",
+    "easyHint": "Zonder aarzelen",
+    "againTomorrow": "‘Opnieuw’ plant een herhaling voor morgen, niet voor deze sessie."
   },
   "chat": {
     "title": "Lingu, jouw tutor",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Nieuw",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Begrepen",
     "entry1": {
-      "label": "Oefen je lessen met Lingu",
-      "desc": "Start een spraakgesprek vanuit een afgeronde les. Lingu helpt je toe te passen wat je hebt geleerd. Het gesprek wordt opgeslagen met de titel van het geoefende onderwerp."
+      "label": "Jouw flashcards, op jouw manier",
+      "desc": "Bekijk en filter al je flashcards, bewerk de inhoud en kies of je tijdens het herhalen de definitie of vertaling wilt zien. Je kunt kaarten ook verwijderen of bekende kaarten pauzeren zonder je voortgang te verliezen, en ze hervatten wanneer je wilt."
     },
     "entry2": {
-      "label": "Meer manieren om XP te verdienen",
-      "desc": "Verdien XP met <bold>spraak, chat, gespreide lees- en luisterherhalingen en het afronden van onderdelen en niveaus</bold>. Je vernieuwde dashboard toont de XP van vandaag, je leerreeks en je recente activiteit."
-    },
-    "entry3": {
-      "label": "Nieuwe sectie Spellen",
-      "desc": "Een nieuwe plek om talen te oefenen met spellen. Ga naar Spellen om de beschikbare activiteiten te bekijken; we zullen nieuwe toevoegen."
-    },
-    "entry4": {
       "label": "Een soepelere ervaring",
       "desc": "We hebben ook kleine fouten opgelost en een paar details verbeterd, zodat je elke dag met nog meer plezier leert met FreeLingo."
     }

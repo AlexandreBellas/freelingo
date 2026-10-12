@@ -839,7 +839,37 @@
     "tapToHide": "dotknij aby ukryć",
     "tapToReveal": "dotknij aby pokazać",
     "interval": "Interwał",
-    "repetitions": "Powt"
+    "repetitions": "Powt",
+    "librarySearch": "Szukaj słów lub tłumaczeń...",
+    "sourceFilter": "Źródło",
+    "allCards": "Wszystkie fiszki",
+    "savedFromText": "Zapisane z tekstów",
+    "statusFilter": "Stan",
+    "newCards": "Nowe",
+    "suspended": "Wstrzymane",
+    "nextReview": "Następna powtórka: {date}",
+    "libraryNoResults": "Żadne fiszki nie pasują do tych filtrów.",
+    "libraryEmpty": "Tutaj pojawią się wygenerowane fiszki, zapisane słowa i dodane zestawy słownictwa.",
+    "editCard": "Edytuj fiszkę",
+    "field_word": "Słowo",
+    "field_definition": "Definicja",
+    "field_translation": "Tłumaczenie",
+    "field_example_sentence": "Przykładowe zdanie",
+    "editKeepsProgress": "Edycja zachowuje postępy i harmonogram powtórek.",
+    "duplicateWord": "W tym planie jest już inna fiszka z tym słowem. Wybierz inne słowo.",
+    "suspend": "Wstrzymaj",
+    "reactivate": "Wznów",
+    "deleteTitle": "Usuń fiszkę",
+    "deleteMessage": "Trwale usunąć „{word}” i harmonogram powtórek? Tej czynności nie można cofnąć.",
+    "suspendHint": "Znasz już słowo? Wstrzymaj powtórki bez usuwania fiszki. Możesz je wznowić w Moim słowniku.",
+    "backPreference": "Główna odpowiedź na odwrocie",
+    "ratingTitle": "Jak trudno było sobie przypomnieć?",
+    "ratingHelp": "Oceń, co udało Ci się przypomnieć przed odsłonięciem odpowiedzi. Twoja ocena dostosowuje kolejne powtórki.",
+    "againHint": "Nie pamiętam",
+    "hardHint": "Z dużym wysiłkiem",
+    "goodHint": "Pamiętam",
+    "easyHint": "Bez wahania",
+    "againTomorrow": "„Jeszcze raz” planuje powtórkę na jutro, nie na tę sesję."
   },
   "chat": {
     "title": "Lingu, Twój korepetytor",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Co nowego",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Rozumiem",
     "entry1": {
-      "label": "Ćwicz lekcje z Lingu",
-      "desc": "Rozpocznij rozmowę głosową z ukończonej lekcji. Lingu pomaga Ci stosować zdobytą wiedzę, a rozmowa jest zapisywana z tytułem ćwiczonego tematu."
+      "label": "Twoje fiszki, po Twojemu",
+      "desc": "Przeglądaj i filtruj wszystkie fiszki, edytuj ich treść i wybieraj między definicją a tłumaczeniem podczas powtórek. Możesz też usuwać fiszki lub wstrzymać powtórki tych, które już znasz, bez utraty postępów, i wznowić je w dowolnym momencie."
     },
     "entry2": {
-      "label": "Więcej sposobów na zdobywanie XP",
-      "desc": "Zdobywaj XP za <bold>rozmowy głosowe, czat, rozłożone w czasie powtórki czytania i słuchania oraz ukończone jednostki i poziomy</bold>. Odświeżony panel pokazuje dzisiejsze XP, serię nauki i ostatnią aktywność."
-    },
-    "entry3": {
-      "label": "Nowa sekcja Gry",
-      "desc": "Nowe miejsce do ćwiczenia języków poprzez gry. Zajrzyj do sekcji Gry, aby sprawdzić dostępne aktywności; będziemy dodawać kolejne propozycje."
-    },
-    "entry4": {
       "label": "Płynniejsze korzystanie",
       "desc": "Poprawiliśmy też drobne błędy i dopracowaliśmy kilka szczegółów, aby codzienna nauka z FreeLingo była jeszcze przyjemniejsza."
     }

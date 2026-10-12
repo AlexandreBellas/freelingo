@@ -839,7 +839,37 @@
     "tapToHide": "tryk for at skjule",
     "tapToReveal": "tryk for at vise",
     "interval": "Interval",
-    "repetitions": "Gentagelser"
+    "repetitions": "Gentagelser",
+    "librarySearch": "Søg efter ord eller oversættelser...",
+    "sourceFilter": "Oprindelse",
+    "allCards": "Alle kort",
+    "savedFromText": "Gemt fra tekster",
+    "statusFilter": "Status",
+    "newCards": "Nye",
+    "suspended": "Sat på pause",
+    "nextReview": "Næste repetition: {date}",
+    "libraryNoResults": "Ingen kort matcher disse filtre.",
+    "libraryEmpty": "Her vises oprettede kort, gemte ord og tilføjede ordforrådssæt.",
+    "editCard": "Rediger kort",
+    "field_word": "Ord",
+    "field_definition": "Definition",
+    "field_translation": "Oversættelse",
+    "field_example_sentence": "Eksempelsætning",
+    "editKeepsProgress": "Redigering bevarer dine fremskridt og din repetitionsplan.",
+    "duplicateWord": "Der findes allerede et andet kort med dette ord i planen. Vælg et andet ord.",
+    "suspend": "Sæt på pause",
+    "reactivate": "Genaktiver",
+    "deleteTitle": "Slet kort",
+    "deleteMessage": "Vil du slette ”{word}” og repetitionsplanen permanent? Dette kan ikke fortrydes.",
+    "suspendHint": "Kender du allerede et ord? Sæt kortet på pause uden at slette det. Du kan genaktivere det i Mit ordforråd.",
+    "backPreference": "Primært svar på bagsiden",
+    "ratingTitle": "Hvor svært var det at huske?",
+    "ratingHelp": "Vurder, hvad du huskede, før du så svaret. Din vurdering tilpasser de næste repetitioner.",
+    "againHint": "Jeg kunne ikke huske det",
+    "hardHint": "Med stor anstrengelse",
+    "goodHint": "Jeg huskede det",
+    "easyHint": "Uden tøven",
+    "againTomorrow": "”Igen” planlægger repetitionen til i morgen, ikke til denne session."
   },
   "chat": {
     "title": "Lingu, din sproglærer",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Nyheder",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Forstået",
     "entry1": {
-      "label": "Øv dine lektioner med Lingu",
-      "desc": "Start en stemmesamtale fra en gennemført lektion. Lingu hjælper dig med at bruge det, du har lært, og samtalen gemmes med titlen på det emne, du øvede."
+      "label": "Dine flashcards, på din måde",
+      "desc": "Se og filtrer alle dine flashcards, rediger indholdet, og vælg, om du vil se definitionen eller oversættelsen, når du repeterer. Du kan også slette kort eller sætte dem, du allerede kan, på pause uden at miste dine fremskridt og genaktivere dem, når du vil."
     },
     "entry2": {
-      "label": "Flere måder at optjene XP på",
-      "desc": "Optjen XP med <bold>talesamtaler, chat, fordelte læse- og lytterepetitioner samt gennemførte enheder og niveauer</bold>. Det fornyede dashboard fremhæver dagens XP, din stime og din seneste aktivitet."
-    },
-    "entry3": {
-      "label": "Ny spilsektion",
-      "desc": "Et nyt sted at øve sprog gennem spil. Besøg Spil for at se de tilgængelige aktiviteter; vi tilføjer nye muligheder løbende."
-    },
-    "entry4": {
       "label": "En mere smidig oplevelse",
       "desc": "Vi har også rettet mindre fejl og forbedret nogle detaljer, så du får endnu mere glæde af din daglige læring med FreeLingo."
     }

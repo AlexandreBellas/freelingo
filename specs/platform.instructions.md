@@ -325,6 +325,34 @@ qualities 0, 3, 4, and 5; speaking mode maps normalized exact match to 5 and oth
 Due cards are ordered by `next_review`. Generation derives target language from the plan and native
 translation context from the user profile. Reviewing always credits the card's stored plan.
 
+### Flashcard library and management
+
+The library lists all cards belonging to the active plan, with a saved-from-text view that retains
+the original personal vocabulary subset. Word and translation search, source and state filters,
+pagination, and next-review dates are available. New cards have both zero interval and zero
+repetitions; due/new filters exclude suspended cards. The legacy saved-vocabulary endpoint retains
+its original scope. Generation, selected-word saving and bulk vocabulary-set creation retain their
+existing flows and deduplication behavior.
+
+Learners can edit word, definition, translation and example from both the library and review page.
+Word and definition must remain non-empty; translation and example can be empty. Edits preserve
+source, persisted plan, suspension, ease, interval, repetitions and review date. Renaming to another
+normalized word already in that plan returns a duplicate conflict; existing duplicate words do not
+prevent other content edits. Deduplication remains best-effort under concurrent writes.
+
+Deletion is permanent and requires frontend confirmation. Suspension is reversible, excludes the
+card from scheduled reviews and leaves its schedule and vocabulary progress intact. Reactivation
+retains the previous review date, including overdue dates. Re-saving an existing suspended word
+does not reactivate it. Neither editing nor suspension awards XP. Reviewing a suspended card is
+rejected by the backend. Review input requires a strict integer from 0 to 5; SM-2 and plan-owned XP
+commit in one transaction.
+
+The account-wide `flashcard_back_content` preference chooses definition or translation as the main
+standard-mode answer. Definition is the default and the fallback for missing translations. Examples
+and complementary information remain visible after revealing the card. Speaking evaluation retains
+its existing behavior. Failed loads and mutations expose recoverable errors; obsolete responses are
+discarded across session, language and plan changes.
+
 ## Language roles and internationalization
 
 The application distinguishes UI locale, native language, learned target language, active

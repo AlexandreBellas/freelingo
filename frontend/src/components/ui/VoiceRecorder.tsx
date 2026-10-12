@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { apiFetch } from '@/lib/api'
 import { float32ToWav } from '@/lib/audio'
@@ -11,6 +11,7 @@ interface VoiceRecorderProps {
   maxSeconds?: number
   disabled?: boolean
   className?: string
+  onBusyChange?: (busy: boolean) => void
 }
 
 type RecorderState = 'idle' | 'recording' | 'transcribing' | 'error'
@@ -26,6 +27,7 @@ export function VoiceRecorder({
   maxSeconds = 5,
   disabled = false,
   className = '',
+  onBusyChange,
 }: VoiceRecorderProps) {
   const [state, setState] = useState<RecorderState>('idle')
   const streamRef = useRef<MediaStream | null>(null)
@@ -38,6 +40,12 @@ export function VoiceRecorder({
   const recordingContextRef = useRef<RecordingContext | null>(null)
   const mountedRef = useRef(true)
   const t = useTranslations('voiceRecorder')
+  const notifyBusy = useEffectEvent((busy: boolean) => onBusyChange?.(busy))
+
+  useEffect(() => {
+    notifyBusy(state === 'recording' || state === 'transcribing')
+    return () => notifyBusy(false)
+  }, [state])
 
   useEffect(() => {
     mountedRef.current = true

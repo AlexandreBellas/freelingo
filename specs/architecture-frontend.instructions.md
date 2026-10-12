@@ -267,6 +267,30 @@ is decorative. `RewardGuide.tsx` provides a localized, collapsible explanation o
 and links to the corresponding activities. Competency/vocabulary/skill bars expose numeric progress,
 vocabulary filters expose selection, and learned-language curriculum text uses `TargetLanguageText`.
 
+## Flashcards
+
+`app/(app)/flashcards/page.tsx` owns the review queue and existing generation form. Its standard card
+uses a native reveal button with keyboard support and separate audio controls. `BackPreference`
+loads and saves the account-wide reverse-side preference through the backend. Speaking continues to
+use the resource-owned `VoiceRecorder`; its optional busy notification prevents management and mode
+changes during recording or transcription.
+
+`app/(app)/flashcards/vocabulary/page.tsx` is the full active-plan library. It uses `/api/flashcards/library`
+with source/state filters, debounced word/translation search and pagination. The saved-from-text filter
+retains the previous vocabulary view. Learned words, definitions and examples use `TargetLanguageText`;
+next-review dates use the interface locale without shifting date-only values across time zones.
+
+`components/flashcards/FlashcardActions.tsx` shares inline content editing, suspension/reactivation
+and confirmed deletion between both pages. Pending mutations disable repeat submissions; errors
+retain the draft or confirmation dialog. Successful management updates the queue or reloads the
+library without awarding review credit. Content edits retain the current review position.
+
+`FlashcardBoundary` reconciles missing/invalidated language context and keys content by session,
+language, plan and invalidation version. Switching unmounts old content. `useFlashcardScope` also
+checks the current stores before accepting delayed responses; list requests are canceled on cleanup
+and supersession. Load errors offer retry, missing plans use `NoPlanBanner`, and mutation errors do
+not advance the queue. No flashcard content or preference is persisted in browser storage.
+
 ## Public landing
 
 `app/page.tsx` is server-rendered. Its hero introduces the study plan, practice and voice conversation

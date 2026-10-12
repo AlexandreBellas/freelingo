@@ -1,85 +1,110 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { apiFetch } from '@/lib/api'
 import { AudioPlayer } from '@/components/ui/AudioPlayer'
 import { PageLoading } from '@/components/ui/page-loading'
 import { Pagination } from '@/components/ui/pagination'
-
-interface VocabItem {
-  id: number
-  study_plan_id: number
-  word: string
-  definition: string
-  example_sentence: string
-  translation: string
-}
+import { TargetLanguageText } from '@/components/TargetLanguageText'
+import NoPlanBanner from '@/components/plan/NoPlanBanner'
+import {
+  FlashcardBoundary,
+  FlashcardError,
+  useFlashcardScope,
+} from '@/components/flashcards/FlashcardBoundary'
+import { FlashcardActions } from '@/components/flashcards/FlashcardActions'
+import type { Flashcard } from '@/components/flashcards/types'
 
 const LIMIT = 10
 
 export default function VocabularyPage() {
+  return (
+    <FlashcardBoundary>
+      {(code) => <VocabularyContent targetLanguageCode={code} />}
+    </FlashcardBoundary>
+  )
+}
+
+function VocabularyContent({
+  targetLanguageCode,
+}: {
+  targetLanguageCode: string
+}) {
   const t = useTranslations('flashcards')
   const tCommon = useTranslations('common')
-
-  const [items, setItems] = useState<VocabItem[]>([])
-  const [total, setTotal] = useState(0)
+  const locale = useLocale()
+  const isCurrent = useFlashcardScope()
+  const [data, setData] = useState<{
+    items: Flashcard[]
+    total: number
+    page: number
+    pages: number
+  } | null>(null)
   const [page, setPage] = useState(1)
-  const [pages, setPages] = useState(1)
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [loading, setLoading] = useState(true)
-  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [source, setSource] = useState('all')
+  const [status, setStatus] = useState('all')
+  const [loadError, setLoadError] = useState(false)
+  const [noPlan, setNoPlan] = useState(false)
+  const [revision, setRevision] = useState(0)
 
   // Debounce search input: reset to page 1 on new query
   useEffect(() => {
+    if (search === debouncedSearch) return
     const timer = setTimeout(() => {
       setDebouncedSearch(search)
       setPage(1)
     }, 300)
     return () => clearTimeout(timer)
-  }, [search])
-
-  const loadPage = useCallback(async (p: number, q: string) => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({
-        page: String(p),
-        limit: String(LIMIT),
-        search: q,
-      })
-      const res = await apiFetch(`/api/flashcards/vocabulary?${params}`)
-      if (res.ok) {
-        const data = await res.json()
-        setItems(data.items)
-        setTotal(data.total)
-        setPage(data.page)
-        setPages(data.pages)
-      }
-    } catch {
-      /* ignore */
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  }, [search, debouncedSearch])
 
   useEffect(() => {
-    loadPage(page, debouncedSearch)
-  }, [page, debouncedSearch, loadPage])
-
-  async function deleteItem(id: number) {
-    setDeletingId(id)
-    try {
-      await apiFetch(`/api/flashcards/${id}`, { method: 'DELETE' })
-      // Reload current page (total may change)
-      await loadPage(page, debouncedSearch)
-    } catch {
-      /* ignore */
-    } finally {
-      setDeletingId(null)
+    const controller = new AbortController()
+    async function load() {
+      setLoading(true)
+      setLoadError(false)
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(LIMIT),
+          search: debouncedSearch,
+          source,
+          status,
+        })
+        const res = await apiFetch(`/api/flashcards/library?${params}`, {
+          signal: controller.signal,
+        })
+        if (res.status === 404) {
+          if (isCurrent() && !controller.signal.aborted) setNoPlan(true)
+          return
+        }
+        if (!res.ok) throw new Error('Could not load library')
+        const result = await res.json()
+        if (isCurrent() && !controller.signal.aborted) {
+          setData(result)
+          setPage(result.page)
+          setNoPlan(false)
+        }
+      } catch {
+        if (isCurrent() && !controller.signal.aborted) setLoadError(true)
+      } finally {
+        if (isCurrent() && !controller.signal.aborted) setLoading(false)
+      }
     }
+    void load()
+    return () => controller.abort()
+  }, [page, debouncedSearch, source, status, revision, isCurrent])
+
+  function reload() {
+    setLoading(true)
+    setRevision((value) => value + 1)
   }
+
+  if (noPlan) return <NoPlanBanner />
 
   return (
     <div className="mx-auto max-w-4xl space-y-4 p-6">
@@ -92,7 +117,7 @@ export default function VocabularyPage() {
           </span>
           {!loading && (
             <span className="text-fl-hint text-fl-muted-3 font-mono tracking-widest">
-              {total}
+              {data?.total ?? 0}
             </span>
           )}
         </div>
@@ -107,56 +132,122 @@ export default function VocabularyPage() {
       {/* Search */}
       <input
         type="search"
+        aria-label={t('librarySearch')}
+        maxLength={255}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={t('vocabularySearch')}
+        placeholder={t('librarySearch')}
         className="bg-fl-bg border-fl-border text-fl-fg placeholder:text-fl-border-2 focus:border-fl-border-2 w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
       />
+      <div className="flex flex-wrap gap-4">
+        <label className="text-fl-muted-1 flex items-center gap-2 text-sm">
+          {t('sourceFilter')}
+          <select
+            value={source}
+            onChange={(event) => {
+              setLoading(true)
+              setSource(event.target.value)
+              setPage(1)
+            }}
+            className="border-fl-border bg-fl-bg text-fl-fg border px-3 py-2"
+          >
+            <option value="all">{t('allCards')}</option>
+            <option value="from_text">{t('savedFromText')}</option>
+          </select>
+        </label>
+        <label className="text-fl-muted-1 flex items-center gap-2 text-sm">
+          {t('statusFilter')}
+          <select
+            value={status}
+            onChange={(event) => {
+              setLoading(true)
+              setStatus(event.target.value)
+              setPage(1)
+            }}
+            className="border-fl-border bg-fl-bg text-fl-fg border px-3 py-2"
+          >
+            <option value="all">{tCommon('all')}</option>
+            <option value="due">{t('due')}</option>
+            <option value="new">{t('newCards')}</option>
+            <option value="suspended">{t('suspended')}</option>
+          </select>
+        </label>
+      </div>
+      <p className="text-fl-muted-2 text-sm">{t('suspendHint')}</p>
 
       {/* List */}
       <div className="border-fl-border bg-fl-surface border">
         {loading ? (
           <PageLoading fullScreen={false} className="block p-5" />
-        ) : items.length === 0 ? (
+        ) : loadError ? (
+          <FlashcardError onRetry={reload} />
+        ) : !data?.items.length ? (
           <p className="text-fl-muted-3 p-5 font-mono text-xs tracking-widest uppercase">
-            {debouncedSearch
-              ? t('myVocabularyNoResults')
-              : t('myVocabularyEmpty')}
+            {debouncedSearch || status !== 'all'
+              ? t('libraryNoResults')
+              : source === 'from_text'
+                ? t('myVocabularyEmpty')
+                : t('libraryEmpty')}
           </p>
         ) : (
           <div className="divide-fl-border divide-y">
-            {items.map((item) => (
-              <div
+            {data.items.map((item) => (
+              <article
                 key={item.id}
-                className="flex items-start justify-between gap-4 px-5 py-3"
+                aria-label={item.word}
+                className="space-y-3 px-5 py-4"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-fl-fg font-mono text-xs font-bold">
+                    <TargetLanguageText
+                      as="h2"
+                      languageCode={targetLanguageCode}
+                      className="text-fl-fg text-lg font-bold"
+                    >
                       {item.word}
-                    </p>
+                    </TargetLanguageText>
                     <AudioPlayer
                       text={item.word}
                       studyPlanId={item.study_plan_id}
                       size="sm"
                     />
                   </div>
-                  <p className="text-fl-muted-2 mt-0.5 font-mono text-xs leading-relaxed">
+                  <TargetLanguageText
+                    as="p"
+                    languageCode={targetLanguageCode}
+                    className="text-fl-muted-1 mt-2"
+                  >
                     {item.definition}
-                  </p>
-                  <p className="text-fl-muted-3 text-fl-label mt-1 font-mono tracking-widest uppercase">
+                  </TargetLanguageText>
+                  <p className="text-fl-muted-1 mt-1 font-sans leading-relaxed">
                     {item.translation}
                   </p>
+                  {item.example_sentence && (
+                    <TargetLanguageText
+                      as="p"
+                      languageCode={targetLanguageCode}
+                      className="text-fl-muted-2 mt-2 italic"
+                    >
+                      {item.example_sentence}
+                    </TargetLanguageText>
+                  )}
+                  <p className="text-fl-muted-2 mt-2 text-sm">
+                    {item.is_suspended
+                      ? t('suspended')
+                      : t('nextReview', {
+                          date: new Intl.DateTimeFormat(locale, {
+                            dateStyle: 'medium',
+                            timeZone: 'UTC',
+                          }).format(new Date(`${item.next_review}T00:00:00Z`)),
+                        })}
+                  </p>
                 </div>
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  disabled={deletingId === item.id}
-                  className="text-fl-muted-3 shrink-0 font-mono text-xs transition-colors hover:text-red-400 disabled:opacity-40"
-                  aria-label={tCommon('delete')}
-                >
-                  ✕
-                </button>
-              </div>
+                <FlashcardActions
+                  card={item}
+                  onUpdate={reload}
+                  onDelete={reload}
+                />
+              </article>
             ))}
           </div>
         )}
@@ -164,13 +255,19 @@ export default function VocabularyPage() {
 
       {/* Pagination */}
       <Pagination
-        page={page - 1}
-        totalPages={pages}
-        loading={loading}
-        onPageChange={(p) => setPage(p + 1)}
+        page={(data?.page ?? 1) - 1}
+        totalPages={loadError ? 1 : (data?.pages ?? 1)}
+        loading={loading || search !== debouncedSearch}
+        onPageChange={(p) => {
+          setLoading(true)
+          setPage(p + 1)
+        }}
         prevLabel={`← ${t('vocabularyPrev')}`}
         nextLabel={`${t('vocabularyNext')} →`}
-        pageInfo={t('vocabularyPageInfo', { page, pages })}
+        pageInfo={t('vocabularyPageInfo', {
+          page: data?.page ?? 1,
+          pages: data?.pages ?? 1,
+        })}
         className="gap-2 border-0 bg-transparent"
       />
     </div>

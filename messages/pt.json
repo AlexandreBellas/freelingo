@@ -839,7 +839,37 @@
     "tapToHide": "toca para esconder",
     "tapToReveal": "toca para mostrar",
     "interval": "Intervalo",
-    "repetitions": "Rep"
+    "repetitions": "Rep",
+    "librarySearch": "Pesquisar palavras ou traduções...",
+    "sourceFilter": "Origem",
+    "allCards": "Todos os cartões",
+    "savedFromText": "Guardados a partir de textos",
+    "statusFilter": "Estado",
+    "newCards": "Novos",
+    "suspended": "Suspensos",
+    "nextReview": "Próxima revisão: {date}",
+    "libraryNoResults": "Nenhum cartão corresponde a estes filtros.",
+    "libraryEmpty": "Aqui aparecem os cartões gerados, as palavras guardadas e os conjuntos de vocabulário adicionados.",
+    "editCard": "Editar cartão",
+    "field_word": "Palavra",
+    "field_definition": "Definição",
+    "field_translation": "Tradução",
+    "field_example_sentence": "Frase de exemplo",
+    "editKeepsProgress": "A edição mantém o progresso e o calendário de revisões.",
+    "duplicateWord": "Já existe outro cartão com esta palavra neste plano. Escolhe uma palavra diferente.",
+    "suspend": "Suspender",
+    "reactivate": "Reativar",
+    "deleteTitle": "Eliminar cartão",
+    "deleteMessage": "Eliminar definitivamente «{word}» e o seu calendário de revisões? Esta ação não pode ser desfeita.",
+    "suspendHint": "Já conheces uma palavra? Suspende-a para deixar de a rever sem a apagar. Podes reativá-la em Meu vocabulário.",
+    "backPreference": "Resposta principal no verso",
+    "ratingTitle": "Quanto te custou lembrar?",
+    "ratingHelp": "Avalia o que recordavas antes de ver a resposta. A tua avaliação ajusta as próximas revisões.",
+    "againHint": "Não me lembrava",
+    "hardHint": "Com muito esforço",
+    "goodHint": "Lembrava-me",
+    "easyHint": "Sem hesitar",
+    "againTomorrow": "«De novo» agenda a revisão para amanhã, não para esta sessão."
   },
   "chat": {
     "title": "Lingu, o seu tutor",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Novidades",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Entendido",
     "entry1": {
-      "label": "Pratica as tuas lições com o Lingu",
-      "desc": "Inicia uma conversa por voz a partir de uma lição concluída. O Lingu ajuda-te a utilizar o que aprendeste e a conversa fica guardada com o título do tema praticado."
+      "label": "Os teus cartões, à tua medida",
+      "desc": "Consulta e filtra todos os teus cartões, edita o conteúdo e escolhe se preferes ver a definição ou a tradução ao rever. Também podes eliminar cartões ou suspender os que já dominas sem perder o progresso, e reativá-los quando quiseres."
     },
     "entry2": {
-      "label": "Mais formas de ganhar XP",
-      "desc": "Ganha XP com <bold>voz, chat, revisões espaçadas de leitura e escuta e ao concluir unidades e níveis</bold>. O painel renovado destaca os XP de hoje, a tua sequência e a atividade recente."
-    },
-    "entry3": {
-      "label": "Nova secção de jogos",
-      "desc": "Um novo espaço para praticar idiomas com jogos. Visita Jogos para consultar as atividades disponíveis; vamos adicionar novas propostas."
-    },
-    "entry4": {
       "label": "Uma experiência mais fluida",
       "desc": "Também corrigimos pequenos erros e afinámos alguns detalhes para tornar a tua aprendizagem diária com o FreeLingo ainda mais agradável."
     }

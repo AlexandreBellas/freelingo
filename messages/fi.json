@@ -839,7 +839,37 @@
     "tapToHide": "piilota napauttamalla",
     "tapToReveal": "näytä napauttamalla",
     "interval": "Aikaväli",
-    "repetitions": "Kertaukset"
+    "repetitions": "Kertaukset",
+    "librarySearch": "Hae sanoja tai käännöksiä...",
+    "sourceFilter": "Alkuperä",
+    "allCards": "Kaikki kortit",
+    "savedFromText": "Teksteistä tallennetut",
+    "statusFilter": "Tila",
+    "newCards": "Uudet",
+    "suspended": "Tauolla",
+    "nextReview": "Seuraava kertaus: {date}",
+    "libraryNoResults": "Näitä suodattimia vastaavia kortteja ei löytynyt.",
+    "libraryEmpty": "Luodut kortit, tallennetut sanat ja lisätyt sanastot näkyvät täällä.",
+    "editCard": "Muokkaa korttia",
+    "field_word": "Sana",
+    "field_definition": "Määritelmä",
+    "field_translation": "Käännös",
+    "field_example_sentence": "Esimerkkilause",
+    "editKeepsProgress": "Muokkaus säilyttää edistymisesi ja kertausaikataulun.",
+    "duplicateWord": "Tässä suunnitelmassa on jo toinen kortti samalla sanalla. Valitse toinen sana.",
+    "suspend": "Aseta tauolle",
+    "reactivate": "Aktivoi uudelleen",
+    "deleteTitle": "Poista kortti",
+    "deleteMessage": "Poistetaanko ”{word}” ja sen kertausaikataulu pysyvästi? Tätä ei voi perua.",
+    "suspendHint": "Osaatko sanan jo? Aseta kortti tauolle poistamatta sitä. Voit aktivoida sen uudelleen Oma sanasto -osiossa.",
+    "backPreference": "Kääntöpuolen ensisijainen vastaus",
+    "ratingTitle": "Kuinka vaikeaa muistaminen oli?",
+    "ratingHelp": "Arvioi, mitä muistit ennen vastauksen katsomista. Arviosi vaikuttaa tuleviin kertauksiin.",
+    "againHint": "En muistanut",
+    "hardHint": "Suurella vaivalla",
+    "goodHint": "Muistin",
+    "easyHint": "Epäröimättä",
+    "againTomorrow": "”Uudelleen” ajoittaa kertauksen huomiselle, ei tähän harjoituskertaan."
   },
   "chat": {
     "title": "Lingu, oma opettajasi",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Uutta",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Selvä",
     "entry1": {
-      "label": "Harjoittele oppitunteja Lingun kanssa",
-      "desc": "Aloita äänikeskustelu suoritetulta oppitunnilta. Lingu auttaa sinua käyttämään oppimaasi, ja keskustelu tallennetaan harjoitellun aiheen otsikolla."
+      "label": "Muistikortit sinun tavallasi",
+      "desc": "Selaa ja suodata kaikkia muistikorttejasi, muokkaa niiden sisältöä ja valitse, näetkö kerratessa määritelmän vai käännöksen. Voit myös poistaa kortteja tai asettaa jo osaamasi kortit tauolle menettämättä edistymistäsi ja aktivoida ne uudelleen milloin tahansa."
     },
     "entry2": {
-      "label": "Lisää tapoja ansaita XP:tä",
-      "desc": "Ansaitse XP:tä <bold>puheesta, chatista, hajautetuista luku- ja kuuntelukertauksista sekä osioiden ja tasojen suorittamisesta</bold>. Uudistettu näkymä korostaa päivän XP:tä, oppimisputkeasi ja viimeaikaista toimintaasi."
-    },
-    "entry3": {
-      "label": "Uusi Pelit-osio",
-      "desc": "Uusi paikka kielten harjoitteluun pelien avulla. Käy Pelit-osiossa katsomassa saatavilla olevat tehtävät; lisäämme uusia vaihtoehtoja."
-    },
-    "entry4": {
       "label": "Sujuvampi käyttökokemus",
       "desc": "Korjasimme myös pieniä virheitä ja hioimme yksityiskohtia, jotta FreeLingolla oppiminen olisi joka päivä entistä mukavampaa."
     }

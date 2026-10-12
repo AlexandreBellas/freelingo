@@ -839,7 +839,37 @@
     "tapToHide": "dodirni za skrivanje",
     "tapToReveal": "dodirni za otkrivanje",
     "interval": "Razmak",
-    "repetitions": "Ponavljanja"
+    "repetitions": "Ponavljanja",
+    "librarySearch": "Pretraži riječi ili prijevode...",
+    "sourceFilter": "Izvor",
+    "allCards": "Sve kartice",
+    "savedFromText": "Spremljene iz tekstova",
+    "statusFilter": "Status",
+    "newCards": "Nove",
+    "suspended": "Pauzirane",
+    "nextReview": "Sljedeće ponavljanje: {date}",
+    "libraryNoResults": "Nema kartica koje odgovaraju ovim filtrima.",
+    "libraryEmpty": "Ovdje će se pojaviti stvorene kartice, spremljene riječi i dodani skupovi vokabulara.",
+    "editCard": "Uredi karticu",
+    "field_word": "Riječ",
+    "field_definition": "Definicija",
+    "field_translation": "Prijevod",
+    "field_example_sentence": "Primjer rečenice",
+    "editKeepsProgress": "Uređivanje čuva napredak i raspored ponavljanja.",
+    "duplicateWord": "U ovom planu već postoji druga kartica s tom riječi. Odaberi drugu riječ.",
+    "suspend": "Pauziraj",
+    "reactivate": "Ponovno aktiviraj",
+    "deleteTitle": "Izbriši karticu",
+    "deleteMessage": "Trajno izbrisati „{word}” i raspored ponavljanja? Ova se radnja ne može poništiti.",
+    "suspendHint": "Već znaš riječ? Pauziraj karticu bez brisanja. Možeš je ponovno aktivirati u odjeljku Moj rječnik.",
+    "backPreference": "Glavni odgovor na poleđini",
+    "ratingTitle": "Koliko je bilo teško prisjetiti se?",
+    "ratingHelp": "Ocijeni čega si se sjećao prije otkrivanja odgovora. Tvoja ocjena prilagođava sljedeća ponavljanja.",
+    "againHint": "Nisam se sjećao",
+    "hardHint": "Uz mnogo truda",
+    "goodHint": "Sjećao sam se",
+    "easyHint": "Bez oklijevanja",
+    "againTomorrow": "„Ponovno” zakazuje ponavljanje za sutra, ne za ovu sesiju."
   },
   "chat": {
     "title": "Lingu, tvoj učitelj",
@@ -1646,21 +1676,13 @@
   },
   "whatsNew": {
     "title": "Novosti",
-    "version": "v1.10.25",
+    "version": "v1.10.30",
     "cta": "Razumijem",
     "entry1": {
-      "label": "Vježbaj lekcije s Linguom",
-      "desc": "Započni glasovni razgovor iz dovršene lekcije. Lingu ti pomaže primijeniti naučeno, a razgovor se sprema s naslovom teme koju si vježbao."
+      "label": "Tvoje kartice, po tvojoj mjeri",
+      "desc": "Pregledaj i filtriraj sve kartice, uredi njihov sadržaj i odaberi želiš li pri ponavljanju vidjeti definiciju ili prijevod. Kartice možeš i izbrisati ili pauzirati one koje već znaš bez gubitka napretka te ih ponovno aktivirati kad god želiš."
     },
     "entry2": {
-      "label": "Više načina za osvajanje XP-a",
-      "desc": "Osvoji XP uz <bold>glasovne razgovore, chat, razmaknuta ponavljanja čitanja i slušanja te završavanje jedinica i razina</bold>. Osvježena nadzorna ploča ističe današnji XP, tvoj niz i nedavnu aktivnost."
-    },
-    "entry3": {
-      "label": "Novi odjeljak Igre",
-      "desc": "Novi prostor za vježbanje jezika kroz igre. Posjeti Igre i pogledaj dostupne aktivnosti; dodavat ćemo nove prijedloge."
-    },
-    "entry4": {
       "label": "Ugodnije iskustvo",
       "desc": "Ispravili smo i manje pogreške te doradili pojedinosti kako bi svakodnevno učenje uz FreeLingo bilo ugodnije."
     }

@@ -1,7 +1,9 @@
 import re
+from datetime import date
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
-from sqlalchemy import func, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -14,13 +16,16 @@ from app.schemas.flashcards import (
     FlashcardBulkCreate,
     FlashcardBulkResponse,
     FlashcardCreate,
+    FlashcardEdit,
     FlashcardFromWordRequest,
     FlashcardFromWordResponse,
     FlashcardGenerateRequest,
     FlashcardGenerateResponse,
     FlashcardListResponse,
+    FlashcardPreferences,
     FlashcardResponse,
     FlashcardReview,
+    FlashcardSuspension,
     VocabularyListResponse,
 )
 from app.services.flashcard_sm2 import generate_flashcards, lookup_word, sm2_update
@@ -30,7 +35,7 @@ from app.services.llm_adapter import (
     LLMTimeoutError,
     LLMUnavailableError,
 )
-from app.services.progress_service import update_daily_progress
+from app.services.progress_service import lock_progress_plan, update_daily_progress
 from app.services.user_language_service import get_active_language
 
 router = APIRouter(prefix="/api/flashcards", tags=["flashcards"])
@@ -125,16 +130,15 @@ async def get_due_flashcards(
     db: AsyncSession = Depends(get_db),
 ):
     plan = await _get_active_plan_or_404(db, current_user.id)
-    from datetime import date as date_type
-
     result = await db.execute(
         select(Flashcard)
         .where(
             Flashcard.user_id == current_user.id,
             Flashcard.study_plan_id == plan.id,
-            Flashcard.next_review <= date_type.today(),
+            Flashcard.next_review <= date.today(),
+            Flashcard.is_suspended.is_(False),
         )
-        .order_by(Flashcard.next_review)
+        .order_by(Flashcard.next_review, Flashcard.id)
     )
     due = result.scalars().all()
 
@@ -245,14 +249,19 @@ async def review_flashcard(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    card = await db.get(Flashcard, card_id)
-    if not card or card.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Flashcard not found")
-
+    owner = await db.scalar(
+        select(Flashcard.study_plan_id).where(
+            Flashcard.id == card_id, Flashcard.user_id == current_user.id
+        )
+    )
+    if owner is None:
+        raise HTTPException(status_code=404, detail="Flashcard not found")
+    # Follow plan-before-resource lock order, including concurrent plan deletion.
+    await lock_progress_plan(db, current_user.id, owner)
+    card = await _get_owned_card_for_update(db, current_user.id, card_id)
+    if card.is_suspended:
+        raise HTTPException(status_code=409, detail="flashcard_suspended")
     card = sm2_update(card, data.quality)
-    await db.commit()
-    await db.refresh(card)
-
     await update_daily_progress(
         db,
         current_user.id,
@@ -260,9 +269,12 @@ async def review_flashcard(
         skill="vocabulary",
         skill_score=min(data.quality / 5.0, 1.0),
         study_plan_id=card.study_plan_id,
+        commit=False,
     )
     request.state.vocabulary_reviewed = card.source == "from_text"
-    return card
+    response = FlashcardResponse.model_validate(card)
+    await db.commit()
+    return response
 
 
 @router.post("/generate", response_model=FlashcardGenerateResponse)
@@ -447,6 +459,123 @@ async def get_vocabulary_flashcards(
     return VocabularyListResponse(items=items, total=total, page=page, pages=pages)
 
 
+@router.get("/library", response_model=VocabularyListResponse)
+@limiter.limit("60/minute")
+async def get_flashcard_library(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str = Query("", max_length=255),
+    source: Literal["all", "from_text"] = Query("all"),
+    status: Literal["all", "due", "new", "suspended"] = Query("all"),
+):
+    plan = await _get_active_plan_or_404(db, current_user.id)
+    filters = [Flashcard.user_id == current_user.id, Flashcard.study_plan_id == plan.id]
+    if source == "from_text":
+        filters.append(Flashcard.source == "from_text")
+    if status == "suspended":
+        filters.append(Flashcard.is_suspended.is_(True))
+    elif status in ("due", "new"):
+        filters.append(Flashcard.is_suspended.is_(False))
+        if status == "due":
+            filters.append(Flashcard.next_review <= date.today())
+        else:
+            filters.extend([Flashcard.interval == 0, Flashcard.repetitions == 0])
+    if search.strip():
+        escaped = search.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        filters.append(
+            or_(
+                Flashcard.word.ilike(f"%{escaped}%", escape="\\"),
+                Flashcard.translation.ilike(f"%{escaped}%", escape="\\"),
+            )
+        )
+    total = await db.scalar(select(func.count(Flashcard.id)).where(*filters)) or 0
+    pages = max(1, (total + limit - 1) // limit)
+    page = min(page, pages)
+    result = await db.execute(
+        select(Flashcard)
+        .where(*filters)
+        .order_by(func.lower(Flashcard.word), Flashcard.id)
+        .offset((page - 1) * limit)
+        .limit(limit)
+    )
+    return VocabularyListResponse(items=result.scalars().all(), total=total, page=page, pages=pages)
+
+
+@router.get("/preferences", response_model=FlashcardPreferences)
+@limiter.limit("60/minute")
+async def get_flashcard_preferences(
+    request: Request, current_user: User = Depends(get_current_user)
+):
+    return FlashcardPreferences(back_content=current_user.flashcard_back_content)
+
+
+@router.put("/preferences", response_model=FlashcardPreferences)
+@limiter.limit("60/minute")
+async def update_flashcard_preferences(
+    request: Request,
+    data: FlashcardPreferences,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    current_user.flashcard_back_content = data.back_content
+    await db.commit()
+    return data
+
+
+async def _get_owned_card_for_update(db: AsyncSession, user_id: int, card_id: int) -> Flashcard:
+    card = await db.scalar(
+        select(Flashcard)
+        .where(Flashcard.id == card_id, Flashcard.user_id == user_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if card is None:
+        raise HTTPException(status_code=404, detail="Flashcard not found")
+    return card
+
+
+@router.put("/{card_id}", response_model=FlashcardResponse)
+@limiter.limit("60/minute")
+async def edit_flashcard(
+    request: Request,
+    card_id: int,
+    data: FlashcardEdit,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    card = await _get_owned_card_for_update(db, current_user.id, card_id)
+    if _normalize_flashcard_word(data.word) != _normalize_flashcard_word(card.word):
+        duplicate = await _find_existing_flashcard(
+            db, current_user.id, card.study_plan_id, data.word
+        )
+        if duplicate is not None:
+            raise HTTPException(status_code=409, detail="flashcard_duplicate")
+    for field, value in data.model_dump().items():
+        setattr(card, field, value)
+    response = FlashcardResponse.model_validate(card)
+    await db.commit()
+    return response
+
+
+@router.put("/{card_id}/suspension", response_model=FlashcardResponse)
+@limiter.limit("60/minute")
+async def set_flashcard_suspension(
+    request: Request,
+    card_id: int,
+    data: FlashcardSuspension,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    card = await _get_owned_card_for_update(db, current_user.id, card_id)
+    card.is_suspended = data.is_suspended
+    response = FlashcardResponse.model_validate(card)
+    await db.commit()
+    return response
+
+
 @router.delete("/{card_id}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("60/minute")
 async def delete_flashcard(
@@ -455,8 +584,6 @@ async def delete_flashcard(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    card = await db.get(Flashcard, card_id)
-    if not card or card.user_id != current_user.id:
-        raise HTTPException(status_code=404, detail="Flashcard not found")
+    card = await _get_owned_card_for_update(db, current_user.id, card_id)
     await db.delete(card)
     await db.commit()

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Optional
+from typing import Literal, Optional
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
 
 class FlashcardCreate(BaseModel):
@@ -22,7 +22,33 @@ class FlashcardBulkResponse(BaseModel):
 
 
 class FlashcardReview(BaseModel):
-    quality: int
+    quality: int = Field(strict=True, ge=0, le=5)
+
+
+class FlashcardEdit(BaseModel):
+    word: str = Field(min_length=1, max_length=100)
+    definition: str = Field(min_length=1, max_length=10000)
+    example_sentence: str = Field(max_length=10000)
+    translation: str = Field(max_length=255)
+
+    model_config = {"extra": "forbid"}
+
+    @field_validator("word", "definition", "example_sentence", "translation", mode="before")
+    @classmethod
+    def trim_content(cls, value: object) -> object:
+        return value.strip() if isinstance(value, str) else value
+
+
+class FlashcardSuspension(BaseModel):
+    is_suspended: bool = Field(strict=True)
+
+    model_config = {"extra": "forbid"}
+
+
+class FlashcardPreferences(BaseModel):
+    back_content: Literal["definition", "translation"]
+
+    model_config = {"extra": "forbid"}
 
 
 class FlashcardFromWordRequest(BaseModel):
@@ -47,6 +73,7 @@ class FlashcardResponse(BaseModel):
     example_sentence: str
     translation: str
     source: Optional[str] = None
+    is_suspended: bool = False
     ease_factor: float
     interval: int
     repetitions: int
