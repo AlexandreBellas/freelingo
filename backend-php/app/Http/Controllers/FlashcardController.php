@@ -36,7 +36,7 @@ class FlashcardController extends Controller
         $due = Flashcard::query()
             ->where('user_id', $user->id)
             ->where('study_plan_id', $plan->id)
-            ->where('next_review', '<=', Clock::today())
+            ->whereDate('next_review', '<=', Clock::today())
             ->where('is_suspended', false)
             ->orderBy('next_review')
             ->orderBy('id')
@@ -322,7 +322,7 @@ class FlashcardController extends Controller
         } elseif (in_array($status, ['due', 'new'], true)) {
             $query->where('is_suspended', false);
             if ($status === 'due') {
-                $query->where('next_review', '<=', Clock::today());
+                $query->whereDate('next_review', '<=', Clock::today());
             } else {
                 $query->where('interval', 0)->where('repetitions', 0);
             }

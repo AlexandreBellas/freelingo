@@ -63,9 +63,21 @@ final class LearningCatalog
      */
     public static function vocabularyWords(string $level, string $targetLanguage): array
     {
-        $byLevel = self::load('vocabulary', $targetLanguage);
+        $loaded = self::load('vocabulary', $targetLanguage);
+        if (isset($loaded[$level]) && is_array($loaded[$level]) && array_is_list($loaded[$level])) {
+            return array_values(array_map(fn ($word) => is_array($word) ? (string) ($word['word'] ?? '') : (string) $word, $loaded[$level]));
+        }
+        $words = [];
+        foreach ($loaded as $set) {
+            if (! is_array($set) || ($set['level'] ?? null) !== $level) {
+                continue;
+            }
+            foreach ($set['words'] ?? [] as $word) {
+                $words[] = is_array($word) ? (string) ($word['word'] ?? '') : (string) $word;
+            }
+        }
 
-        return $byLevel[$level] ?? [];
+        return $words;
     }
 
     public static function languageName(string $targetLanguage): string

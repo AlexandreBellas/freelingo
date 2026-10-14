@@ -40,7 +40,11 @@ class StudyPlanController extends Controller
             ? $this->plans->forLanguage($user, $language)
             : $this->plans->optional($user);
 
-        return response()->json($plan ? Presenters::plan($plan) : null);
+        if (! $plan) {
+            return response()->json(null)->setData(null);
+        }
+
+        return response()->json(Presenters::plan($plan));
     }
 
     public function generate(Request $request): JsonResponse
