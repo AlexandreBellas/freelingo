@@ -308,7 +308,7 @@ class FeedbackController extends Controller
         }
         $entryIds = array_map(fn (FeedbackEntry $entry) => $entry->id, $entries);
         $authors = User::query()->whereIn('id', array_unique(array_map(fn (FeedbackEntry $entry) => $entry->author_id, $entries)))->get()->keyBy('id');
-        $voted = FeedbackVote::query()->whereIn('entry_id', $entryIds)->where('user_id', $user->id)->pluck('entry_id')->all();
+        $voted = array_map('intval', FeedbackVote::query()->whereIn('entry_id', $entryIds)->where('user_id', $user->id)->pluck('entry_id')->all());
         $counts = FeedbackComment::query()->whereIn('entry_id', $entryIds)->selectRaw('entry_id, COUNT(*) as cnt')->groupBy('entry_id')->pluck('cnt', 'entry_id');
         $unread = $this->unreadIds($user->id, $entryIds);
         $items = [];
@@ -317,7 +317,7 @@ class FeedbackController extends Controller
             if (! $author) {
                 continue;
             }
-            $items[] = $this->payload($entry, $author, in_array($entry->id, $voted, true), in_array($entry->id, $unread, true), (int) ($counts[$entry->id] ?? 0));
+            $items[] = $this->payload($entry, $author, in_array((int) $entry->id, $voted, true), in_array((int) $entry->id, $unread, true), (int) ($counts[$entry->id] ?? 0));
         }
 
         return $items;
