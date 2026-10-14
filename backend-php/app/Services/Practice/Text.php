@@ -65,6 +65,46 @@ final class Text
         return hash('sha256', self::canonicalJson($value));
     }
 
+    /**
+     * Python json.dumps(value, sort_keys=True): ASCII escapes, spaces, sorted object keys.
+     */
+    public static function pyDumps(mixed $value): string
+    {
+        return self::dumps($value);
+    }
+
+    private static function dumps(mixed $value): string
+    {
+        if (is_array($value)) {
+            if ($value === []) {
+                return '[]';
+            }
+            if (array_is_list($value)) {
+                return '['.implode(', ', array_map(fn ($item) => self::dumps($item), $value)).']';
+            }
+            ksort($value);
+            $parts = [];
+            foreach ($value as $key => $item) {
+                $parts[] = self::dumps((string) $key).': '.self::dumps($item);
+            }
+
+            return '{'.implode(', ', $parts).'}';
+        }
+        if (is_float($value)) {
+            if (is_nan($value)) {
+                throw new \InvalidArgumentException('NaN is not JSON');
+            }
+            $encoded = json_encode($value);
+            if ($encoded !== false && ! str_contains($encoded, '.') && ! str_contains(strtolower($encoded), 'e')) {
+                $encoded .= '.0';
+            }
+
+            return $encoded ?: '0.0';
+        }
+
+        return json_encode($value, JSON_UNESCAPED_SLASHES) ?: 'null';
+    }
+
     public static function iso(Carbon|\DateTimeInterface|null $value, bool $zulu = false): ?string
     {
         if ($value === null) {
