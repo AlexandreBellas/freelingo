@@ -204,8 +204,13 @@ class AuthController extends Controller
         }
 
         $expected = $request->header('X-Expected-User-ID');
-        if ($expected !== null && (string) $expected !== (string) $userId) {
-            throw new ApiException('auth_context_changed', 409);
+        if ($expected !== null) {
+            if (! preg_match('/^[1-9]\d*$/', $expected) || (int) $expected > 2147483647) {
+                throw new ApiException('Invalid expected user', 422);
+            }
+            if ((string) $expected !== (string) $userId) {
+                throw new ApiException('auth_context_changed', 409);
+            }
         }
 
         $this->redis->delete('refresh:'.$token);

@@ -7,15 +7,27 @@ use App\Support\Settings;
 
 class Jwt
 {
-    public static function createAccessToken(int $userId, string $role): string
+    public static function createAccessToken(int $userId, string $role, ?int $expiresAt = null): string
     {
-        $exp = time() + (Settings::int('access_token_expire_minutes', 15) * 60);
+        $exp = $expiresAt ?? (time() + (Settings::int('access_token_expire_minutes', 15) * 60));
 
         return self::encode([
             'sub' => (string) $userId,
             'role' => $role,
             'exp' => $exp,
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    public static function signPayload(array $payload, ?string $secret = null): string
+    {
+        $header = self::b64encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT'], JSON_THROW_ON_ERROR));
+        $body = self::b64encode(json_encode($payload, JSON_THROW_ON_ERROR));
+        $signature = self::b64encode(hash_hmac('sha256', $header.'.'.$body, $secret ?? Settings::string('secret_key'), true));
+
+        return $header.'.'.$body.'.'.$signature;
     }
 
     public static function createRefreshToken(): string
