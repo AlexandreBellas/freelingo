@@ -35,7 +35,7 @@ class MemoryController extends Controller
             throw new ApiException('Validation error', 422);
         }
         $stripped = trim($content);
-        if ($stripped === '' || mb_strlen($content) > MemoryService::MAX_MEMORY_CHARS || mb_strlen($stripped) > MemoryService::MAX_MEMORY_CHARS) {
+        if ($stripped === '' || mb_strlen($stripped) > MemoryService::MAX_MEMORY_CHARS) {
             throw new ApiException('Validation error', 422);
         }
         try {

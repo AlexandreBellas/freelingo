@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ArrayRedis::class, fn () => new ArrayRedis);
+        $this->app->singleton(LlmClient::class, fn () => new UnavailableLlm);
         $this->app->singleton(LlmAdapter::class, fn () => LlmAdapter::fromSettings());
         $this->app->singleton(SpeechGateway::class, fn () => SpeechGateway::fromSettings());
         $this->app->singleton(StripeGateway::class, fn () => new HttpStripeGateway);
