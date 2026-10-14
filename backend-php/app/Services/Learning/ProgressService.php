@@ -9,7 +9,7 @@ use App\Support\Clock;
 use App\Support\JsonDate;
 use Illuminate\Support\Carbon;
 
-final class ProgressService
+class ProgressService
 {
     public const XP_LESSON_COMPLETE = 20;
 

@@ -9,7 +9,7 @@ use App\Models\ProgressReward;
 use App\Models\StudyPlan;
 use Illuminate\Support\Carbon;
 
-final class ProgressRewards
+class ProgressRewards
 {
     public function __construct(private readonly ProgressService $progress) {}
 

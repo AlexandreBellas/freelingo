@@ -123,7 +123,7 @@ class FlashcardController extends Controller
         if ($owner === null) {
             throw new ApiException('Flashcard not found', 404);
         }
-        return DB::transaction(function () use ($user, $cardId, $quality, $reviewId, $owner) {
+        return DB::transaction(function () use ($request, $user, $cardId, $quality, $reviewId, $owner) {
             $this->progress->lockPlan($user->id, (int) $owner);
             $card = Flashcard::query()->where('id', $cardId)->where('user_id', $user->id)->lockForUpdate()->first();
             if (! $card) {
@@ -137,6 +137,7 @@ class FlashcardController extends Controller
                 if ((int) $receipt->quality !== $quality) {
                     throw new ApiException('flashcard_review_conflict', 409);
                 }
+                $request->attributes->set('flashcard_review_replayed', true);
 
                 return response()->json($receipt->response);
             }
@@ -145,6 +146,7 @@ class FlashcardController extends Controller
             }
             $this->cards->sm2($card, $quality);
             $card->save();
+            $request->attributes->set('vocabulary_reviewed', $card->source === 'from_text');
             $this->progress->updateDaily(
                 $user->id,
                 $card->study_plan_id,
@@ -173,17 +175,18 @@ class FlashcardController extends Controller
         $cefr = RequestChecks::optionalString($data, 'cefr_level', 'B1');
         $plan = $this->plans->required($user);
         try {
+            $cards = app(FlashcardService::class);
             $existing = [];
             foreach (Flashcard::query()->where('user_id', $user->id)->where('study_plan_id', $plan->id)->pluck('word') as $word) {
-                $existing[$this->cards->normalizeWord((string) $word)] = true;
+                $existing[$cards->normalizeWord((string) $word)] = true;
             }
-            $result = $this->cards->generate($topic, $count, $cefr, $user->native_language, $plan->target_language);
+            $result = $cards->generate($topic, $count, $cefr, $user->native_language, $plan->target_language);
             $unique = [];
             $skippedDuplicates = 0;
             $skippedEmpty = 0;
             $seen = [];
             foreach ($result['flashcards'] as $card) {
-                $normalized = $this->cards->normalizeWord($card['word']);
+                $normalized = $cards->normalizeWord($card['word']);
                 if ($normalized === '') {
                     $skippedEmpty++;
 
@@ -246,7 +249,7 @@ class FlashcardController extends Controller
             }
         }
         try {
-            $cardData = $this->cards->lookup(trim($word), $context, $cefr, $user->native_language, $plan->target_language);
+            $cardData = app(FlashcardService::class)->lookup(trim($word), $context, $cefr, $user->native_language, $plan->target_language);
         } catch (LlmTimeoutException) {
             throw new ApiException('The AI model took too long.', 504);
         } catch (LlmUnavailableException) {
@@ -376,7 +379,13 @@ class FlashcardController extends Controller
         $data = RequestChecks::body($request->json()->all());
         RequestChecks::forbidExtra($data, ['word', 'definition', 'example_sentence', 'translation']);
         foreach (['word', 'definition', 'example_sentence', 'translation'] as $field) {
-            if (! array_key_exists($field, $data) || ! is_string($data[$field])) {
+            if (! array_key_exists($field, $data)) {
+                RequestChecks::fail(['body', $field]);
+            }
+            if ($data[$field] === null && in_array($field, ['example_sentence', 'translation'], true)) {
+                $data[$field] = '';
+            }
+            if (! is_string($data[$field])) {
                 RequestChecks::fail(['body', $field]);
             }
             $data[$field] = trim($data[$field]);

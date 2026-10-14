@@ -97,7 +97,13 @@ final class RequestChecks
     public static function flashcardContent(array $data, array $locPrefix = ['body']): array
     {
         foreach (['word', 'definition', 'example_sentence', 'translation'] as $field) {
-            if (! array_key_exists($field, $data) || ! is_string($data[$field])) {
+            if (! array_key_exists($field, $data)) {
+                self::fail([...$locPrefix, $field]);
+            }
+            if ($data[$field] === null && in_array($field, ['example_sentence', 'translation'], true)) {
+                $data[$field] = '';
+            }
+            if (! is_string($data[$field])) {
                 self::fail([...$locPrefix, $field]);
             }
         }
