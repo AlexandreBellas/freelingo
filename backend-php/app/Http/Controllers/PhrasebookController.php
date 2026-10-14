@@ -113,6 +113,15 @@ class PhrasebookController extends Controller
             rename($temporary, $path);
         }
 
-        return response()->file($path, ['Content-Type' => 'audio/mpeg', 'Cache-Control' => 'no-store']);
+        $response = new BinaryFileResponse($path, 200, [
+            'Content-Type' => 'audio/mpeg',
+            'Cache-Control' => 'no-store',
+        ], false, null, false, false);
+        $property = new \ReflectionProperty($response->headers, 'headers');
+        $headers = $property->getValue($response->headers);
+        $headers['cache-control'] = ['no-store'];
+        $property->setValue($response->headers, $headers);
+
+        return $response;
     }
 }

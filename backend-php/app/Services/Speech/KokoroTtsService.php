@@ -7,6 +7,13 @@ final class KokoroTtsService
     /** @var list<array<string, mixed>> */
     public array $requests = [];
 
+    /**
+     * Arguments passed to synthesize, before voice fallback.
+     *
+     * @var list<array{0: string, 1: ?string, 2: ?string}>
+     */
+    public array $invocations = [];
+
     /** @var callable(string, array<string, mixed>): string */
     public $transport;
 
@@ -25,6 +32,7 @@ final class KokoroTtsService
 
     public function synthesize(string $text, ?string $voice = null, ?string $language = null): string
     {
+        $this->invocations[] = [$text, $voice, $language];
         $payload = [
             'model' => 'kokoro',
             'input' => $text,

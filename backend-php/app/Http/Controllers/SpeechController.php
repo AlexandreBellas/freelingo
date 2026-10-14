@@ -12,6 +12,7 @@ use App\Services\Practice\Prompts;
 use App\Services\Practice\SpeechGateway;
 use App\Services\Practice\TourAudio;
 use App\Services\Speech\OpenAiTtsService;
+use App\Services\Speech\SpeechTimeout;
 use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -31,13 +32,13 @@ class SpeechController extends Controller
         }
         $body = $request->json()->all();
         $text = $body['text'] ?? null;
-        if (! is_string($text) || trim($text) === '') {
+        if (! is_string($text) || trim($text) === '' || mb_strlen($text) > 5000) {
             throw new ApiException('Text is required', 422);
         }
-        $conversationId = $body['conversation_id'] ?? null;
-        $studyPlanId = $body['study_plan_id'] ?? null;
+        $conversationId = $this->contextId($body['conversation_id'] ?? null);
+        $studyPlanId = $this->contextId($body['study_plan_id'] ?? null);
         if ($conversationId !== null && $studyPlanId !== null) {
-            throw new ApiException('Provide conversation_id or study_plan_id, not both', 422);
+            throw new ApiException('Provide either study_plan_id or conversation_id, not both', 422);
         }
         $language = null;
         if ($conversationId !== null) {
@@ -47,10 +48,6 @@ class SpeechController extends Controller
             }
             $studyPlanId = $conversation->study_plan_id;
             $language = $conversation->target_language;
-            $text = ChatMarkdown::toSpeech($text, $language);
-            if (trim($text) === '') {
-                throw new ApiException('No speakable text', 422);
-            }
         }
         if ($studyPlanId !== null) {
             $plan = StudyPlan::query()->where('id', $studyPlanId)->where('user_id', $user->id)->first();
@@ -58,6 +55,12 @@ class SpeechController extends Controller
                 throw new ApiException('Study plan not found', 404);
             }
             $language = $plan->target_language;
+        }
+        if ($conversationId !== null) {
+            $text = ChatMarkdown::toSpeech($text, is_string($language) ? $language : null);
+            if (trim($text) === '') {
+                throw new ApiException('No speakable text', 422);
+            }
         }
         $voice = $speech->ttsProvider === 'local' ? null : ($body['voice'] ?? null);
         $started = microtime(true);
@@ -84,7 +87,7 @@ class SpeechController extends Controller
             throw new ApiException('Invalid voice name', 400);
         }
         $text = $request->json('text');
-        if (! is_string($text) || trim($text) === '' || mb_strlen($text) > 2000) {
+        if (! is_string($text) || $text === '' || mb_strlen($text) > 5000) {
             throw new ApiException('Tour narration text is required', 422);
         }
         if ($speech->tts === null) {
@@ -92,11 +95,13 @@ class SpeechController extends Controller
         }
         try {
             $path = TourAudio::path($speech->tts, $locale, $text, is_string($voice) ? $voice : null);
+        } catch (SpeechTimeout) {
+            throw new ApiException('Tour narration timed out', 504);
         } catch (\Throwable) {
             throw new ApiException('Tour narration is unavailable', 503);
         }
 
-        return response()->file($path, ['Content-Type' => 'audio/mpeg', 'Cache-Control' => 'no-store']);
+        return $this->audioFile($path);
     }
 
     public function preview(Request $request, string $voice, SpeechGateway $speech): BinaryFileResponse
@@ -128,20 +133,17 @@ class SpeechController extends Controller
             rename($temporary, $path);
         }
 
-        return response()->file($path, ['Content-Type' => 'audio/mpeg', 'Cache-Control' => 'no-store']);
+        return $this->audioFile($path);
     }
 
     public function stt(Request $request, SpeechGateway $speech): \Illuminate\Http\JsonResponse
     {
         $user = $this->apiUser($request);
+        $planId = $this->requiredPlanId($request->input('study_plan_id'));
         if ($speech->stt === null) {
             throw new ApiException('STT service is not enabled', 503);
         }
-        $planId = $request->input('study_plan_id');
-        if (! is_numeric($planId) || (int) $planId <= 0) {
-            throw new ApiException('study_plan_id is required', 422);
-        }
-        $plan = StudyPlan::query()->where('id', (int) $planId)->where('user_id', $user->id)->first();
+        $plan = StudyPlan::query()->where('id', $planId)->where('user_id', $user->id)->first();
         if (! $plan) {
             throw new ApiException('Study plan not found', 404);
         }
@@ -156,10 +158,68 @@ class SpeechController extends Controller
         $text = $speech->stt->transcribe(
             $bytes,
             $file->getClientOriginalName() ?: 'audio.webm',
-            $file->getMimeType() ?: 'audio/webm',
+            $file->getClientMimeType() ?: ($file->getMimeType() ?: 'audio/webm'),
             Languages::iso639($plan->target_language),
         );
 
         return response()->json(['text' => $text]);
+    }
+
+    private function audioFile(string $path): BinaryFileResponse
+    {
+        $response = new BinaryFileResponse($path, 200, [
+            'Content-Type' => 'audio/mpeg',
+            'Cache-Control' => 'no-store',
+        ], false, null, false, false);
+        // Symfony appends ", private" unless public/private is already present.
+        // The tour and preview contracts require the exact directive "no-store".
+        $property = new \ReflectionProperty($response->headers, 'headers');
+        $headers = $property->getValue($response->headers);
+        $headers['cache-control'] = ['no-store'];
+        $property->setValue($response->headers, $headers);
+
+        return $response;
+    }
+
+    /**
+     * Strict positive 32-bit id. Null means the field was omitted.
+     */
+    private function contextId(mixed $value): ?int
+    {
+        if ($value === null) {
+            return null;
+        }
+        $id = $this->parseBoundedId($value);
+        if ($id === null) {
+            throw new ApiException('Invalid context id', 422);
+        }
+
+        return $id;
+    }
+
+    private function requiredPlanId(mixed $value): int
+    {
+        $id = $this->parseBoundedId($value);
+        if ($id === null) {
+            throw new ApiException('study_plan_id is required', 422);
+        }
+
+        return $id;
+    }
+
+    private function parseBoundedId(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value >= 1 && $value <= 2147483647 ? $value : null;
+        }
+        if (! is_string($value) || ! preg_match('/^[0-9]+$/', $value)) {
+            return null;
+        }
+        $normalized = ltrim($value, '0');
+        if ($normalized === '' || strlen($normalized) > 10 || (strlen($normalized) === 10 && strcmp($normalized, '2147483647') > 0)) {
+            return null;
+        }
+
+        return (int) $normalized;
     }
 }

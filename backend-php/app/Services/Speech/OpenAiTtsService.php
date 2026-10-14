@@ -10,14 +10,28 @@ final class OpenAiTtsService
     /** @var list<array<string, mixed>> */
     public array $requests = [];
 
+    /**
+     * Arguments passed to synthesize, before voice fallback.
+     *
+     * @var list<array{0: string, 1: ?string, 2: ?string}>
+     */
+    public array $invocations = [];
+
+    /**
+     * Optional override for instruction-capable models. Receives the language.
+     *
+     * @var null|callable(?string): ?string
+     */
+    public $instructionSource = null;
+
     /** @var callable(string, array<string, mixed>): string */
     public $transport;
 
     public function __construct(
         public readonly string $apiKey,
-        public readonly string $model,
+        public string $model,
         public string $voice,
-        public readonly float $speed = 1.0,
+        public float $speed = 1.0,
         public readonly ?float $timeout = null,
     ) {
         $this->transport = static fn () => throw new \RuntimeException('TTS transport is not configured');
@@ -32,6 +46,10 @@ final class OpenAiTtsService
     public function getInstructions(?string $language = null): ?string
     {
         if ($this->model === 'gpt-4o-mini-tts' || str_starts_with($this->model, 'gpt-4o-mini-tts-')) {
+            if ($this->instructionSource !== null) {
+                return ($this->instructionSource)($language);
+            }
+
             return Prompts::speechInstructions($language);
         }
 
@@ -59,6 +77,7 @@ final class OpenAiTtsService
 
     public function synthesize(string $text, ?string $voice = null, ?string $language = null): string
     {
+        $this->invocations[] = [$text, $voice, $language];
         $text = trim($text);
         if ($text === '') {
             return '';

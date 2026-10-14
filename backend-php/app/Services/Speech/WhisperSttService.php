@@ -35,6 +35,7 @@ final class WhisperSttService
             'filename' => $filename,
             'mime' => $mimeType,
             'bytes' => strlen($audioBytes),
+            'timeout' => 60.0,
         ];
         $this->requests[] = $payload;
 
