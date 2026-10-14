@@ -6,6 +6,8 @@ class FeedbackComment extends BaseModel
 {
     protected $table = 'feedback_comments';
 
+    protected $dateFormat = 'Y-m-d H:i:s.u';
+
     protected $fillable = [
         'entry_id',
         'author_id',

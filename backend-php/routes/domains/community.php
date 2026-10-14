@@ -28,7 +28,7 @@ Route::middleware('auth.api')->group(function () {
     Route::get('/api/memories', [MemoryController::class, 'index']);
     Route::post('/api/memories', [MemoryController::class, 'store']);
     Route::delete('/api/memories', [MemoryController::class, 'clear']);
-    Route::delete('/api/memories/{memoryId}', [MemoryController::class, 'destroy'])->whereNumber('memoryId');
+    Route::delete('/api/memories/{memory_id}', [MemoryController::class, 'destroy'])->whereNumber('memory_id');
 
     Route::get('/api/freemium/status', [FreemiumController::class, 'status']);
     Route::post('/api/billing/checkout', [BillingController::class, 'checkout']);
@@ -44,25 +44,25 @@ Route::middleware('auth.api')->group(function () {
     Route::get('/api/feedback/unread-summary', [FeedbackController::class, 'unread']);
     Route::get('/api/feedback', [FeedbackController::class, 'index']);
     Route::post('/api/feedback', [FeedbackController::class, 'store']);
-    Route::post('/api/feedback/{entryId}/read', [FeedbackController::class, 'markReadEndpoint'])->whereNumber('entryId');
-    Route::get('/api/feedback/{entryId}', [FeedbackController::class, 'show'])->whereNumber('entryId');
-    Route::delete('/api/feedback/{entryId}', [FeedbackController::class, 'destroy'])->whereNumber('entryId');
-    Route::post('/api/feedback/{entryId}/vote', [FeedbackController::class, 'vote'])->whereNumber('entryId');
-    Route::patch('/api/feedback/{entryId}/status', [FeedbackController::class, 'updateStatus'])->whereNumber('entryId');
-    Route::get('/api/feedback/{entryId}/comments', [FeedbackController::class, 'comments'])->whereNumber('entryId');
-    Route::post('/api/feedback/{entryId}/comments', [FeedbackController::class, 'addComment'])->whereNumber('entryId');
-    Route::delete('/api/feedback/{entryId}/comments/{commentId}', [FeedbackController::class, 'deleteComment'])->whereNumber(['entryId', 'commentId']);
+    Route::post('/api/feedback/{entry_id}/read', [FeedbackController::class, 'markReadEndpoint'])->whereNumber('entry_id');
+    Route::get('/api/feedback/{entry_id}', [FeedbackController::class, 'show'])->whereNumber('entry_id');
+    Route::delete('/api/feedback/{entry_id}', [FeedbackController::class, 'destroy'])->whereNumber('entry_id');
+    Route::post('/api/feedback/{entry_id}/vote', [FeedbackController::class, 'vote'])->whereNumber('entry_id');
+    Route::patch('/api/feedback/{entry_id}/status', [FeedbackController::class, 'updateStatus'])->whereNumber('entry_id');
+    Route::get('/api/feedback/{entry_id}/comments', [FeedbackController::class, 'comments'])->whereNumber('entry_id');
+    Route::post('/api/feedback/{entry_id}/comments', [FeedbackController::class, 'addComment'])->whereNumber('entry_id');
+    Route::delete('/api/feedback/{entry_id}/comments/{comment_id}', [FeedbackController::class, 'deleteComment'])->whereNumber(['entry_id', 'comment_id']);
 });
 
 Route::middleware(['auth.api', 'admin'])->group(function () {
     Route::get('/api/admin/stats', [AdminController::class, 'stats']);
     Route::get('/api/admin/users', [AdminController::class, 'users']);
     Route::post('/api/admin/users', [AdminController::class, 'storeUser']);
-    Route::get('/api/admin/users/{userId}/stats', [AdminController::class, 'userStats'])->whereNumber('userId');
-    Route::get('/api/admin/users/{userId}/quota', [AdminController::class, 'quota'])->whereNumber('userId');
-    Route::get('/api/admin/users/{userId}', [AdminController::class, 'showUser'])->whereNumber('userId');
-    Route::patch('/api/admin/users/{userId}', [AdminController::class, 'updateUser'])->whereNumber('userId');
-    Route::delete('/api/admin/users/{userId}', [AdminController::class, 'destroyUser'])->whereNumber('userId');
+    Route::get('/api/admin/users/{user_id}/stats', [AdminController::class, 'userStats'])->whereNumber('user_id');
+    Route::get('/api/admin/users/{user_id}/quota', [AdminController::class, 'quota'])->whereNumber('user_id');
+    Route::get('/api/admin/users/{user_id}', [AdminController::class, 'showUser'])->whereNumber('user_id');
+    Route::patch('/api/admin/users/{user_id}', [AdminController::class, 'updateUser'])->whereNumber('user_id');
+    Route::delete('/api/admin/users/{user_id}', [AdminController::class, 'destroyUser'])->whereNumber('user_id');
     Route::post('/api/admin/invite', [AdminController::class, 'invite']);
     Route::get('/api/admin/maintenance', [AdminController::class, 'maintenance']);
     Route::patch('/api/admin/maintenance', [AdminController::class, 'toggleMaintenance']);
@@ -71,6 +71,6 @@ Route::middleware(['auth.api', 'admin'])->group(function () {
     Route::post('/api/admin/dashboard-banner/translate', [AdminDashboardBannerController::class, 'translate']);
     Route::put('/api/admin/dashboard-banner', [AdminDashboardBannerController::class, 'update']);
     Route::get('/api/admin/reviews', [ReviewController::class, 'adminIndex']);
-    Route::patch('/api/admin/reviews/{reviewId}', [ReviewController::class, 'adminUpdate'])->whereNumber('reviewId');
-    Route::delete('/api/admin/reviews/{reviewId}', [ReviewController::class, 'adminDestroy'])->whereNumber('reviewId');
+    Route::patch('/api/admin/reviews/{review_id}', [ReviewController::class, 'adminUpdate'])->whereNumber('review_id');
+    Route::delete('/api/admin/reviews/{review_id}', [ReviewController::class, 'adminDestroy'])->whereNumber('review_id');
 });

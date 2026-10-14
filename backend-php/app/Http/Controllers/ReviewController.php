@@ -114,8 +114,9 @@ class ReviewController extends Controller
         ]);
     }
 
-    public function adminUpdate(Request $request, int $reviewId): JsonResponse
+    public function adminUpdate(Request $request, int $review_id): JsonResponse
     {
+        $reviewId = $review_id;
         $data = $request->json()->all();
         if (! is_array($data) || ! array_key_exists('is_approved', $data) || ! is_bool($data['is_approved'])) {
             throw new ApiException('Validation error', 422);
@@ -124,8 +125,9 @@ class ReviewController extends Controller
         return response()->json($this->admin($this->reviews->setApproval($reviewId, $data['is_approved'])));
     }
 
-    public function adminDestroy(int $reviewId): Response
+    public function adminDestroy(int $review_id): Response
     {
+        $reviewId = $review_id;
         $this->reviews->delete($reviewId);
 
         return response()->noContent();

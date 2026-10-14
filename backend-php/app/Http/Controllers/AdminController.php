@@ -134,8 +134,9 @@ class AdminController extends Controller
         return response()->json($this->present($user->refresh()));
     }
 
-    public function userStats(Request $request, int $userId): JsonResponse
+    public function userStats(Request $request, int $user_id): JsonResponse
     {
+        $userId = $user_id;
         $this->apiUser($request);
         $user = User::query()->find($userId);
         if (! $user) {
@@ -227,8 +228,9 @@ class AdminController extends Controller
         ]);
     }
 
-    public function showUser(Request $request, int $userId): JsonResponse
+    public function showUser(Request $request, int $user_id): JsonResponse
     {
+        $userId = $user_id;
         $this->apiUser($request);
         $user = User::query()->find($userId);
         if (! $user) {
@@ -238,8 +240,9 @@ class AdminController extends Controller
         return response()->json($this->present($user));
     }
 
-    public function updateUser(Request $request, int $userId): JsonResponse
+    public function updateUser(Request $request, int $user_id): JsonResponse
     {
+        $userId = $user_id;
         $admin = $this->apiUser($request);
         $user = User::query()->find($userId);
         if (! $user) {
@@ -311,8 +314,9 @@ class AdminController extends Controller
         return response()->json($this->present($user->refresh()));
     }
 
-    public function quota(Request $request, int $userId): JsonResponse
+    public function quota(Request $request, int $user_id): JsonResponse
     {
+        $userId = $user_id;
         $this->apiUser($request);
         $user = User::query()->find($userId);
         if (! $user) {
@@ -327,8 +331,9 @@ class AdminController extends Controller
         ));
     }
 
-    public function destroyUser(Request $request, int $userId): JsonResponse
+    public function destroyUser(Request $request, int $user_id): JsonResponse
     {
+        $userId = $user_id;
         $admin = $this->apiUser($request);
         $user = User::query()->find($userId);
         if (! $user) {

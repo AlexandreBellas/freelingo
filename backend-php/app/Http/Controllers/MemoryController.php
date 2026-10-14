@@ -47,10 +47,10 @@ class MemoryController extends Controller
         return response()->json($this->present($memory), 201);
     }
 
-    public function destroy(Request $request, int $memoryId): Response
+    public function destroy(Request $request, int $memory_id): Response
     {
         $user = $this->apiUser($request);
-        if (! $this->memories->delete($memoryId, $user->id)) {
+        if (! $this->memories->delete($memory_id, $user->id)) {
             throw new ApiException('Memory not found', 404);
         }
 

@@ -48,6 +48,8 @@ abstract class TestCase extends BaseTestCase
         foreach ($headers as $name => $value) {
             $server['HTTP_'.strtoupper(str_replace('-', '_', $name))] = $value;
         }
+        $previousHeaders = $this->defaultHeaders;
+        $this->defaultHeaders = [];
         $call = $this->withHeaders($headers)->withCredentials()->withUnencryptedCookies($this->cookies);
         $response = match (strtoupper($method)) {
             'GET' => $call->getJson($uri, $server),
@@ -57,6 +59,7 @@ abstract class TestCase extends BaseTestCase
             'DELETE' => $call->deleteJson($uri, $payload),
             default => $call->json($method, $uri, $payload),
         };
+        $this->defaultHeaders = $previousHeaders;
         foreach ($response->headers->getCookies() as $cookie) {
             if ($cookie->getValue() === null || $cookie->getExpiresTime() === 1) {
                 unset($this->cookies[$cookie->getName()]);

@@ -103,8 +103,9 @@ class FeedbackController extends Controller
         return response()->json($this->present($entry, $user), 201);
     }
 
-    public function markReadEndpoint(Request $request, int $entryId): JsonResponse
+    public function markReadEndpoint(Request $request, int $entry_id): JsonResponse
     {
+        $entryId = $entry_id;
         $user = $this->apiUser($request);
         $this->entryOrFail($entryId);
         $state = $this->markRead($entryId, $user->id);
@@ -115,8 +116,9 @@ class FeedbackController extends Controller
         ]);
     }
 
-    public function show(Request $request, int $entryId): JsonResponse
+    public function show(Request $request, int $entry_id): JsonResponse
     {
+        $entryId = $entry_id;
         $user = $this->apiUser($request);
         $entry = $this->entryOrFail($entryId);
         $payload = $this->present($entry, $user);
@@ -126,8 +128,9 @@ class FeedbackController extends Controller
         return response()->json($payload);
     }
 
-    public function destroy(Request $request, int $entryId): Response
+    public function destroy(Request $request, int $entry_id): Response
     {
+        $entryId = $entry_id;
         $user = $this->apiUser($request);
         $entry = $this->entryOrFail($entryId);
         if ((int) $entry->author_id !== $user->id && $user->role !== 'admin') {
@@ -138,8 +141,9 @@ class FeedbackController extends Controller
         return response()->noContent();
     }
 
-    public function vote(Request $request, int $entryId): JsonResponse
+    public function vote(Request $request, int $entry_id): JsonResponse
     {
+        $entryId = $entry_id;
         $user = $this->apiUser($request);
         $entry = $this->entryOrFail($entryId);
         if ($entry->type !== 'feature') {
@@ -164,9 +168,13 @@ class FeedbackController extends Controller
         return response()->json(['voted' => $voted, 'vote_count' => (int) $entry->vote_count]);
     }
 
-    public function updateStatus(Request $request, int $entryId): JsonResponse
+    public function updateStatus(Request $request, int $entry_id): JsonResponse
     {
+        $entryId = $entry_id;
         $user = $this->apiUser($request);
+        if ($user->role !== 'admin') {
+            throw new ApiException('Admin access required', 403);
+        }
         $data = $request->json()->all();
         $status = is_array($data) ? ($data['status'] ?? null) : null;
         if (! in_array($status, ['pending', 'planned', 'in_progress', 'done', 'declined'], true)) {
@@ -179,8 +187,9 @@ class FeedbackController extends Controller
         return response()->json($this->present($entry->refresh(), $user));
     }
 
-    public function comments(Request $request, int $entryId): JsonResponse
+    public function comments(Request $request, int $entry_id): JsonResponse
     {
+        $entryId = $entry_id;
         $this->apiUser($request);
         $this->entryOrFail($entryId);
         $comments = FeedbackComment::query()->where('entry_id', $entryId)->orderBy('created_at')->get();
@@ -189,8 +198,9 @@ class FeedbackController extends Controller
         return response()->json(['items' => $items, 'total' => count($items)]);
     }
 
-    public function addComment(Request $request, int $entryId): JsonResponse
+    public function addComment(Request $request, int $entry_id): JsonResponse
     {
+        $entryId = $entry_id;
         $user = $this->apiUser($request);
         $this->entryOrFail($entryId);
         $body = $request->json('body');
@@ -215,8 +225,10 @@ class FeedbackController extends Controller
         ], 201);
     }
 
-    public function deleteComment(Request $request, int $entryId, int $commentId): Response
+    public function deleteComment(Request $request, int $entry_id, int $comment_id): Response
     {
+        $entryId = $entry_id;
+        $commentId = $comment_id;
         $user = $this->apiUser($request);
         $this->entryOrFail($entryId);
         $comment = FeedbackComment::query()->find($commentId);

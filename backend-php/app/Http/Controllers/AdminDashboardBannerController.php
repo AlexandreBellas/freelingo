@@ -29,14 +29,15 @@ Subtitle: %s
 Description: %s
 TXT;
 
-    public function __construct(private readonly BannerTranslator $translator) {}
-
-    public function show(Request $request): JsonResponse
+    public function show(Request $request): JsonResponse|\Illuminate\Http\Response
     {
         $this->apiUser($request);
         $banner = DashboardBanner::query()->find(1);
+        if (! $banner) {
+            return response('null', 200, ['Content-Type' => 'application/json']);
+        }
 
-        return response()->json($banner ? $this->present($banner) : null);
+        return response()->json($this->present($banner));
     }
 
     public function translate(Request $request): JsonResponse
@@ -47,7 +48,7 @@ TXT;
         unset($source['source_locale']);
         $prompt = sprintf(self::PROMPT, $locale, $source['title'], $source['subtitle'], $source['description']);
         try {
-            $translations = $this->translator->translate($prompt);
+            $translations = app(BannerTranslator::class)->translate($prompt);
         } catch (\Throwable) {
             throw new ApiException('Could not translate dashboard banner', 502);
         }
