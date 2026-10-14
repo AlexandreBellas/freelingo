@@ -52,9 +52,105 @@ class QuotaService
         if ($weeklyLimit === 0) {
             return [true, 0, 0];
         }
-        $result = $this->redis->eval('', 1, $this->weekKey($userId), (string) $weeklyLimit);
+        $result = $this->redis->eval(
+            '',
+            1,
+            $this->weekKey($userId),
+            (string) $weeklyLimit,
+            (string) $this->secondsUntilMonday(),
+        );
 
         return [(bool) $result[0], (int) $result[1], $weeklyLimit];
+    }
+
+    /**
+     * @return array{0: bool, 1: int, 2: int}
+     */
+    public function checkDailyMinutes(int $userId, int $dailyMinutesLimit): array
+    {
+        $minutes = intdiv((int) ($this->redis->get($this->dayKey($userId)) ?? 0), 60);
+        if ($dailyMinutesLimit === 0) {
+            return [true, $minutes, 0];
+        }
+
+        return [$minutes < $dailyMinutesLimit, $minutes, $dailyMinutesLimit];
+    }
+
+    /**
+     * @return array{0: bool, 1: int, 2: int}
+     */
+    public function checkWeeklyMinutes(int $userId, int $weeklyMinutesLimit): array
+    {
+        $minutes = intdiv((int) ($this->redis->get($this->weeklySecondsKey($userId)) ?? 0), 60);
+        if ($weeklyMinutesLimit === 0) {
+            return [true, $minutes, 0];
+        }
+
+        return [$minutes < $weeklyMinutesLimit, $minutes, $weeklyMinutesLimit];
+    }
+
+    /**
+     * @return array{0: bool, 1: int, 2: int}
+     */
+    public function checkMonthlyTokens(int $userId, int $monthlyLimit): array
+    {
+        $used = $this->monthlyTokensUsed($userId);
+        if ($monthlyLimit === 0) {
+            return [true, $used, 0];
+        }
+
+        return [$used < $monthlyLimit, $used, $monthlyLimit];
+    }
+
+    /**
+     * @return array{0: int, 1: ?string, 2: ?string, 3: ?int}
+     */
+    public function checkAll(
+        int $userId,
+        int $monthlyTokensLimit,
+        int $dailyMinutesLimit,
+        int $weeklyMinutesLimit,
+        int $weeklySessionsLimit,
+        int $maxDuration,
+    ): array {
+        if ($monthlyTokensLimit > 0) {
+            [$ok, $used, $limit] = $this->checkMonthlyTokens($userId, $monthlyTokensLimit);
+            if (! $ok) {
+                $message = "Monthly token limit reached ({$used}/{$limit} tokens). Voice is unavailable until next month.";
+
+                return [$maxDuration, 'quota_exceeded_tokens', $message, 1008];
+            }
+        }
+
+        [$dailyOk, $minutesUsed, $minutesLimit] = $this->checkDailyMinutes($userId, $dailyMinutesLimit);
+        if (! $dailyOk) {
+            $message = "Daily time limit reached ({$minutesUsed}/{$minutesLimit} min).";
+
+            return [$maxDuration, 'quota_exceeded_time', $message, 1008];
+        }
+
+        [$weeklyOk, $weeklyUsed, $weeklyLimit] = $this->checkWeeklyMinutes($userId, $weeklyMinutesLimit);
+        if (! $weeklyOk) {
+            $message = "Weekly time limit reached ({$weeklyUsed}/{$weeklyLimit} min).";
+
+            return [$maxDuration, 'quota_exceeded_weekly_minutes', $message, 1008];
+        }
+
+        [$sessionsOk, $sessionsUsed, $sessionsLimit] = $this->checkAndIncrementSessions($userId, $weeklySessionsLimit);
+        if (! $sessionsOk) {
+            $message = "Weekly session limit reached ({$sessionsUsed}/{$sessionsLimit}).";
+
+            return [$maxDuration, 'quota_exceeded_sessions', $message, 1008];
+        }
+
+        if ($dailyMinutesLimit > 0) {
+            $maxDuration = min($maxDuration, ($dailyMinutesLimit - $minutesUsed) * 60);
+        }
+        if ($weeklyMinutesLimit > 0) {
+            $maxDuration = min($maxDuration, ($weeklyMinutesLimit - $weeklyUsed) * 60);
+        }
+
+        return [$maxDuration, null, null, null];
     }
 
     public function recordSessionSeconds(int $userId, int $seconds): void
@@ -62,8 +158,33 @@ class QuotaService
         if ($seconds <= 0) {
             return;
         }
-        $this->redis->incrby($this->dayKey($userId), $seconds);
-        $this->redis->incrby($this->weeklySecondsKey($userId), $seconds);
+        $dayKey = $this->dayKey($userId);
+        $weekKey = $this->weeklySecondsKey($userId);
+        $this->redis->incrby($dayKey, $seconds);
+        $this->redis->incrby($weekKey, $seconds);
+        if ($this->redis->ttl($dayKey) < 0) {
+            $this->redis->expire($dayKey, $this->secondsUntilMidnight());
+        }
+        if ($this->redis->ttl($weekKey) < 0) {
+            $this->redis->expire($weekKey, $this->secondsUntilMonday());
+        }
+    }
+
+    public function secondsUntilMonday(): int
+    {
+        $now = Carbon::now('UTC');
+        $daysAhead = 7 - ($now->dayOfWeekIso - 1);
+        $nextMonday = $now->copy()->addDays($daysAhead)->startOfDay();
+
+        return max($nextMonday->getTimestamp() - $now->getTimestamp(), 1);
+    }
+
+    public function secondsUntilMidnight(): int
+    {
+        $now = Carbon::now('UTC');
+        $tomorrow = $now->copy()->addDay()->startOfDay();
+
+        return max($tomorrow->getTimestamp() - $now->getTimestamp(), 1);
     }
 
     private function weekKey(int $userId): string

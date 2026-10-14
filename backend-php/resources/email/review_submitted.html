@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="{{locale}}">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{email_title}}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f5f0;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+    }
+
+    .wrapper {
+      max-width: 520px;
+      margin: 40px auto;
+      background: #ffffff;
+      border: 1px solid #d4d4cc;
+    }
+
+    .header {
+      padding: 28px 32px 20px;
+      border-bottom: 1px solid #d4d4cc;
+    }
+
+    .logo {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #1a1a18;
+    }
+
+    .body {
+      padding: 32px;
+    }
+
+    .label {
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #9b9b94;
+      margin: 0 0 4px;
+    }
+
+    .value {
+      font-size: 14px;
+      color: #1a1a18;
+      margin: 0 0 20px;
+    }
+
+    .comment-block {
+      border-left: 2px solid #d4d4cc;
+      padding: 12px 16px;
+      margin-top: 4px;
+    }
+
+    .comment-text {
+      font-size: 14px;
+      color: #6b6b64;
+      line-height: 1.6;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .cta {
+      margin-top: 28px;
+    }
+
+    .cta a {
+      display: inline-block;
+      background: #1a1a18;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 10px 20px;
+    }
+
+    .footer {
+      padding: 20px 32px;
+      border-top: 1px solid #d4d4cc;
+      font-size: 11px;
+      color: #9b9b94;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <span class="logo">● {{logo}}</span>
+    </div>
+    <div class="body">
+      <p class="label">{{author_label}}</p>
+      <p class="value">{{user_display_name}}</p>
+      <p class="label">{{rating_label}}</p>
+      <p class="value">{{rating}}</p>
+      <p class="label">{{language_label}}</p>
+      <p class="value">{{target_language}}</p>
+      <p class="label">{{comment_label}}</p>
+      <div class="comment-block">
+        <p class="comment-text">{{comment}}</p>
+      </div>
+      <div class="cta">
+        <a href="{{admin_url}}">{{cta}} &rarr;</a>
+      </div>
+    </div>
+    <div class="footer">
+      {{footer}} &mdash; <a href="{{base_url}}" style="color:#9b9b94;">{{base_url}}</a>
+    </div>
+  </div>
+</body>
+
+</html>

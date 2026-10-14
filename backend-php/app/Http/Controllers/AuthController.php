@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\Controllers\Concerns\PresentsUsers;
 use App\Models\User;
 use App\Models\UserLanguage;
+use App\Services\AvatarService;
 use App\Services\Email\EmailService;
 use App\Services\QuotaService;
 use App\Services\Redis\ArrayRedis;
@@ -46,6 +47,7 @@ class AuthController extends Controller
         private readonly EmailService $email,
         private readonly UserLanguageService $languages,
         private readonly QuotaService $quotas,
+        private readonly AvatarService $avatars,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -354,6 +356,7 @@ class AuthController extends Controller
         $email = $user->email;
         $name = $user->display_name;
         $locale = $user->native_language;
+        $this->avatars->deleteStoredFile($user);
         $user->delete();
         try {
             $this->email->sendAccountDeletedEmail($email, $name, $locale);
@@ -379,6 +382,31 @@ class AuthController extends Controller
         $quota['tokens_unlimited'] = (int) $user->monthly_tokens_limit === 0;
 
         return response()->json($quota);
+    }
+
+    public function uploadAvatar(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->attributes->get('user');
+        $updated = $this->avatars->upload($user, $request->file('file'));
+
+        return response()->json($this->userPayload($updated));
+    }
+
+    public function avatarFile(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $request->attributes->get('user');
+
+        return $this->avatars->file($user);
+    }
+
+    public function deleteAvatar(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->attributes->get('user');
+
+        return response()->json($this->userPayload($this->avatars->delete($user)));
     }
 
     public function verifyEmail(Request $request): JsonResponse

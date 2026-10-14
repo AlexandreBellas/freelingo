@@ -22,6 +22,9 @@ Route::prefix('/api/auth')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/quota', [AuthController::class, 'quota']);
         Route::patch('/me', [AuthController::class, 'updateMe']);
+        Route::post('/me/avatar', [AuthController::class, 'uploadAvatar']);
+        Route::get('/me/avatar-file', [AuthController::class, 'avatarFile']);
+        Route::delete('/me/avatar', [AuthController::class, 'deleteAvatar']);
         Route::delete('/me', [AuthController::class, 'deleteMe']);
         Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
     });

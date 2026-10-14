@@ -11,9 +11,13 @@ class ArrayRedis
     /** @var array<string, string> */
     private array $store = [];
 
+    /** @var array<string, int> */
+    private array $expiresAt = [];
+
     public function setex(string $key, int $ttl, string $value): void
     {
         $this->store[$key] = $value;
+        $this->expiresAt[$key] = time() + $ttl;
     }
 
     public function set(string $key, string $value, mixed ...$args): bool
@@ -41,7 +45,7 @@ class ArrayRedis
 
     public function delete(string $key): void
     {
-        unset($this->store[$key]);
+        unset($this->store[$key], $this->expiresAt[$key]);
     }
 
     public function getex(string $key): ?string
@@ -80,11 +84,22 @@ class ArrayRedis
 
     public function expire(string $key, int $ttl): void
     {
+        if (array_key_exists($key, $this->store)) {
+            $this->expiresAt[$key] = time() + $ttl;
+        }
     }
 
     public function ttl(string $key): int
     {
-        return array_key_exists($key, $this->store) ? -1 : -2;
+        if (! array_key_exists($key, $this->store)) {
+            return -2;
+        }
+        if (! array_key_exists($key, $this->expiresAt)) {
+            return -1;
+        }
+        $remaining = $this->expiresAt[$key] - time();
+
+        return $remaining > 0 ? $remaining : -2;
     }
 
     /**
@@ -100,6 +115,10 @@ class ArrayRedis
             return [0, $current];
         }
         $new = $this->incr($key);
+        $ttl = (int) ($args[2] ?? 0);
+        if ($new === 1 && $ttl > 0) {
+            $this->expire($key, $ttl);
+        }
 
         return [1, $current];
     }
@@ -112,5 +131,6 @@ class ArrayRedis
     public function flush(): void
     {
         $this->store = [];
+        $this->expiresAt = [];
     }
 }
