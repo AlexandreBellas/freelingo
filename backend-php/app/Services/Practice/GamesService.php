@@ -180,7 +180,8 @@ final class GamesService
             }
             $content = $this->generateContent($session);
         } catch (\Throwable $exception) {
-            $error = str_contains(strtolower($exception->getMessage()), 'timeout') ? 'timeout' : 'generation_failed';
+            $message = strtolower($exception->getMessage());
+            $error = str_contains($message, 'timeout') || str_contains($message, 'timed out') ? 'timeout' : 'generation_failed';
         }
         $session = GameSession::query()->find($sessionId);
         $admission = GameAdmission::query()->find($sessionId);
@@ -264,14 +265,40 @@ final class GamesService
 
                 continue;
             }
-            if ($session->game_type === 'sentence-order') {
-                $challenges = array_map(fn (array $challenge) => $this->shuffleOrder($challenge), $challenges);
+            $recent = $context['recent_sentences'] ?? [];
+            $repeated = false;
+            foreach ($challenges as $challenge) {
+                if (in_array($challenge['sentence'] ?? '', $recent, true)) {
+                    $repeated = true;
+                }
+            }
+            if ($repeated) {
+                $rejection = "\nPrevious candidate rejected: do not repeat recent sentences.";
+
+                continue;
+            }
+            try {
+                if ($session->game_type === 'sentence-order') {
+                    self::validateSentenceOrderContent(['challenges' => $challenges]);
+                } elseif ($session->game_type === 'vocabulary-pairs') {
+                    self::validateVocabularyPairs(['challenges' => $challenges]);
+                } else {
+                    self::validateDetectiveContent(['challenges' => $challenges]);
+                }
+            } catch (\InvalidArgumentException $exception) {
+                $rejection = "\nPrevious candidate rejected: ".$exception->getMessage();
+
+                continue;
             }
             $review = $this->llm->structuredOutput(
                 [['role' => 'system', 'content' => $reviewer($prompt, ['challenges' => $challenges])]],
                 deadline: (float) $deadline,
             );
             if (($review['valid'] ?? false) === true) {
+                if ($session->game_type === 'sentence-order') {
+                    $challenges = array_map(fn (array $challenge) => $this->shuffleOrderChallenge($challenge), $challenges);
+                }
+
                 return $challenges;
             }
             $rejection = "\nPrevious candidate rejected; create a new one. Audit: ".($review['reason'] ?? '');
@@ -283,7 +310,213 @@ final class GamesService
      * @param  array<string, mixed>  $challenge
      * @return array<string, mixed>
      */
-    private function shuffleOrder(array $challenge): array
+    /**
+     * @param  array<string, mixed>  $challenge
+     */
+    public static function validateDetectiveChallenge(array $challenge): void
+    {
+        $sentence = $challenge['sentence'] ?? null;
+        $fragments = $challenge['fragments'] ?? null;
+        $options = $challenge['options'] ?? null;
+        $explanation = $challenge['explanation'] ?? '';
+        $source = $challenge['source_id'] ?? '';
+        $errorIndex = $challenge['error_index'] ?? null;
+        $correctIndex = $challenge['correct_index'] ?? null;
+        $corrected = $challenge['corrected_sentence'] ?? null;
+        if (! is_string($sentence) || mb_strlen($sentence) < 3 || mb_strlen($sentence) > 500
+            || ! is_array($fragments) || count($fragments) < 3 || count($fragments) > 20
+            || ! is_array($options) || count($options) !== 3
+            || ! is_int($errorIndex) || $errorIndex < 0 || $errorIndex > 19
+            || ! is_int($correctIndex) || $correctIndex < 0 || $correctIndex > 2
+            || ! is_string($corrected) || mb_strlen($corrected) < 3
+            || ! is_string($explanation) || mb_strlen($explanation) < 10
+            || ! is_string($source) || $source === '') {
+            throw new \InvalidArgumentException('Invalid detective challenge');
+        }
+        $parts = [];
+        foreach ($fragments as $part) {
+            if (! is_string($part) || trim($part) === '' || mb_strlen($part) > 200) {
+                throw new \InvalidArgumentException('Each fragment must contain selectable text');
+            }
+            $parts[] = $part;
+        }
+        if (implode('', $parts) !== $sentence) {
+            throw new \InvalidArgumentException('Fragments must concatenate exactly to the sentence');
+        }
+        if ($errorIndex >= count($parts)) {
+            throw new \InvalidArgumentException('Invalid error index');
+        }
+        $normalized = [];
+        foreach ($options as $option) {
+            if (! is_string($option)) {
+                throw new \InvalidArgumentException('Options must be nonempty and distinct');
+            }
+            $folded = self::fold($option);
+            if ($folded === '' || mb_strlen($option) > 200) {
+                throw new \InvalidArgumentException('Options must be nonempty and distinct');
+            }
+            $normalized[] = $folded;
+        }
+        if (count(array_unique($normalized)) !== 3) {
+            throw new \InvalidArgumentException('Options must be nonempty and distinct');
+        }
+        if (in_array(self::fold($parts[$errorIndex]), $normalized, true)) {
+            throw new \InvalidArgumentException('No option may repeat the erroneous fragment');
+        }
+        $replaced = $parts;
+        $replaced[$errorIndex] = $options[$correctIndex];
+        if (implode('', $replaced) !== $corrected) {
+            throw new \InvalidArgumentException('The correction must replace exactly one fragment');
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $content
+     */
+    public static function validateDetectiveContent(array $content): void
+    {
+        self::validateDistinctSentences($content, fn (array $challenge) => self::validateDetectiveChallenge($challenge));
+    }
+
+    /**
+     * @param  array<string, mixed>  $challenge
+     */
+    public static function validateSentenceOrderChallenge(array $challenge): void
+    {
+        $sentence = $challenge['sentence'] ?? null;
+        $clue = $challenge['clue'] ?? null;
+        $fragments = $challenge['fragments'] ?? null;
+        $separator = $challenge['separator'] ?? null;
+        $orders = $challenge['accepted_orders'] ?? null;
+        $explanation = $challenge['explanation'] ?? '';
+        $source = $challenge['source_id'] ?? '';
+        if (! is_string($sentence) || mb_strlen($sentence) < 3
+            || ! is_string($clue) || mb_strlen($clue) < 3
+            || ! is_array($fragments) || count($fragments) < 3 || count($fragments) > 12
+            || ! in_array($separator, ['', ' '], true)
+            || ! is_array($orders) || $orders === [] || count($orders) > 8
+            || ! is_string($explanation) || mb_strlen($explanation) < 10
+            || ! is_string($source) || $source === '') {
+            throw new \InvalidArgumentException('Invalid sentence-order challenge');
+        }
+        $parts = [];
+        foreach ($fragments as $part) {
+            if (! is_string($part) || trim($part) === '' || $part !== trim($part) || mb_strlen($part) > 200) {
+                throw new \InvalidArgumentException('Fragments must be nonempty, bounded and have no boundary whitespace');
+            }
+            $parts[] = $part;
+        }
+        $sentences = [];
+        foreach ($orders as $order) {
+            if (! is_array($order) || ! array_is_list($order)) {
+                throw new \InvalidArgumentException('Every solution must use each fragment exactly once');
+            }
+            $indexes = [];
+            foreach ($order as $index) {
+                if (! is_int($index)) {
+                    throw new \InvalidArgumentException('Every solution must use each fragment exactly once');
+                }
+                $indexes[] = $index;
+            }
+            $sorted = $indexes;
+            sort($sorted);
+            if ($sorted !== range(0, count($parts) - 1)) {
+                throw new \InvalidArgumentException('Every solution must use each fragment exactly once');
+            }
+            $sentences[] = implode($separator, array_map(fn (int $index) => $parts[$index], $indexes));
+        }
+        if ($sentences[0] !== $sentence) {
+            throw new \InvalidArgumentException('The first solution must reconstruct the sentence exactly');
+        }
+        if (count(array_unique($sentences)) !== count($sentences)) {
+            throw new \InvalidArgumentException('Solutions must be textually distinct');
+        }
+        if (count(array_unique($parts)) < 2) {
+            throw new \InvalidArgumentException('The challenge must admit an incorrect arrangement');
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $content
+     */
+    public static function validateSentenceOrderContent(array $content): void
+    {
+        self::validateDistinctSentences($content, fn (array $challenge) => self::validateSentenceOrderChallenge($challenge));
+    }
+
+    /**
+     * @param  array<string, mixed>  $content
+     */
+    public static function validateVocabularyPairs(array $content): void
+    {
+        $challenges = $content['challenges'] ?? null;
+        if (! is_array($challenges) || count($challenges) !== 5) {
+            throw new \InvalidArgumentException('Five challenges are required');
+        }
+        foreach (['term', 'meaning'] as $field) {
+            $values = [];
+            foreach ($challenges as $challenge) {
+                if (! is_array($challenge)) {
+                    throw new \InvalidArgumentException('Five distinct nonempty terms and meanings are required');
+                }
+                $raw = $challenge[$field] ?? null;
+                $sentence = $challenge['sentence'] ?? '';
+                $translation = $challenge['translation'] ?? '';
+                $source = $challenge['source_id'] ?? '';
+                if (! is_string($raw) || ! is_string($sentence) || mb_strlen($sentence) < 3
+                    || ! is_string($translation) || mb_strlen($translation) < 3
+                    || ! is_string($source) || $source === '') {
+                    throw new \InvalidArgumentException('Five distinct nonempty terms and meanings are required');
+                }
+                $folded = self::fold($raw);
+                if ($folded === '') {
+                    throw new \InvalidArgumentException('Five distinct nonempty terms and meanings are required');
+                }
+                $values[] = $folded;
+            }
+            if (count(array_unique($values)) !== 5) {
+                throw new \InvalidArgumentException('Five distinct nonempty terms and meanings are required');
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $content
+     * @param  callable(array<string, mixed>): void  $validate
+     */
+    private static function validateDistinctSentences(array $content, callable $validate): void
+    {
+        $challenges = $content['challenges'] ?? null;
+        if (! is_array($challenges) || count($challenges) !== 5) {
+            throw new \InvalidArgumentException('Five challenges are required');
+        }
+        $sentences = [];
+        foreach ($challenges as $challenge) {
+            if (! is_array($challenge)) {
+                throw new \InvalidArgumentException('Five different sentences are required');
+            }
+            $validate($challenge);
+            $sentences[] = mb_strtolower(trim((string) $challenge['sentence']));
+        }
+        if (count(array_unique($sentences)) !== 5) {
+            throw new \InvalidArgumentException('Five different sentences are required');
+        }
+    }
+
+    private static function fold(string $value): string
+    {
+        $value = trim($value);
+        if (class_exists(\Normalizer::class)) {
+            $normalized = \Normalizer::normalize($value, \Normalizer::FORM_KC);
+            if (is_string($normalized)) {
+                $value = $normalized;
+            }
+        }
+
+        return mb_strtolower($value, 'UTF-8');
+    }
+
+    public function shuffleOrderChallenge(array $challenge): array
     {
         $fragments = array_values($challenge['fragments'] ?? []);
         $separator = (string) ($challenge['separator'] ?? ' ');
@@ -434,6 +667,7 @@ final class GamesService
         if (! $session) {
             throw new ApiException('game_not_found', 404);
         }
+        $this->assertAnswerShape($session, $body);
         if (! in_array($session->status, ['ready', 'completed'], true)) {
             throw new ApiException('game_not_ready', 409);
         }
@@ -552,6 +786,51 @@ final class GamesService
             : $choice === $challenge[($body['step'] ?? '') === 'detect' ? 'error_index' : 'correct_index'];
 
         return ['session' => $session->fresh(), 'answer_number' => $previousCount + 1, 'correct' => $actionCorrect];
+    }
+
+    /**
+     * @param  array<string, mixed>  $body
+     */
+    private function assertAnswerShape(GameSession $session, array $body): void
+    {
+        $step = $body['step'] ?? null;
+        if ($session->game_type === 'vocabulary-pairs') {
+            if ($step !== 'match') {
+                throw new ApiException('invalid_game_answer', 422);
+            }
+            foreach (['attempt' => [0, 24], 'challenge' => [0, 4], 'choice' => [0, 4]] as $field => [$min, $max]) {
+                $value = $body[$field] ?? null;
+                if (! is_int($value) || $value < $min || $value > $max) {
+                    throw new ApiException('invalid_game_answer', 422);
+                }
+            }
+
+            return;
+        }
+        $challenge = $body['challenge'] ?? null;
+        if (! is_int($challenge) || $challenge < 0 || $challenge > 4) {
+            throw new ApiException('invalid_game_answer', 422);
+        }
+        if ($session->game_type === 'sentence-order') {
+            if ($step !== 'order' || ! is_array($body['order'] ?? null) || ! array_is_list($body['order'])) {
+                throw new ApiException('invalid_game_answer', 422);
+            }
+            $order = $body['order'];
+            if (count($order) < 3 || count($order) > 12) {
+                throw new ApiException('invalid_game_answer', 422);
+            }
+            foreach ($order as $index) {
+                if (! is_int($index) || $index < 0 || $index > 11) {
+                    throw new ApiException('invalid_game_answer', 422);
+                }
+            }
+
+            return;
+        }
+        $choice = $body['choice'] ?? null;
+        if (! in_array($step, ['detect', 'correct'], true) || ! is_int($choice) || $choice < 0 || $choice > 19) {
+            throw new ApiException('invalid_game_answer', 422);
+        }
     }
 
     /**

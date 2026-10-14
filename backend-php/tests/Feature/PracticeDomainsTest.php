@@ -163,16 +163,6 @@ class PracticeDomainsTest extends TestCase
         $catalog = $this->api('GET', '/api/games/detective', [], $headers);
         $catalog->assertOk();
         $this->assertTrue($catalog->json('modes.free.available'));
-        $slug = null;
-        foreach ($catalog->json() ? [] : [] as $ignored) {
-        }
-        $topics = $this->api('GET', '/api/grammar?language=en-US', [], $headers)->json('topics');
-        foreach ($topics as $topic) {
-            if ($topic['level'] === 'A1') {
-                $slug = $topic['slug'];
-                break;
-            }
-        }
         $adapter = new LlmAdapter('ollama', 'test');
         $step = 0;
         $adapter->responder = function () use (&$step) {
@@ -180,16 +170,21 @@ class PracticeDomainsTest extends TestCase
             $source = \App\Models\GameSession::query()->latest('created_at')->first();
             $sourceId = $source?->context['sources'][0]['source_id'] ?? 'grammar:unknown';
             if ($step % 2 === 1) {
-                return json_encode(['challenges' => [[
-                    'sentence' => 'She go home yesterday.',
-                    'fragments' => ['She', 'go', 'home', 'yesterday.'],
-                    'error_index' => 1,
-                    'options' => ['goes', 'went', 'gone'],
-                    'correct_index' => 1,
-                    'corrected_sentence' => 'She went home yesterday.',
-                    'explanation' => 'Past simple uses went, not go.',
-                    'source_id' => $sourceId,
-                ]]]);
+                $challenges = [];
+                for ($i = 0; $i < 5; $i++) {
+                    $challenges[] = [
+                        'sentence' => "She go home yesterday {$i}.",
+                        'fragments' => ['She ', 'go ', "home yesterday {$i}."],
+                        'error_index' => 1,
+                        'options' => ['goes ', 'went ', 'gone '],
+                        'correct_index' => 1,
+                        'corrected_sentence' => "She went home yesterday {$i}.",
+                        'explanation' => 'Past simple uses went, not go.',
+                        'source_id' => $sourceId,
+                    ];
+                }
+
+                return json_encode(['challenges' => $challenges]);
             }
 
             return json_encode(['valid' => true, 'reason' => 'ok']);
@@ -205,19 +200,23 @@ class PracticeDomainsTest extends TestCase
         $session = $this->api('GET', '/api/games/sessions/'.$requestId, [], $headers);
         $session->assertOk()->assertJsonPath('status', 'ready');
         $this->assertArrayNotHasKey('error_index', $session->json('challenges.0'));
-        $detected = $this->api('POST', '/api/games/sessions/'.$requestId.'/answer', [
-            'challenge' => 0,
-            'step' => 'detect',
-            'choice' => 1,
-        ], $headers);
-        $detected->assertOk();
-        $this->assertSame(1, $detected->json('challenges.0.error_index'));
-        $corrected = $this->api('POST', '/api/games/sessions/'.$requestId.'/answer', [
-            'challenge' => 0,
-            'step' => 'correct',
-            'choice' => 1,
-        ], $headers);
-        $corrected->assertOk()->assertJsonPath('status', 'completed');
+        $corrected = null;
+        for ($i = 0; $i < 5; $i++) {
+            $detected = $this->api('POST', '/api/games/sessions/'.$requestId.'/answer', [
+                'challenge' => $i,
+                'step' => 'detect',
+                'choice' => 1,
+            ], $headers);
+            $detected->assertOk();
+            $this->assertSame(1, $detected->json('challenges.'.$i.'.error_index'));
+            $corrected = $this->api('POST', '/api/games/sessions/'.$requestId.'/answer', [
+                'challenge' => $i,
+                'step' => 'correct',
+                'choice' => 1,
+            ], $headers);
+            $corrected->assertOk();
+        }
+        $corrected->assertJsonPath('status', 'completed');
         $this->assertGreaterThan(0, $corrected->json('xp_earned'));
     }
 

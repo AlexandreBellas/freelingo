@@ -95,10 +95,7 @@ final class ConversationPipeline
             'languagePromptOverlay' => Prompts::languageOverlay($targetLanguage),
             'lessonPracticeContext' => $lessonPracticeContext,
         ];
-        $this->systemPrompt = Prompts::buildConversationSystemPrompt(
-            ...$this->promptArgs,
-            memoryToolsEnabled: $this->memoryToolsAvailable,
-        );
+        $this->systemPrompt = $this->renderPrompt($this->memoryToolsAvailable);
         if ($initialContext) {
             foreach ($initialContext as $message) {
                 if (! is_array($message)) {
@@ -143,6 +140,33 @@ final class ConversationPipeline
         return $models;
     }
 
+    public function refreshMemoryPrompt(): void
+    {
+        $this->systemPrompt = $this->renderPrompt($this->memoryToolsAvailable);
+        if ($this->userId === null) {
+            return;
+        }
+        try {
+            $rows = Memory::query()->where('user_id', $this->userId)->orderBy('created_at')->orderBy('id')->get()->all();
+            $user = User::query()->find($this->userId);
+            if ($user) {
+                $this->promptArgs['nativeLanguage'] = Languages::nativeName((string) $user->native_language);
+            }
+            $this->memoryContext = ChatService::memoryContext($rows);
+            $this->promptArgs['memoryContext'] = $this->memoryContext;
+            $this->systemPrompt = $this->renderPrompt($this->memoryToolsAvailable);
+        } catch (\Throwable) {
+        }
+    }
+
+    private function renderPrompt(bool $tools): string
+    {
+        return Prompts::buildConversationSystemPrompt(
+            ...$this->promptArgs,
+            memoryToolsEnabled: $tools,
+        );
+    }
+
     /**
      * @return list<string>
      */
@@ -184,7 +208,7 @@ final class ConversationPipeline
     {
         $turn = ++$this->turnId;
         $trigger = ['role' => 'user', 'content' => '[Session started. Greet the student warmly and naturally — one or two sentences max — and invite them to speak.]'];
-        $prompt = Prompts::buildConversationSystemPrompt(...$this->promptArgs, memoryToolsEnabled: false);
+        $prompt = $this->renderPrompt(false);
         $messages = [['role' => 'system', 'content' => $prompt], ...array_slice($this->history, -20), $trigger];
         try {
             $raw = $this->llm->chat($messages, true);
@@ -197,6 +221,7 @@ final class ConversationPipeline
             $events = [...$events, ...$this->speak($clean, $turn, 'assistant')];
             $this->history[] = ['role' => 'assistant', 'content' => $clean];
             $this->saveMessage('assistant', $clean, null);
+            $events[] = ['type' => 'status', 'value' => 'listening', 'turn_id' => $turn];
             $events[] = ['type' => 'turn_complete', 'turn_id' => $turn];
 
             return $events;
@@ -212,7 +237,7 @@ final class ConversationPipeline
     /**
      * @return list<array<string, mixed>>
      */
-    public function processAudio(string $audio, string $filename = 'audio.webm', string $mime = 'audio/webm'): array
+    public function processAudio(string $audio, string $filename = 'audio.wav', string $mime = 'audio/wav'): array
     {
         $this->cancelled = false;
         $turn = ++$this->turnId;
@@ -220,10 +245,10 @@ final class ConversationPipeline
         try {
             $text = $this->stt->transcribe($audio, $filename, $mime, Languages::iso639($this->targetLanguage));
         } catch (\Throwable $error) {
-            return [...$events, ['type' => 'error', 'code' => 'stt_error', 'message' => $error->getMessage(), 'turn_id' => $turn]];
+            return [...$events, ['type' => 'error', 'code' => 'stt_failed', 'message' => $error->getMessage(), 'turn_id' => $turn]];
         }
         if (trim($text) === '') {
-            return [...$events, ['type' => 'turn_complete', 'turn_id' => $turn]];
+            return [...$events, ['type' => 'status', 'value' => 'listening', 'turn_id' => $turn]];
         }
 
         return [...$events, ...$this->processTranscript($text, $turn)];
@@ -241,26 +266,33 @@ final class ConversationPipeline
             return [['type' => 'turn_complete', 'turn_id' => $turn]];
         }
         $this->history[] = ['role' => 'user', 'content' => $text];
-        $userId = $this->saveMessage('user', $text, null);
+        $this->refreshMemoryPrompt();
         $events = [
-            ['type' => 'transcript', 'role' => 'user', 'text' => $text, 'turn_id' => $turn],
+            ['type' => 'transcript', 'role' => 'user', 'text' => $text, 'final' => true, 'turn_id' => $turn],
             ['type' => 'status', 'value' => 'thinking', 'turn_id' => $turn],
         ];
         $native = $this->promptArgs['nativeLanguage'];
-        $tool = new LlmTool('save_user_memory', "Save one durable fact in {$native}.", [
-            'type' => 'object',
-            'properties' => ['content' => ['type' => 'string']],
-            'required' => ['content'],
-        ]);
+        $tool = new LlmTool(
+            'save_user_memory',
+            "Save one durable, useful fact about the student for future conversations. Write the fact in the student's native language: {$native}.",
+            [
+                'type' => 'object',
+                'properties' => ['content' => ['type' => 'string', 'maxLength' => MemoryService::MAX_MEMORY_CHARS]],
+                'required' => ['content'],
+                'additionalProperties' => false,
+            ],
+        );
         $messages = [['role' => 'system', 'content' => $this->systemPrompt], ...array_slice($this->history, -20)];
+        $fallback = [['role' => 'system', 'content' => $this->renderPrompt(false)], ...array_slice($this->history, -20)];
+        $stream = null;
         try {
             $raw = $this->memoryToolsAvailable
-                ? $this->llm->chat($messages, true, [$tool], fn (LlmToolCall $call) => $this->executeMemory($call))
+                ? $this->llm->chat($messages, true, [$tool], fn (LlmToolCall $call) => $this->executeMemory($call), $fallback)
                 : $this->llm->chat($messages, true);
-        } catch (LlmTimeoutError $error) {
-            return [...$events, ['type' => 'error', 'code' => 'llm_timeout', 'message' => $error->getMessage(), 'turn_id' => $turn]];
-        } catch (LlmUnavailableError $error) {
-            return [...$events, ['type' => 'error', 'code' => 'llm_unavailable', 'message' => $error->getMessage(), 'turn_id' => $turn]];
+        } catch (LlmTimeoutError|LlmUnavailableError|\Throwable $error) {
+            $this->popTrailingUser();
+
+            return [...$events, ['type' => 'error', 'code' => 'llm_failed', 'message' => $error->getMessage(), 'turn_id' => $turn]];
         }
         if ($this->cancelled) {
             $this->popTrailingUser();
@@ -270,40 +302,84 @@ final class ConversationPipeline
         $spoken = '';
         $memorySent = false;
         $stream = $raw instanceof LlmStream ? $raw : new LlmStream([(string) $raw]);
-        foreach ($stream as $chunk) {
-            if ($chunk instanceof LlmToolResultEvent) {
-                if (($chunk->result->content['saved'] ?? false) === true && ! $memorySent) {
-                    $memorySent = true;
-                    $events[] = ['type' => 'memory_updated', 'turn_id' => $turn];
+        try {
+            foreach ($stream as $chunk) {
+                if ($chunk instanceof \Throwable) {
+                    throw $chunk;
                 }
+                if ($chunk instanceof LlmToolResultEvent) {
+                    $this->noteMemory($events, $turn, $memorySent, $chunk->result->content);
 
-                continue;
-            }
-            if ($chunk instanceof LlmStreamReset) {
-                $spoken = '';
-                $events[] = ['type' => 'response_reset', 'turn_id' => $turn];
+                    continue;
+                }
+                if ($chunk instanceof LlmStreamReset) {
+                    $spoken = '';
+                    $events[] = ['type' => 'response_reset', 'turn_id' => $turn];
 
-                continue;
+                    continue;
+                }
+                if (is_string($chunk)) {
+                    $spoken .= $chunk;
+                }
             }
-            if (is_string($chunk)) {
-                $spoken .= $chunk;
-            }
+        } catch (\Throwable $error) {
+            $this->noteStreamMemory($stream, $events, $turn, $memorySent);
+            $this->disableTools($stream);
+            $this->popTrailingUser();
+
+            return [...$events, ['type' => 'error', 'code' => 'llm_failed', 'message' => $error->getMessage(), 'turn_id' => $turn]];
         }
+        $this->noteStreamMemory($stream, $events, $turn, $memorySent);
+        $this->disableTools($stream);
         $clean = self::cleanSentence($spoken);
         if ($clean === '') {
+            $this->popTrailingUser();
+            $events[] = ['type' => 'status', 'value' => 'listening', 'turn_id' => $turn];
             $events[] = ['type' => 'turn_complete', 'turn_id' => $turn];
 
             return $events;
         }
         $events = [...$events, ...$this->speak($clean, $turn, 'assistant')];
         $this->history[] = ['role' => 'assistant', 'content' => $clean];
-        $this->saveMessage('assistant', $clean, $userId);
+        $this->saveTurn($text, $clean);
         if ($stream->promptTokens !== null || $stream->completionTokens !== null) {
             $this->saveUsage($stream);
         }
+        $events[] = ['type' => 'status', 'value' => 'listening', 'turn_id' => $turn];
         $events[] = ['type' => 'turn_complete', 'turn_id' => $turn];
 
         return $events;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $events
+     * @param  array<string, mixed>  $content
+     */
+    private function noteMemory(array &$events, int $turn, bool &$sent, array $content): void
+    {
+        if (($content['saved'] ?? false) === true && ! $sent) {
+            $sent = true;
+            $events[] = ['type' => 'memory_updated', 'turn_id' => $turn];
+        }
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $events
+     */
+    private function noteStreamMemory(LlmStream $stream, array &$events, int $turn, bool &$sent): void
+    {
+        foreach ($stream->toolResults as $result) {
+            $this->noteMemory($events, $turn, $sent, $result->content);
+        }
+    }
+
+    private function disableTools(LlmStream $stream): void
+    {
+        if (! $stream->toolsUnsupported) {
+            return;
+        }
+        $this->memoryToolsAvailable = false;
+        $this->refreshMemoryPrompt();
     }
 
     /**
@@ -356,7 +432,7 @@ final class ConversationPipeline
     {
         $events = [];
         $sent = 0;
-        $transcript = ['type' => 'transcript', 'role' => $role, 'text' => $text, 'turn_id' => $turn];
+        $transcript = ['type' => 'transcript', 'role' => $role, 'text' => $text, 'final' => true, 'turn_id' => $turn];
         foreach (self::splitTtsSentences($text) as $sentence) {
             try {
                 $audio = $this->tts->synthesize($sentence, $this->voice !== '' ? $this->voice : null, $this->targetLanguage);
@@ -394,22 +470,43 @@ final class ConversationPipeline
         return $text;
     }
 
-    private function saveMessage(string $role, string $content, ?int $replyTo): ?int
+    private function saveTurn(string $userText, string $assistantText): void
+    {
+        if ($this->userId === null || $this->conversationId === null) {
+            return;
+        }
+        try {
+            $completed = Carbon::now('UTC');
+            $replyTo = $this->saveMessage('user', $userText, null, $completed);
+            $responseId = $this->saveMessage('assistant', $assistantText, $replyTo, $completed);
+            Conversation::query()->where('id', $this->conversationId)->update(['updated_at' => $completed]);
+            if ($responseId !== null) {
+                app(\App\Services\Learning\ProgressRewards::class)->rewardConversation($responseId);
+            }
+        } catch (\Throwable) {
+        }
+    }
+
+    private function saveMessage(string $role, string $content, ?int $replyTo, ?Carbon $createdAt = null): ?int
     {
         if ($this->userId === null || $this->conversationId === null || trim($content) === '') {
             return null;
         }
-        $row = ChatHistory::query()->create([
-            'user_id' => $this->userId,
-            'conversation_id' => $this->conversationId,
-            'role' => $role,
-            'content' => $content,
-            'created_at' => Carbon::now('UTC'),
-            'study_plan_id' => $this->studyPlanId,
-            'target_language' => $this->targetLanguage,
-            'modality' => 'voice',
-            'reply_to_id' => $replyTo,
-        ]);
+        try {
+            $row = ChatHistory::query()->create([
+                'user_id' => $this->userId,
+                'conversation_id' => $this->conversationId,
+                'role' => $role,
+                'content' => $content,
+                'created_at' => $createdAt ?? Carbon::now('UTC'),
+                'study_plan_id' => $this->studyPlanId,
+                'target_language' => $this->targetLanguage,
+                'modality' => 'voice',
+                'reply_to_id' => $replyTo,
+            ]);
+        } catch (\Throwable) {
+            return null;
+        }
 
         return $row->id;
     }
@@ -419,15 +516,18 @@ final class ConversationPipeline
         if ($this->userId === null) {
             return;
         }
-        LlmUsage::query()->create([
-            'user_id' => $this->userId,
-            'source' => 'voice',
-            'prompt_tokens' => $stream->promptTokens,
-            'completion_tokens' => $stream->completionTokens,
-            'total_tokens' => $stream->totalTokens,
-            'created_at' => Carbon::now('UTC'),
-            'study_plan_id' => $this->studyPlanId,
-        ]);
+        try {
+            LlmUsage::query()->create([
+                'user_id' => $this->userId,
+                'source' => 'voice',
+                'prompt_tokens' => $stream->promptTokens,
+                'completion_tokens' => $stream->completionTokens,
+                'total_tokens' => $stream->totalTokens,
+                'created_at' => Carbon::now('UTC'),
+                'study_plan_id' => $this->studyPlanId,
+            ]);
+        } catch (\Throwable) {
+        }
     }
 }
 
