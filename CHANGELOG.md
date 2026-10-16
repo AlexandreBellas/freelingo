@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.35] - 2026-10-16
+
+### Added
+
+- Reproducible repository-local development setup with checksum-verified Python and Node runtimes, pinned npm/pip and Python development tools, isolated caches and a shared command runner for tests and formatting.
+
+### Fixed
+
+- Vocabulary sets open and can be added to flashcards when an active study plan exists, without incorrectly reporting a language or plan change on every retry.
+
 ## [1.10.30] - 2026-10-12
 
 ### Added

@@ -30,6 +30,7 @@ async def test_generate_study_plan(client, test_user):
     assert response.status_code == 200
     data = response.json()
     assert data["cefr_level"] == "A2"
+    assert data["target_language"] == user.target_language
     assert data["goals"] == ["grammar", "vocabulary"]
     assert data["is_active"] is True
 
@@ -52,6 +53,7 @@ async def test_get_current_plan_after_generate(client, test_user):
     data = response.json()
     assert data is not None
     assert data["cefr_level"] == "A1"
+    assert data["target_language"] == user.target_language
     assert data["goals"] == ["vocabulary"]
 
 

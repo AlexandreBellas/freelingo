@@ -1,51 +1,87 @@
 # Development
 
-## Requirements
+## Local validation environment
 
-- [OrbStack](https://orbstack.dev/) or [Colima](https://github.com/abiosoft/colima) + Docker CLI
-- Node.js and Python are **not** required locally — everything runs in containers
+Local work uses backend tests/static checks and frontend lint, typecheck and unit tests. Backend
+tests use in-memory SQLite and mocked services. Docker and a running application are not required;
+deployment checks belong to the maintainer. Container configuration is documented in
+`specs/docker.instructions.md`.
 
-## Setup (one time)
+The supported hosts are macOS and glibc-based Linux on arm64 or x86_64. Bootstrap needs the OS utilities
+Bash, curl, tar and a SHA-256 utility (`shasum` or `sha256sum`), plus network access. Python, Node,
+npm, pip and project libraries are installed inside this checkout. No Homebrew installation or global
+package-manager setup is needed.
 
-### 1. Store secrets in macOS Keychain
+## Setup
 
-```bash
-security add-generic-password -a openai    -s freelingo -w "sk-your-key"
-security add-generic-password -a postgres  -s freelingo -w "devpass"
-security add-generic-password -a redis     -s freelingo -w "devpass"
-security add-generic-password -a secretkey -s freelingo -w "$(openssl rand -hex 32)"
-```
-
-### 2. Start the stack
+From the repository root:
 
 ```bash
-./run-dev.sh
+./scripts/bootstrap.sh
 ```
 
-This launches 4 containers, with hot-reload for the frontend and backend:
+`scripts/toolchain.env` pins exact Python 3.14, Node 25, bundled npm 11 and pip versions. Bootstrap
+downloads standalone CPython from `astral-sh/python-build-standalone` and Node from `nodejs.org`,
+verifying their archives against committed SHA-256 checksums before extraction.
 
-- Frontend: http://localhost:3000, with `./frontend` and `./messages` mounted.
-- Backend: http://localhost:8000, bound to `127.0.0.1`, with `./backend` mounted.
-- PostgreSQL: `postgres:5432` inside the container network; its port is not published to macOS.
-- Redis: `redis:6379` inside the container network; its port is not published to macOS.
+Generated directories are ignored by Git:
 
-## How it works
+- `.local/python/` and `.local/node/`: versioned, self-contained language runtimes.
+- `.local/cache/`, `.local/tmp/`, `.local/home/`, `.local/config/`, `.local/share/`, and `.local/state/`:
+  downloads, package/tool caches, temporary files and process-local user directories.
+- `.venv/`: Python environment based on the repository's standalone interpreter.
+- `frontend/node_modules/`: frontend dependencies installed with `npm ci`.
 
-- `frontend/Dockerfile.dev` shares the production Dockerfile's `node:25-alpine` base, explicit `npm@11` installation, and `npm ci` dependency installation from the committed lockfile. Keep both Dockerfiles aligned when updating Node, npm, or the installation policy; the frontend PR checks also use Node 25 and `npm ci`.
-- The remote `develop` and `main` image-publishing workflows both use `frontend/Dockerfile` and `backend/Dockerfile` from their respective branches. They publish separate image names for the development server and production VPS. The development Dockerfile described here is only used by `docker-compose.dev.yml`.
-- `run-dev.sh` reads secrets from Keychain, exports them as env vars, and runs `docker compose -f docker-compose.dev.yml --env-file .env.dev up -d`
-- `.env.dev` holds non-sensitive config (LLM provider, TTS/STT mode, etc.). Secret fields are empty or contain `CHANGE_ME_*` placeholders. The script supplies `OPENAI_API_KEY`, `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, and `SECRET_KEY` from Keychain at runtime, overriding those fields, and stops if any required entry is missing.
-- `docker-compose.dev.yml` builds the backend with `backend/Dockerfile` and the frontend with `frontend/Dockerfile.dev`, and mounts source code as volumes. Backend uses `uvicorn --reload`, frontend uses `npm run dev`.
-- Backend startup automatically applies the existing Alembic migrations with `alembic upgrade head` before starting Uvicorn.
-- The frontend uses `BACKEND_URL=http://backend:8000` for server-side API forwarding. Conversation WebSockets connect directly from the browser to `ws://localhost:8000/ws/conversation` through `NEXT_PUBLIC_API_URL=http://localhost:8000`, set in the frontend service environment. Next.js rewrites only forward `/api/*`, so voice conversation requires the published backend port.
-- `./data/` stores PostgreSQL and Redis data persistently across restarts.
+Python installation uses `backend/requirements-dev.txt`, which includes runtime requirements and
+the pinned Ruff/Black tools. `constraints.txt` and `constraints-dev.txt` pin indirect dependencies.
+Bootstrap rejects an unpinned resolved dependency and requires binary wheels, avoiding implicit
+compiler installations and unpinned build dependencies. The frontend uses the committed npm lockfile.
 
-## TTS / STT
+## Running commands
 
-Both are set to `openai` in `.env.dev`, reusing `OPENAI_API_KEY`. No Kokoro or Whisper containers needed.
-
-## Stopping
+Use the command runner from the repository root:
 
 ```bash
-docker compose -f docker-compose.dev.yml down
+# Targeted backend tests; disable the aggregate coverage threshold for focused runs
+./scripts/local.sh backend python -m pytest tests/test_auth.py -v --no-cov
+
+# Frontend tests and static checks
+./scripts/local.sh frontend npm run test:run
+./scripts/local.sh frontend npm run lint
+./scripts/local.sh frontend ./node_modules/.bin/tsc --noEmit
+
+# Canonical formatting and full pre-push validation, when explicitly requested
+./scripts/format.sh
+./scripts/pre-push.sh
 ```
+
+`scripts/local.sh` accepts `root`, `backend` or `frontend` as its working directory, followed by a
+command and its arguments. It verifies the local runtimes and uses a project-only toolchain PATH plus
+basic OS utilities. It isolates HOME, XDG directories, temporary files and package-manager settings
+for the child process. The calling shell's configuration is unchanged.
+
+Format and pre-push scripts use the same environment. They invoke installed tools directly, so missing
+tools fail instead of being downloaded by `npx`. Pre-push does not install dependencies; bootstrap is
+the explicit installation step. Running bare system `python`, `npm` or `npx` bypasses this isolation.
+
+Ask before launching tests, checks or formatters. Stop on a test failure and obtain approval before
+changing code or tests. See `specs/testing.instructions.md` for validation boundaries.
+
+## Recreating and updating
+
+If the generated directories are deleted, rerun `./scripts/bootstrap.sh`. To replace an existing,
+broken or outdated virtual environment and reinstall frontend dependencies:
+
+```bash
+./scripts/bootstrap.sh --recreate
+```
+
+This removes `.venv` and recreates it from the local interpreter; `npm ci` recreates `node_modules`.
+Cached downloads and runtimes are reused. The generated folders contain no authoritative project
+configuration and should not hold secrets or user data. After moving the checkout, recreate the
+environment because virtualenv scripts contain absolute paths.
+
+Review dependency updates in the committed requirements, constraints and npm lockfile. Runtime
+updates require matching versions and archive checksums in `scripts/toolchain.env`; npm must match
+the selected Node archive's bundled version. Keep the Python/Node majors and pip version aligned
+with CI and images. Use the local npm 11 when intentionally regenerating the frontend lockfile.

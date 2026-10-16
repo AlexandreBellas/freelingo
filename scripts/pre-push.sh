@@ -1,21 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
-source "${ROOT_DIR}/.venv/bin/activate"
-
-python -m pip install --quiet pip==26.2.1
-python -m pip install --quiet -r "${ROOT_DIR}/backend/requirements.txt"
+source "$(dirname "${BASH_SOURCE[0]}")/local-env.sh"
+require_local_runtimes
 
 "${ROOT_DIR}/scripts/format.sh"
 
 pushd "${ROOT_DIR}/backend" >/dev/null
-pytest -v
+"${VIRTUAL_ENV}/bin/python" -m pytest -v
 popd >/dev/null
 
 pushd "${ROOT_DIR}/frontend" >/dev/null
-npm run lint
-npx tsc --noEmit
-npm run test:run
+"${NODE_HOME}/bin/npm" run lint
+./node_modules/.bin/tsc --noEmit
+"${NODE_HOME}/bin/npm" run test:run
 popd >/dev/null
