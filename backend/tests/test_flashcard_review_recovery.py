@@ -142,6 +142,62 @@ async def test_review_requires_a_valid_attempt_identity(client, test_user, conte
     assert response.status_code == 422
 
 
+@pytest.mark.parametrize("language", ["en-GB", "en-US", "it-IT"])
+async def test_vocabulary_import_uses_serialized_current_plan_context(
+    client, test_user, db_session, language
+):
+    user, headers = test_user
+    plan = await make_study_plan(
+        db_session, user_id=user.id, target_language=language, cefr_level="A1", is_active=True
+    )
+    await db_session.commit()
+    switched = await client.put(
+        "/api/languages/active", headers=headers, json={"target_language": language}
+    )
+    assert switched.status_code == 200
+
+    current = await client.get("/api/study-plan/current", headers=headers)
+    assert current.status_code == 200
+    context = current.json()
+    assert context["id"] == plan.id
+    assert context["target_language"] == language
+
+    sets = await client.get(
+        "/api/vocabulary/level/A1", headers=headers, params={"language": language}
+    )
+    assert sets.status_code == 200
+    set_id = sets.json()["sets"][0]["id"]
+    detail = await client.get(
+        f"/api/vocabulary/{set_id}", headers=headers, params={"language": language}
+    )
+    assert detail.status_code == 200
+    words = detail.json()["set"]["words"]
+    payload = {
+        "study_plan_id": context["id"],
+        "target_language": context["target_language"],
+        "flashcards": [
+            {
+                "word": word["word"],
+                "definition": word["definition"],
+                "example_sentence": word["example"],
+                "translation": "",
+            }
+            for word in words
+        ],
+    }
+    imported = await client.post("/api/flashcards/bulk", headers=headers, json=payload)
+    assert imported.status_code == 200
+    assert imported.json()["created"] > 0
+    cards = (await db_session.scalars(select(Flashcard))).all()
+    assert len(cards) == imported.json()["created"]
+    assert {card.word for card in cards} == {word["word"].strip() for word in words}
+    assert all(card.study_plan_id == plan.id and card.user_id == user.id for card in cards)
+
+    repeated = await client.post("/api/flashcards/bulk", headers=headers, json=payload)
+    assert repeated.status_code == 200
+    assert repeated.json()["created"] == 0
+
+
 async def test_stale_set_import_is_rejected_after_another_tab_switches_language(
     client, test_user, db_session, context
 ):

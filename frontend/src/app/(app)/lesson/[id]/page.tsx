@@ -568,11 +568,9 @@ export default function LessonPage() {
     exercise.options.length > 0
   const targetLanguageCode = activeLanguage?.code ?? 'en-GB'
   const explanation = lesson?.content?.explanation as
-    | Record<string, unknown>
-    | undefined
+    Record<string, unknown> | undefined
   const nativeExplanation = lesson?.content?.native_explanation as
-    | Record<string, unknown>
-    | undefined
+    Record<string, unknown> | undefined
 
   return (
     <>

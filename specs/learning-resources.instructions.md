@@ -79,7 +79,8 @@ or show deck coverage. Detail shows word, part of speech, IPA, frequency, defini
 
 The available deck action adds the entire set through flashcard bulk creation. There is no per-entry
 add control. The detail page captures its explicitly requested content language together with the
-current plan ID; requests for the set and plan must agree on language. Bulk creation requires both
+current plan ID; the set's requested language must match the persisted `target_language` returned by
+`GET /api/study-plan/current`. Bulk creation requires both
 captured values and rejects a mismatch with the server's active plan before insertion. A conflict
 refreshes the language context and set for inspection; it never automatically resubmits the import.
 Late set responses and add results are discarded after context changes. Browsing without a plan is

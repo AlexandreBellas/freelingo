@@ -11,15 +11,10 @@ export interface TargetLanguage {
 }
 
 export type TargetLanguageScript =
-  | 'latin'
-  | 'hiragana-katakana-kanji'
-  | 'hangul'
-  | 'simplified-hanzi'
+  'latin' | 'hiragana-katakana-kanji' | 'hangul' | 'simplified-hanzi'
 
 export type TargetLanguageRomanization =
-  | 'romaji'
-  | 'revised-romanization'
-  | 'pinyin'
+  'romaji' | 'revised-romanization' | 'pinyin'
 
 interface TargetLanguageCapability {
   script: TargetLanguageScript

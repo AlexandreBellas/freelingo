@@ -16,32 +16,35 @@ The project does NOT use Docker for local tests. Tests are fully isolated:
 ### Prerequisites
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate && pip install -r backend/requirements.txt
+./scripts/bootstrap.sh
 ```
 
-`.venv/` is already in `.gitignore`. Create it once, activate before each session.
+Bootstrap installs the exact runtimes from `scripts/toolchain.env`, pinned Python requirements/tools
+and the npm lockfile inside the checkout. `.local/`, `.venv/` and `frontend/node_modules/` are ignored
+by Git. Use `--recreate` to replace a broken virtualenv. Never use global Python/Node/npm or install
+missing tools implicitly with `npx`. Run all commands below from the repository root.
 
 ### Run
 
 ```bash
-source .venv/bin/activate && cd backend && pytest -v
+./scripts/local.sh backend python -m pytest -v
 ```
 
 Use a command timeout of at least 600 seconds for the full backend suite; the current run takes about 4 minutes and can exceed shorter 120-second tool defaults.
 
 Options:
 
-- Single file: `source .venv/bin/activate && cd backend && pytest tests/test_auth.py -v`
-- Single test: `source .venv/bin/activate && cd backend && pytest tests/test_flashcards.py::test_quality_3_basic_progression -v`
-- Coverage HTML: `source .venv/bin/activate && cd backend && pytest --cov-report=html`
+- Single file: `./scripts/local.sh backend python -m pytest tests/test_auth.py -v --no-cov`
+- Single test: `./scripts/local.sh backend python -m pytest tests/test_flashcards.py::test_sm2_quality_3_progression -v --no-cov`
+- Coverage HTML: `./scripts/local.sh backend python -m pytest --cov-report=html`
 
 ## Frontend tests (vitest)
 
 ```bash
-cd frontend && npm run test:run
+./scripts/local.sh frontend npm run test:run
 ```
 
-474 tests covering stores, components, hooks, app pages, lib, i18n, middleware, review UI, review prompt triggers, billing UI, freemium state, memory management, SSE parsing, chat stream resets, toasts, and API interceptor. Frontend coverage is not configured/reported:
+Tests cover stores, components, hooks, app pages, lib, i18n, middleware, review UI, review prompt triggers, billing UI, freemium state, memory management, SSE parsing, chat stream resets, toasts, and API interceptor. Frontend coverage is not configured/reported:
 
 - `lib/api.ts` — auth interceptor, 401 refresh, retry
 - `store/auth.ts` — isSubscribed(), logout
@@ -67,21 +70,22 @@ cd frontend && npm run test:run
 
 Options:
 
-- Watch mode: `npm run test`
-- Single file: `npx vitest run tests/lib/api.test.ts`
+- Watch mode: `./scripts/local.sh frontend npm run test`
+- Single file: `./scripts/local.sh frontend npm run test:run -- tests/lib/api.test.ts`
 
 ## Frontend checks
 
 ```bash
-cd frontend && npx tsc --noEmit                 # TypeScript type checking
-cd frontend && npm run lint                     # Lint
-cd frontend && npx prettier --check src/        # Format check
+./scripts/local.sh frontend ./node_modules/.bin/tsc --noEmit
+./scripts/local.sh frontend npm run lint
+./scripts/local.sh frontend ./node_modules/.bin/prettier --check src/
 ```
 
 ## Backend lint
 
 ```bash
-source .venv/bin/activate && cd backend && ruff check . && black --check .
+./scripts/local.sh backend ruff check .
+./scripts/local.sh backend python -m black --check .
 ```
 
 ## If a suite fails

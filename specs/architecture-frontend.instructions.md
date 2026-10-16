@@ -31,6 +31,10 @@ frontend/src/
 
 UI translation catalogs live in the repository-root `messages/` directory.
 
+`next.config.ts` selects `tsconfig.build.json` for Next.js. It inherits the strict compiler settings
+from `tsconfig.json` and excludes `tests/`. The repository-wide frontend typecheck uses `tsconfig.json`
+to check application and test code together.
+
 ## Route families
 
 - `(auth)`: login, registration, onboarding, account recovery/verification, and billing-return pages

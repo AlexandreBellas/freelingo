@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.35] - 2026-10-16
+
+### Added
+
+- Reproducible repository-local development setup with checksum-verified Python and Node runtimes, pinned npm/pip and Python development tools, isolated caches and a shared command runner for tests and formatting.
+
+### Changed
+
+- Updated frontend and backend dependencies within their existing major versions, including React 19.3.1, FastAPI 0.143.2, SQLAlchemy 2.1.4, the OpenAI and Anthropic SDKs, VAD packages, and development tools. Adapted the VAD lifecycle patch to the updated packages.
+
+### Fixed
+
+- Vocabulary sets open and can be added to flashcards when an active study plan exists, without incorrectly reporting a language or plan change on every retry.
+
+### Security
+
+- Updated Next.js and eslint-config-next to 16.4.2, including upstream security fixes and the corrected sharp 0.35.5 image-processing dependency.
+
 ## [1.10.30] - 2026-10-12
 
 ### Added

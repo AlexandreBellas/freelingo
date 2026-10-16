@@ -51,11 +51,23 @@ Compose files; an empty value omits the reasoning option and preserves the model
 Database sessions come from the async SQLAlchemy engine. Redis is optional at process startup but
 features that require Redis expose their own degraded or unavailable behavior.
 
+PostgreSQL connection URLs explicitly select `postgresql+asyncpg`. The `sqlalchemy[asyncio]` extra
+installs the pinned `greenlet` dependency. Sessions use `expire_on_commit=False` and retain default
+autoflush: SQLAlchemy 2.1 flushes pending ORM changes before both ORM and Core/text statement
+executions. Acquire transaction locks before making changes that depend on them; do not rely on a
+text query bypassing autoflush.
+
 Authentication dependencies decode access tokens, load active users, enforce roles and subscription
 or maintenance policy, and resolve active plans. Authorization-sensitive routers must not trust IDs,
 language codes, or access flags supplied by the frontend without verifying persisted ownership.
 
 `app_logger.py` is a small wrapper around Python standard logging; it is not a structlog integration.
+
+FastAPI and the Anthropic SDK require `opentelemetry-api`, pinned in `backend/constraints.txt`. The
+project does not install or configure an OpenTelemetry SDK or exporters. FastAPI's automatic exporter
+configuration is opt-in; Anthropic can use an externally registered global tracer provider and
+propagator. The API dependency alone does not enable telemetry export. Product analytics remains
+owned by the Umami integration described in `umami.instructions.md`.
 
 ### Models
 

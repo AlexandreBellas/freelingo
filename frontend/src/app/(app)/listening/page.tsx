@@ -59,12 +59,7 @@ interface AttemptItem {
 }
 
 type PageState =
-  | 'loading'
-  | 'idle'
-  | 'generating'
-  | 'exercise'
-  | 'results'
-  | 'history'
+  'loading' | 'idle' | 'generating' | 'exercise' | 'results' | 'history'
 
 const HISTORY_PAGE_SIZE = 10
 

@@ -2,11 +2,7 @@ import { apiFetch } from '@/lib/api'
 
 type Feature = 'listening' | 'reading'
 type Failure =
-  | 'failed'
-  | 'timeout'
-  | 'unavailable'
-  | 'noActivePlan'
-  | 'contextChanged'
+  'failed' | 'timeout' | 'unavailable' | 'noActivePlan' | 'contextChanged'
 
 export interface ExerciseContext {
   study_plan_id: number

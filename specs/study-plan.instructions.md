@@ -32,6 +32,10 @@ Important persisted fields are:
 The partial unique index on `user_language_id` where `is_active=true` enforces one active plan per
 language track.
 
+`StudyPlanResponse` exposes the persisted `target_language` alongside the plan's `id`, including in
+current-plan and generation responses. Callers use these fields to bind resource operations to the
+returned plan and verify its language against the loaded content.
+
 The UI offers duration presets 4, 8, 12, and 16 weeks and derives 5, 5, 4, and 3 days per week. Request
 schemas require `duration_weeks` and `days_per_week` to be at least 1 and `cefr_level` to be one of
 `A1`–`C2`; they do not enforce the preset sets themselves. The service's `assert_plan_capacity()`

@@ -45,8 +45,17 @@ Backend images use Python 3.14 and pip 26.2.1 with `requirements.txt` plus `cons
 Frontend production/development images use Node 25, explicitly install npm 11, and use the committed
 lockfile through `npm ci`. Production uses Next.js standalone output.
 
+The frontend builder places the frontend in `/app` and copies translation catalogs to `/app/messages`.
+Next.js checks types with `frontend/tsconfig.build.json`, which excludes `tests/`; test imports resolve
+against the monorepo layout and are checked by the full `tsconfig.json` in PR CI.
+
 Push workflows for `main` and `develop` build and publish separate Linux `amd64` and `arm64` image
 names with `latest` and short-SHA tags. They publish images only; they do not deploy to a VPS.
+
+Publication uses GitHub-hosted `ubuntu-24.04` runners for `amd64`, preparation, and manifest merging,
+and `ubuntu-24.04-arm` for `arm64`. The changelog release workflow also uses `ubuntu-24.04`.
+These labels select the Ubuntu 24.04 LTS series; GitHub continues updating the runner images and
+their preinstalled tools. Container base images remain defined by the Dockerfiles.
 
 ## Persistence
 

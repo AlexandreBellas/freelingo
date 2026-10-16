@@ -58,10 +58,10 @@ describe('versioned VAD lifecycle patch installer', () => {
   })
 
   it('rejects an unexpected dependency version before modifying either package', () => {
-    writeFileSync(packageFile(1, 'package.json'), JSON.stringify({ version: '0.0.37' }))
+    writeFileSync(packageFile(1, 'package.json'), JSON.stringify({ version: '0.0.38' }))
     const original = contents()
 
-    expect(() => patchInstalledVad(fixture)).toThrow('expected 0.0.36')
+    expect(() => patchInstalledVad(fixture)).toThrow('expected 0.0.37')
     expect(contents()).toEqual(original)
   })
 
