@@ -7,9 +7,9 @@ const path = require('node:path')
 const patches = [
   {
     name: '@ricky0123/vad-web',
-    version: '0.0.30',
+    version: '0.0.31',
     file: 'dist/real-time-vad.js',
-    sha256: 'dd0cfc58e977e4616eeccf9cc5c24c896b8f0601ea4537c5105771102c9362ce',
+    sha256: '33f8509974464a66cacf0801f615281807750a048a4a8299ab510c5ecb91c8e0',
     changes: [
       [
         '        this.start = async () => {',
@@ -103,7 +103,7 @@ const patches = [
   },
   {
     name: '@ricky0123/vad-react',
-    version: '0.0.36',
+    version: '0.0.37',
     file: 'dist/index.js',
     sha256: '3b0ce7cac5430f97c0dec4a341c7f9ef7d32f505e70a224db2ebed0562e3d133',
     changes: [

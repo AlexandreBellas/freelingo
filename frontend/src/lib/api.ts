@@ -40,6 +40,7 @@ export function requestAccessToken(): Promise<string> {
       const state = currentSession(sessionVersion)
       // Clear only local state, not the shared cookie belonging to the other tab.
       state.logout()
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Full reload discards stale session state.
       if (typeof window !== 'undefined') window.location.assign('/login')
       throw new DOMException('Authentication account changed', 'AbortError')
     }
@@ -86,6 +87,7 @@ async function refreshToken(sessionVersion: number): Promise<string | null> {
       if (state.accessToken !== accessToken) return state.accessToken
       state.logout()
       if (typeof window !== 'undefined') {
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Full reload discards stale session state.
         window.location.assign('/login')
       }
       return null

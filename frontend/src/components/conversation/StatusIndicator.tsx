@@ -1,13 +1,7 @@
 import { useTranslations } from 'next-intl'
 
 export type ConvStatus =
-  | 'loading'
-  | 'ready'
-  | 'warming'
-  | 'connecting'
-  | 'live'
-  | 'ended'
-  | 'error'
+  'loading' | 'ready' | 'warming' | 'connecting' | 'live' | 'ended' | 'error'
 
 interface Props {
   status: ConvStatus

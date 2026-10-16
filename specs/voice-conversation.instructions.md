@@ -167,10 +167,11 @@ turn emits `tts_failed` and is not persisted.
 ## VAD and utterance filtering
 
 The frontend uses `@ricky0123/vad-react`, Silero VAD v5, and assets served from `/vad/`. ONNX runtime
-is configured with one thread.
+is configured with one thread. The v5 adapter processes 512-sample frames at 16 kHz, prepending
+64 samples of context from the preceding frame for inference and clearing that context on reset.
 
 `frontend/package.json` runs `scripts/patch-vad.js` before copying VAD assets during `postinstall`.
-The patch targets `@ricky0123/vad-web` 0.0.30 and `@ricky0123/vad-react` 0.0.36. It verifies both
+The patch targets `@ricky0123/vad-web` 0.0.31 and `@ricky0123/vad-react` 0.0.37. It verifies both
 package versions and source hashes before writing either package, accepts repeated application, and
 fails installation on unexpected contents. Dependency upgrades require reviewing this contract.
 
