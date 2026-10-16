@@ -13,12 +13,12 @@ const { useMicVAD } = loadCjs(
 const { MicVAD } = loadCjs(
   '@ricky0123/vad-web'
 ) as typeof import('@ricky0123/vad-web')
-const { SileroV5 } = loadCjs(
-  '@ricky0123/vad-web/dist/models/v5.js'
-) as typeof import('@ricky0123/vad-web/dist/models/v5')
+const { Silero } = loadCjs(
+  '@ricky0123/vad-web/dist/models/silero.js'
+) as typeof import('@ricky0123/vad-web/dist/models/silero')
 
 type VadInstance = Awaited<ReturnType<typeof MicVAD.new>>
-type Model = Awaited<ReturnType<typeof SileroV5.new>>
+type Model = Awaited<ReturnType<typeof Silero.new>>
 
 function model() {
   return {
@@ -87,7 +87,7 @@ beforeEach(() => {
     disconnect = vi.fn()
   })
 
-  vi.spyOn(SileroV5, 'new').mockImplementation(async () => model())
+  vi.spyOn(Silero, 'new').mockImplementation(async () => model())
   const createVAD = MicVAD.new
   vi.spyOn(MicVAD, 'new').mockImplementation(async (config) => {
     const vad = await createVAD(config)
@@ -109,7 +109,7 @@ afterEach(async () => {
 describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
   it('releases a loaded model when destroyed before the microphone is started', async () => {
     const loadedModel = model()
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const getStream = vi.fn(async () => microphone().stream)
     const vad = await MicVAD.new(options(getStream))
 
@@ -121,7 +121,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
 
   it('starts, pauses, resumes and releases an initialized session without StrictMode', async () => {
     const loadedModel = model()
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const firstMic = microphone()
     const secondMic = microphone()
     const getStream = vi.fn()
@@ -159,7 +159,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
       const current = deferred<Model>()
       const canceledModel = model()
       const currentModel = model()
-      vi.mocked(SileroV5.new)
+      vi.mocked(Silero.new)
         .mockReturnValueOnce(canceled.promise)
         .mockReturnValueOnce(current.promise)
       const getStream = vi.fn(async () => microphone().stream)
@@ -167,7 +167,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
         wrapper: StrictMode,
       })
 
-      expect(SileroV5.new).toHaveBeenCalledTimes(2)
+      expect(Silero.new).toHaveBeenCalledTimes(2)
       expect(result.current.loading).toBe(true)
       if (order === 'canceled-first') {
         await act(async () => { canceled.resolve(canceledModel) })
@@ -195,7 +195,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     const release = deferred<void>()
     const loadedModel = model()
     loadedModel.release.mockReturnValue(release.promise)
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const vad = await MicVAD.new(options(async () => microphone().stream))
 
     const first = vad.destroy()
@@ -213,7 +213,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     async (state) => {
       const pending = deferred<Model>()
       const loadedModel = model()
-      vi.mocked(SileroV5.new).mockReturnValueOnce(pending.promise)
+      vi.mocked(Silero.new).mockReturnValueOnce(pending.promise)
       const getStream = vi.fn(async () => microphone().stream)
       const { result, unmount } = renderHook(() => useMicVAD(options(getStream)))
 
@@ -236,7 +236,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const canceled = deferred<Model>()
     const current = deferred<Model>()
-    vi.mocked(SileroV5.new)
+    vi.mocked(Silero.new)
       .mockReturnValueOnce(canceled.promise)
       .mockReturnValueOnce(current.promise)
     const getStream = vi.fn(async () => microphone().stream)
@@ -259,7 +259,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
       const canceled = deferred<Model>()
       const current = deferred<Model>()
-      vi.mocked(SileroV5.new)
+      vi.mocked(Silero.new)
         .mockReturnValueOnce(canceled.promise)
         .mockReturnValueOnce(current.promise)
       const getStream = vi.fn(async () => microphone().stream)
@@ -289,7 +289,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
 
   it('still exposes a genuine failure of the current model', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.mocked(SileroV5.new).mockRejectedValueOnce(new Error('Current model failed'))
+    vi.mocked(Silero.new).mockRejectedValueOnce(new Error('Current model failed'))
     const getStream = vi.fn(async () => microphone().stream)
     const { result } = renderHook(() => useMicVAD(options(getStream)))
 
@@ -303,7 +303,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {})
     const loadedModel = model()
     loadedModel.release.mockRejectedValue(error)
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const { result, unmount } = renderHook(() =>
       useMicVAD(options(async () => microphone().stream))
     )
@@ -318,7 +318,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     const pending = deferred<MediaStream>()
     const mic = microphone()
     const loadedModel = model()
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const getStream = vi.fn(() => pending.promise)
     const vad = await MicVAD.new(options(getStream))
 
@@ -342,7 +342,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     addWorkletModule.mockReturnValueOnce(pending.promise)
     const mic = microphone()
     const loadedModel = model()
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const vad = await MicVAD.new(options(async () => mic.stream))
 
     const start = vad.start()
@@ -365,7 +365,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
     const firstMic = microphone()
     const secondMic = microphone()
     const loadedModel = model()
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const getStream = vi.fn()
       .mockResolvedValueOnce(firstMic.stream)
       .mockReturnValueOnce(pending.promise)
@@ -389,7 +389,7 @@ describe('real MicVAD lifecycle with deferred microphone acquisition', () => {
   it('closes its audio context even when model release fails', async () => {
     const loadedModel = model()
     loadedModel.release.mockRejectedValue(new Error('Model release failed'))
-    vi.mocked(SileroV5.new).mockResolvedValueOnce(loadedModel)
+    vi.mocked(Silero.new).mockResolvedValueOnce(loadedModel)
     const mic = microphone()
     const vad = await MicVAD.new(options(async () => mic.stream))
     await vad.start()

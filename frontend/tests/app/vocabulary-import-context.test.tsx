@@ -118,6 +118,32 @@ it('sends the plan and language captured with the displayed set', async () => {
   })
 })
 
+it('retries an initial language mismatch and imports the refreshed set', async () => {
+  serverLanguage = 'it-IT'
+  await show()
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    messages.flashcards.contextChanged
+  )
+  expect(screen.queryByText('hello')).not.toBeInTheDocument()
+  expect(api.mock.calls.some(([url]) => url === '/api/flashcards/bulk')).toBe(
+    false
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+  await screen.findByText('ciao')
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Add All 1 to Flashcards' })
+  )
+  await screen.findByText(/1 cards added/)
+  const call = api.mock.calls.find(([url]) => url === '/api/flashcards/bulk')!
+  expect(JSON.parse(call[1].body)).toMatchObject({
+    study_plan_id: 43,
+    target_language: 'it-IT',
+    flashcards: [{ word: 'ciao' }],
+  })
+})
+
 it('handles a different server-side language by reloading without automatically adding the new set', async () => {
   await show()
   await screen.findByText('hello')

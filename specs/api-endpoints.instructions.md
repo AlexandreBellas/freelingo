@@ -204,12 +204,15 @@ Auth required (`get_current_user`). Serves canonical backend vocabulary data org
 
 ## Study Plan — `/api/study-plan`
 
-- **GET `/current`** — Rate limit: 60/min. User's active plan with curriculum progress
+- **GET `/current`** — Rate limit: 60/min. User's active plan with curriculum progress, including `id` and the persisted `target_language` used to bind vocabulary imports to their plan. Optional `language` selects an owned language's active plan; without it, uses the active language. Returns `null` when no matching plan exists.
 - **POST `/generate`** — Rate limit: 10/min. Creates new plan from CEFR level, goals, and duration. Returns 422 when `duration_weeks` or `days_per_week` is below 1 or `cefr_level` is not a level the curriculum covers, and 400 when `duration_weeks × days_per_week − 1` is smaller than the level's curriculum unit count (the detail names the minimum). A rejected request creates no plan, no language row, and does not deactivate the current plan.
 - **GET `/today`** — Rate limit: 20/min. Today's lessons; auto-generates missing content via LLM on first access; auto-advances `progress_day` when all lessons for the current day are complete. The reserved final slot (`completion-test`, or the legacy `level-test` id) is never materialized through the lesson generator: it returns the derived `completion` state (`in_progress`, `ready`, or `taken`) with the persisted result when taken. Legacy final-slot lessons are returned until a result exists; once it does, `pending_count` excludes them. Returns `plan_id`, `cefr_level`, `lessons`, `progress_day`, `total_days`, `pending_count`, `completion`.
 - **POST `/skip-day`** — Rate limit: 60/min. Increments `progress_day` by 1 (capped at `total_days`). Returns `{progress_day, total_days}`.
 - **GET `/pending-lessons`** — Rate limit: 60/min. Returns incomplete lessons from days before `progress_day` (generated but not completed). Once the level-test result is persisted, a legacy final-slot lesson (`completion-test` or `level-test`) is excluded: the final slot presents only the result.
 - **GET `/lessons`** — Rate limit: 60/min. Returns lightweight metadata for every generated lesson in the active plan: `id`, title, type, week, day, unit, and completion state. It does not generate content or mutate progress.
+
+Plan responses from `/current` and `/generate` share `StudyPlanResponse`, including the required
+`target_language` from the persisted plan.
 
 ---
 

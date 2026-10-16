@@ -10,6 +10,7 @@
 
 # Local development files
 /data/
+/.local/
 
 # OS
 .DS_Store

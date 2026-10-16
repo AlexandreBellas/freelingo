@@ -1,6 +1,6 @@
 ---
 description: "Current backend/frontend validation strategy, isolation rules, CI boundaries, commands, and failure handling."
-applyTo: "backend/tests/**, backend/pyproject.toml, frontend/tests/**, frontend/vitest.config.ts, frontend/package.json, scripts/{format,pre-push}.sh, .github/workflows/pr-develop-checks.yml"
+applyTo: "backend/tests/**, backend/{pyproject.toml,requirements-dev.txt,constraints-dev.txt}, frontend/tests/**, frontend/vitest.config.ts, frontend/package.json, scripts/{bootstrap,local,local-env,format,pre-push}.sh, scripts/toolchain.env, .github/workflows/pr-develop-checks.yml"
 ---
 
 # Testing
@@ -47,35 +47,47 @@ Frontend coverage reporting is not configured. Do not claim a frontend coverage 
 
 ## Commands
 
-Use project scripts and package commands from their documented working directories:
+Local setup is `./scripts/bootstrap.sh`. Exact runtimes and archive SHA-256 checksums are committed in
+`scripts/toolchain.env`. The bootstrap installs standalone Python and Node with bundled npm under
+`.local/`, creates `.venv` from that Python, installs pinned runtime/development requirements and uses
+`npm ci` for the frontend. Its Python resolution rejects packages without exact committed pins and
+requires binary wheels. `--recreate` replaces `.venv`; `npm ci` replaces `frontend/node_modules`.
+These generated directories are Git-ignored and can be reconstructed from committed inputs.
+
+`scripts/local-env.sh` confines child-process HOME, XDG directories, caches, temporary files and
+package-manager settings to `.local/`. It removes inherited Python/Node injection paths and
+package-manager configuration, and restricts PATH to local tools plus basic OS utilities. The runner
+verifies interpreter provenance and exact Python/Node/npm versions. Global language runtimes and
+package-manager installations are not used. Supported hosts are macOS and glibc Linux, arm64/x86_64.
+
+Run commands from the repository root through `scripts/local.sh`:
 
 ```bash
 # Backend full suite
-source .venv/bin/activate
-cd backend
-pytest -v
+./scripts/local.sh backend python -m pytest -v
 
 # Backend focused file
-pytest tests/test_auth.py -v --no-cov
+./scripts/local.sh backend python -m pytest tests/test_auth.py -v --no-cov
 
 # Frontend unit tests
-cd frontend
-npm run test:run
+./scripts/local.sh frontend npm run test:run
 
 # Frontend focused file
-npx vitest run tests/lib/api.test.ts
+./scripts/local.sh frontend npm run test:run -- tests/lib/api.test.ts
 
 # Frontend static checks
-npm run lint
-npx tsc --noEmit
+./scripts/local.sh frontend npm run lint
+./scripts/local.sh frontend ./node_modules/.bin/tsc --noEmit
 ```
 
 `./scripts/format.sh` is the canonical formatter and can modify files. It runs Ruff/Black and
-ESLint/Prettier from fixed project directories.
+ESLint/Prettier from fixed project directories through the same local environment. Tools are invoked
+directly; missing dependencies fail without implicit `npx` downloads.
 
-`./scripts/pre-push.sh` synchronizes backend dependencies, formats, then runs backend pytest, frontend
-lint, TypeScript, and Vitest. It covers the principal quality checks but does not exactly mirror CI:
-CI does not autoformat or modify the worktree.
+`./scripts/pre-push.sh` formats, then runs backend pytest, frontend lint, TypeScript, and Vitest using
+the existing local environment. It does not install dependencies; run bootstrap explicitly when setup
+or dependency synchronization is needed. It covers the principal quality checks but does not exactly
+mirror CI: CI does not autoformat or modify the worktree.
 
 ## CI
 

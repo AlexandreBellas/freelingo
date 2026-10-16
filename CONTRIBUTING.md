@@ -8,7 +8,9 @@ This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.
 
 ## Development setup
 
-Follow [DEVELOPMENT.md](DEVELOPMENT.md) to prepare and run the local development environment before making code changes. Run the validation commands below from the repository root.
+Follow [DEVELOPMENT.md](DEVELOPMENT.md) and run `./scripts/bootstrap.sh` to prepare the repository-local
+Python/Node toolchain before making code changes. Run the validation commands below from the repository
+root through the local runner; global runtimes and package-manager installations are not used.
 
 ## How to contribute
 
@@ -82,10 +84,12 @@ outside the accepted scope for pull requests.
    ./scripts/format.sh
 
    # Backend tests
-   (source .venv/bin/activate && cd backend && pytest -v)
+   ./scripts/local.sh backend python -m pytest -v
 
    # Frontend lint, typecheck, and tests
-   (cd frontend && npm run lint && npx tsc --noEmit && npm run test:run)
+   ./scripts/local.sh frontend npm run lint
+   ./scripts/local.sh frontend ./node_modules/.bin/tsc --noEmit
+   ./scripts/local.sh frontend npm run test:run
    ```
 5. Open a pull request against `develop`. CI will run backend tests and frontend lint/typecheck/tests automatically.
 
@@ -111,19 +115,23 @@ The backend test suite uses SQLite in-memory and mocked Redis — no Docker serv
 
 ```bash
 # Backend
-(source .venv/bin/activate && cd backend && pytest -v)
+./scripts/local.sh backend python -m pytest -v
 
 # Run a single backend test file
-(source .venv/bin/activate && cd backend && pytest tests/test_auth.py -v)
+./scripts/local.sh backend python -m pytest tests/test_auth.py -v --no-cov
 ```
 
 Frontend tests run locally and in CI:
 
 ```bash
-(cd frontend && npm run lint && npx tsc --noEmit && npm run test:run)
+./scripts/local.sh frontend npm run lint
+./scripts/local.sh frontend ./node_modules/.bin/tsc --noEmit
+./scripts/local.sh frontend npm run test:run
 ```
 
-> **Note:** `package-lock.json` must be generated with **npm 11**. If you update frontend dependencies, make sure you are using npm 11 locally before committing the lockfile.
+`package-lock.json` must be generated with the repository-local **npm 11**. Use
+`./scripts/local.sh frontend npm ...` for approved dependency updates; bootstrap uses `npm ci`
+to reproduce the committed lockfile.
 
 ## DB migrations
 

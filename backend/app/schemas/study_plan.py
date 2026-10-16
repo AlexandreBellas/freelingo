@@ -64,6 +64,7 @@ class StudyPlanResponse(BaseModel):
     id: int
     user_id: int
     cefr_level: str
+    target_language: str
     goals: list[str]
     duration_weeks: int
     days_per_week: int
