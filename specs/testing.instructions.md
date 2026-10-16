@@ -98,6 +98,8 @@ mirror CI: CI does not autoformat or modify the worktree.
 
 `.github/workflows/pr-develop-checks.yml` runs quality checks for pull requests targeting `develop`.
 Pushes to `develop` and `main` trigger image-publication workflows, not this quality workflow.
+Both quality-check jobs use GitHub-hosted `ubuntu-24.04` runners. This fixes the Ubuntu LTS series,
+while GitHub continues updating the runner image and its preinstalled tools.
 
 Backend CI uses Python 3.14, pip 26.2.1, pinned requirements/constraints, SQLite tests, and configured
 coverage enforcement. The existing backend job also starts an ephemeral PostgreSQL 16 service with a

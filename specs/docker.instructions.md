@@ -52,6 +52,11 @@ against the monorepo layout and are checked by the full `tsconfig.json` in PR CI
 Push workflows for `main` and `develop` build and publish separate Linux `amd64` and `arm64` image
 names with `latest` and short-SHA tags. They publish images only; they do not deploy to a VPS.
 
+Publication uses GitHub-hosted `ubuntu-24.04` runners for `amd64`, preparation, and manifest merging,
+and `ubuntu-24.04-arm` for `arm64`. The changelog release workflow also uses `ubuntu-24.04`.
+These labels select the Ubuntu 24.04 LTS series; GitHub continues updating the runner images and
+their preinstalled tools. Container base images remain defined by the Dockerfiles.
+
 ## Persistence
 
 The Compose files use bind mounts below `DATA_PATH`; they do not declare named volumes.
