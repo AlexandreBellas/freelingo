@@ -1,8 +1,9 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { trackBrowserEvent } from '@/lib/analytics'
+import { useConfigStore } from '@/store/config'
 
 const FAQ_KEYS = ['modes', 'free', 'hosting', 'data', 'languages', 'start']
 
@@ -10,6 +11,10 @@ export function LandingFAQ() {
   const t = useTranslations('landing.faq')
   const id = useId()
   const [open, setOpen] = useState<number | null>(null)
+
+  useEffect(() => {
+    void useConfigStore.getState().load()
+  }, [])
 
   return (
     <div className="border-fl-border border">
