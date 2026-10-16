@@ -1,6 +1,6 @@
 ---
 description: "Current backend/frontend validation strategy, isolation rules, CI boundaries, commands, and failure handling."
-applyTo: "backend/tests/**, backend/{pyproject.toml,requirements-dev.txt,constraints-dev.txt}, frontend/tests/**, frontend/vitest.config.ts, frontend/package.json, scripts/{bootstrap,local,local-env,format,pre-push}.sh, scripts/toolchain.env, .github/workflows/pr-develop-checks.yml"
+applyTo: "backend/tests/**, backend/{pyproject.toml,requirements-dev.txt,constraints-dev.txt}, frontend/tests/**, frontend/vitest.config.mts, frontend/package.json, scripts/{bootstrap,local,local-env,format,pre-push}.sh, scripts/toolchain.env, .github/workflows/pr-develop-checks.yml"
 ---
 
 # Testing
