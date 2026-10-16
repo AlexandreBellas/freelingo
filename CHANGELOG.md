@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.40] - 2026-10-16
+
+### Changed
+
+- Clarified Cloud and self-hosted options on the public landing and static project site, including installation-specific accounts, access links, pricing, maintenance responsibilities and provider costs. Updated static-site navigation and compacted the hero layout.
+- Replaced public FAQ content with guidance on deployment options, signup, privacy and learning, with accessible expandable answers available in the initial HTML. Updated copy across all fifteen interface languages.
+
+### Fixed
+
+- Distinguished initial no-card Premium access at signup from optional additional Stripe subscription trial days. Signup benefits follow the freemium trial flag; paid subscriptions advertise extra trial days only when configured and eligible, with missing durations treated as zero.
+- Pricing comparisons distinguish study-plan access from limited lesson completion and include learning games among limited features.
+- Corrected internal FAQ guidance for multi-language learning, adaptive placement assessment, plan creation on confirmation and flashcards belonging to their language's study plan.
+
 ## [1.10.35] - 2026-10-16
 
 ### Added

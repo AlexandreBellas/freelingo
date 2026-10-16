@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Alkuvaiheen Premium-käyttö rekisteröityessä ilman korttia. Sen jälkeen maksuton käyttö rajoituksin, ellet tilaa.",
+    "modes": {
+      "intro": "Käytä pilvessä ilman asennusta tai omalla palvelimellasi.",
+      "compare": "Vertaa vaihtoehtoja",
+      "accounts": "Jokaisella asennuksella on omat tilit ja edistyminen. Pääpainike avaa tämän asennuksen; FreeLingo Cloud -linkki avaa virallisen palvelun.",
+      "title": "Kaksi tapaa käyttää FreeLingoa",
+      "cloud": {
+        "title": "Cloud · Me ylläpidämme",
+        "description": "Opiskele selaimessa FreeLingon ylläpitämällä palvelulla.",
+        "setup": "Palvelintila, ylläpito ja päivitykset sisältyvät palveluun.",
+        "access": "Tekoäly ja puhetoiminnot sisältyvät tilauksesi käyttörajoihin.",
+        "cost": "Aloita ilmaiseksi ja valitse Premium, kun haluat harjoitella enemmän.",
+        "cta": "Avaa FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Oma palvelin · Sinä ylläpidät",
+        "description": "Asenna FreeLingo omaan ympäristöösi ja valitse tekoäly- ja puhepalveluntarjoajat.",
+        "setup": "Hallitse asennusta, asetuksia ja tietojen tallennusta.",
+        "access": "Vapaa ja maksuton ohjelmisto AGPL-3.0-lisenssillä.",
+        "cost": "Vastaat infrastruktuurista, ylläpidosta ja mahdollisista palveluntarjoajien kuluista.",
+        "cta": "Asennusohje"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Mitä eroa pilvellä ja omalla palvelimella on?",
+        "answer": "FreeLingo Cloud on ylläpidetty palvelu osoitteessa freelingo.app: luo tili ja opiskele ilman palvelimen hallintaa. Omalla palvelimella asennat ja ylläpidät FreeLingoa omassa ympäristössäsi sekä määrität tekoäly- ja puhepalvelut. Käytettävissä olevat ominaisuudet riippuvat asetuksista."
+      },
+      "free": {
+        "question": "Voinko aloittaa ilmaiseksi? Tarvitsenko maksukortin?",
+        "answer": "Rekisteröityminen ei vaadi korttia. Jos asennus tarjoaa alkuvaiheen Premium-käytön, se alkaa rekisteröityessä; sen jälkeen käyttö jatkuu maksutta rajoituksin, ellet tilaa. Maksullinen tilaus alkaa ostosta, ellei siihen nimenomaisesti sisälly lisäkokeilupäiviä. Tämä tilauskokeilu on erillinen alkujaksosta ja vaatii maksutavan."
+      },
+      "hosting": {
+        "question": "Mitä tarvitsen FreeLingon ylläpitoon omalla palvelimella?",
+        "answer": "Tarvitset palvelimen, Docker Composen sekä määritetyt tekoäly- ja puhepalvelut. Vastaat asennuksesta, päivityksistä ja varmuuskopioista. AGPL-3.0-ohjelmisto on maksuton; infrastruktuuri ja ulkoiset palvelut voivat maksaa. Laitteistovaatimukset ja tuetut puhekielet riippuvat valituista palveluntarjoajista."
+      },
+      "data": {
+        "question": "Missä tietojani tallennetaan ja käsitellään?",
+        "answer": "Cloudissa FreeLingo-tiimi hallinnoi tallennusta ja lähettää tekoäly- ja puhesisällöt palveluntarjoajille käsittelyä varten. Omalla palvelimella hallitset tallennusta ja palveluntarjoajia: ulkoiset tekoäly- tai puhepalvelut vastaanottavat niille kuuluvan sisällön. Oma palvelin ei tarkoita automaattisesti täysin paikallista käsittelyä."
+      },
+      "languages": {
+        "question": "Mitä kieliä voin opiskella?",
+        "answer": "Britti- ja amerikanenglantia, espanjaa, italiaa, portugalia, saksaa, ranskaa, japania, koreaa ja Manner-Kiinan kiinaa. Voit opiskella useita samanaikaisesti, ja jokaisella kielellä on oma suunnitelma ja edistyminen."
+      },
+      "start": {
+        "question": "Miten aloitan opiskelun?",
+        "answer": "Valitse opiskelukieli, arvioi tasosi ja luo henkilökohtainen suunnitelma. Etene oppitunneilla, vahvista osaamista harjoituksilla ja peleillä sekä harjoittele puhumista Lingun kanssa, myös suoritettujen oppituntien pohjalta."
+      }
+    },
     "microDemo": {
       "title": "Näin Lingu auttaa sinua",
       "exampleLabel": "Kirjallinen esimerkki englannin harjoittelusta",
@@ -1229,28 +1278,28 @@
     "title": "Usein kysytyt kysymykset",
     "subtitle": "Kysymyksiä ja vastauksia",
     "q_start": "Mistä aloitan?",
-    "a_start": "Aloita <strong>tasoarviosta</strong>. Se selvittää englannin taitotasosi (A1–C2) sekä vahvuutesi ja heikkoutesi. Tuloksen perusteella voit luoda henkilökohtaisen <strong>opintosuunnitelman</strong>, joka tuo päivittäiset oppitunnit koontinäyttöön. Ilman tasoarviota koontinäyttö on tyhjä.",
+    "a_start": "Valitse opiskelukieli ja avaa <strong>tasoarvio</strong> taitotasosi arvioimiseksi. Aloittelija voi valita A1:n ilman testiä. Vahvista taso ja kesto luodaksesi kielelle oman <strong>opintosuunnitelman</strong>.",
     "q_workflow": "Miten opiskelu etenee alusta loppuun?",
-    "workflowStep1": "Rekisteröidy ja valitse äidinkielesi",
-    "workflowStep2": "Tee tasoarvio → CEFR-tasosi selvitetään",
-    "workflowStep3": "Luo opintosuunnitelma koontinäytöstä",
+    "workflowStep1": "Rekisteröidy, ilmoita äidinkielesi ja valitse opiskelukieli",
+    "workflowStep2": "Arvioi tasosi kyseisessä kielessä tai aloita aloittelijana A1:stä",
+    "workflowStep3": "Vahvista taso ja kesto luodaksesi opintosuunnitelman",
     "workflowStep4": "Suorita päivittäiset oppitunnit (koontinäytön ALOITA-painike)",
     "workflowStep5": "Harjoittele sanastoa muistikorteilla samalla",
     "workflowStep6": "Harjoittele vapaata keskustelua Lingun kanssa",
     "q_language": "Mitä kieltä voin oppia?",
     "a_language": "FreeLingo tukee tällä hetkellä useita kieliä (amerikanenglanti, brittienglanti, ranska, saksa, italia, japani, korea, Manner-Kiinan kiina, portugali ja espanja), ja lisäämme kieliä ajan mittaan. Kun uusi kieli tulee saataville, löydät sen kohdasta Asetukset → Omat kielet – lisää se ja aloita opiskelu heti.",
     "q_assessment": "Mikä tasoarvio on?",
-    "a_assessment": "Tekoälyn luoma 15 kysymyksen testi, joka kattaa kieliopin, sanaston, luetun ymmärtämisen ja lauseiden muuntelun tasoilla A1–C1. Lopuksi saat CEFR-tasosi, pistemäärän sekä arvion vahvuuksistasi ja heikkouksistasi. Tulos vaikuttaa opintosuunnitelmaasi ja luotuihin muistikortteihin.",
+    "a_assessment": "Mukautuva testi, jossa on enintään 15 kysymystä opiskelukielen omasta kysymyspankista. Se kattaa kieliopin, sanaston ja luetun ymmärtämisen tasoilla A1–C2. Tulos arvioi CEFR-tasosi ja näyttää vahvuudet ja harjoittelukohteet; voit muuttaa ehdotettua tasoa ennen suunnitelman luomista.",
     "q_studyPlan": "Mikä opintosuunnitelma on ja miten luon sellaisen?",
-    "a_studyPlan": "Siirry tasoarvion jälkeen koontinäyttöön ja valitse <strong>Luo opintosuunnitelma</strong>. Tavoitteidesi ja CEFR-tasosi mukainen, päivittäiset oppitunnit sisältävä viikkosuunnitelma luodaan automaattisesti. Oppitunneilla on monivalinta- ja kirjoitustehtäviä, joita tekoäly arvioi.",
+    "a_studyPlan": "Vahvista tasosi tasoarvion lopussa ja valitse kestoksi 4, 8, 12 tai 16 viikkoa. Vahvistus luo <strong>opintosuunnitelman</strong>, jonka kokonaisuudet ja oppitunnit seuraavat kielesi ja tasosi opetussuunnitelmaa. Jokaisella kielellä on oma suunnitelma ja edistyminen.",
     "q_resources": "Mitä Materiaalit-osiossa on?",
     "a_resources": "<strong>Materiaalit</strong> sisältää opintosuunnitelmasta riippumattomia lähteitä: kielioppia tasoittain, sanakokoelmia ja hyödyllisiä ilmauksia. Voit kerrata, hakea selityksiä tai laajentaa sanastoasi milloin tahansa odottamatta päivittäistä oppituntia.",
     "q_flashcards": "Mihin muistikortteja käytetään?",
-    "a_flashcards": "Sanaston harjoitteluun <strong>SM-2</strong>-aikavälikertausalgoritmin avulla. Luo kortteja mistä tahansa aiheesta (esim. \"liike-elämä\", \"fraasiverbit\" tai \"ruoka\"). Kortti sisältää määritelmän, esimerkkilauseen ja äidinkielisen käännöksen. Järjestelmä laskee, milloin kortti kannattaa näyttää uudelleen juuri ennen kuin unohdat sen. Muistikortit eivät riipu opintosuunnitelmasta.",
+    "a_flashcards": "Kertaa sanastoa <strong>SM-2</strong>-aikavälikertauksella: vastauksesi määräävät, milloin kortti näytetään uudelleen. Voit luoda kortteja, tallentaa sanoja teksteistä tai lisätä sanastokokoelmia. Kortit ja kertaukset kuuluvat kielensä opintosuunnitelmaan, mutta voit kerrata niitä etenemättä oppitunneilla.",
     "q_vocabulary": "Miten lisään sanoja sanastooni?",
     "a_vocabulary": "Voit tallentaa sanoja kahdella tavalla: (1) Valitse sana hiirellä oppituntia tai kuunteluharjoitusta lukiessasi tai chatissa ja valitse ilmestyvästä valikosta <strong>Tallenna</strong>. Lingu valmistelee sanalle määritelmän, esimerkkilauseen ja käännöksen äidinkielellesi. (2) Siirry <strong>Sanastoon</strong>, avaa tasoasi vastaava sanakokoelma ja valitse <strong>Lisää kaikki</strong> tuodaksesi koko kokoelman. Tallennetut sanat näkyvät muistikorttien <strong>Omassa sanastossa</strong>.",
     "q_tutor": "Miten voin harjoitella Lingun kanssa?",
-    "a_tutor": "Vapaa chat, jossa vastaukset näkyvät sitä mukaa kun ne syntyvät. Opettaja tuntee CEFR-tasosi ja harjoittelua vaativat alueet ja mukauttaa vastauksensa sen mukaan. Kysy kieliopista, pyydä selityksiä, harjoittele englanniksi kirjoittamista tai vain keskustele. Keskustelut tallennetaan ja ne löytyvät sivupalkista myös seuraavilla käyttökerroilla.",
+    "a_tutor": "Lingu mukauttaa vastaukset aktiiviseen opiskelukieleesi ja suunnitelmasi sisältöön. Kysy kieliopista, pyydä selityksiä, harjoittele kirjoittamista kyseisellä kielellä tai keskustele. Keskustelut tallennetaan kielittäin, ja niitä voi jatkaa historiasta.",
     "q_voice": "Miten äänikeskustelu toimii?",
     "a_voice": "<strong>Äänikeskustelussa</strong> voit puhua Lingun kanssa reaaliajassa. Aloita painamalla Aloita – sovellus kuuntelee automaattisesti puheentunnistuksen (VAD) avulla, ja opettaja vastaa puhesynteesillä. Voit keskeyttää opettajan milloin tahansa. Keskustelu päättyy aikarajaan tai kun painat Pysäytä. Varmista, että selaimella on mikrofonin käyttöoikeus.",
     "q_listening": "Miten kuunteluharjoitukset toimivat?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Mitä tekoälypalveluita FreeLingo tukee?",
     "a_providers_intro": "Määritä tiedostossa <code>.env</code> asetuksella <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Paikallinen ja maksuton. Ollaman on oltava käynnissä palvelimella. Suositeltu malli: gemma4:e4b. Ilman GPU:ta toiminta voi olla hidasta.",
-    "provider_openai": "OpenAI API (GPT-4o ym.). Nopea ja luotettava. Vaatii OPENAI_API_KEY-avaimen.",
+    "provider_openai": "OpenAI-palvelu ylläpitäjän määrittämällä mallilla. Vaatii OPENAI_API_KEY-avaimen ja voi aiheuttaa käyttökuluja.",
     "provider_anthropic": "Anthropic Claude. Vaatii ANTHROPIC_API_KEY-avaimen.",
     "provider_deepseek": "DeepSeek API. Vaatii DEEPSEEK_API_KEY-avaimen.",
     "q_invite": "Voinko kutsua muita?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Kokeile Premiumia rekisteröityessä ilman korttia tai tilausta. Jatka sitten maksutta käyttörajojen puitteissa.",
     "paywallGamesTitle": "Jatka harjoittelua peleillä",
     "paywallGamesDesc": "Ilmainen pelikiintiösi on käytetty tai pelit vaativat Premiumin. Voit jatkaa olemassa olevia pelejä.",
     "paywallLabel": "Premium vaaditaan",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Joustava kuukausitilaus · €{price}/kk →",
     "planYearly": "Paras vastine · €{price}/vuosi · 2 kuukautta ilmaiseksi →",
     "checkoutError": "Maksua ei voitu aloittaa. Yritä uudelleen.",
-    "pricingTitle": "Selkeät hinnat",
-    "pricingDesc": "{days} päivää ilmaiseksi · Ei veloitusta tänään · Peruuta milloin tahansa",
-    "pricingDescTrialUsed": "Valitse kuukausi- tai vuositilaus · Peruuta milloin tahansa",
+    "pricingTitle": "Tilaukset ja hinnat",
+    "pricingContext": "Nämä tilaukset koskevat tätä asennusta. Oma palvelin ei vaadi FreeLingo Cloud -tilausta; ylläpitäjä määrittää pääsyn ja käyttörajat.",
+    "pricingDesc": "Lisäkokeilu tilauksen yhteydessä: {days} päivää · kortti vaaditaan · sen jälkeen sovelletaan tilauksen hintaa",
+    "pricingDescTrialUsed": "Maksullinen kuukausi- tai vuositilaus alkaa ostosta. Peruuta milloin tahansa.",
     "planMonthlyName": "Kuukausittain",
     "planYearlyName": "Vuosittain",
     "bestValue": "Paras vastine",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Valitse tilaus",
     "freeFeature": {
       "f1": "Tasotesti ja tasoarvio",
-      "f2": "Oppitunnit ja opintosuunnitelma",
+      "f2": "Henkilökohtainen opintosuunnitelma",
+      "lessons": "Oppituntien suorittaminen",
+      "games": "Oppimispelit",
       "f3": "Kielioppi- ja sanastomateriaalit",
       "f4": "Koontinäyttö ja edistymisen seuranta",
       "f5": "Muistikortit ja aikavälikertaus",
@@ -1641,7 +1694,7 @@
     "priceAmount": "€{amount}",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "€{price} / {period}",
-    "planFreeDesc": "7 päivän kokeilu täydellä käyttöoikeudella, sen jälkeen ilmainen päivä- ja viikkorajoituksin",
+    "planFreeDesc": "Korttia ei tarvita. Maksuton käyttö käyttörajoilla; valitse Premium, kun tarvitset enemmän.",
     "planFreeCta": "Aloita",
     "limitedLabel": "Rajoitettu"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Uutta",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Selvä",
     "entry1": {
       "label": "Muistikortit sinun tavallasi",

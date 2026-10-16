@@ -362,19 +362,51 @@ The static written English correction example accompanies an explanation of voic
 from a completed lesson, whose content and answered exercises can inform Lingu's conversation. It
 uses `TargetLanguageText` with `en-GB`, localized labels, and no simulated controls or API requests.
 Spaced repetition, XP and streaks are supplementary copy rather than a separate feature grid.
-The hero retains the single animated Lingu in `LanguageBubbles`. Reviews, pricing, open-source links,
-FAQ and footer retain their existing components and flows.
+The hero retains the single animated Lingu in `LanguageBubbles`. A short line links to `#modalities`,
+whose two cards precede pricing and distinguish FreeLingo Cloud from self-hosting. Cloud copy describes
+managed hosting, updates and AI/voice within plan limits. Self-hosting copy identifies AGPL-3.0 software,
+operator-owned maintenance and infrastructure/provider costs. The Cloud card links explicitly to
+`https://freelingo.app/login`, independently of the current instance's registration/session state;
+the installation guide links to the repository's `#quick-start`. The cards render without reveal
+gating. Reviews, local learning CTAs and checkout retain
+their existing flows.
+The comparison explicitly distinguishes the main action for the current installation from the official
+Cloud link and states that accounts and progress are installation-specific. Stripe availability is not
+treated as proof that an installation is the official Cloud service.
+
+`LandingFAQ` uses its own `landing.faq` translations rather than the authenticated help catalog. Its
+six questions cover deployment modes, free signup versus the card-based Premium trial, self-hosting
+requirements, storage and external processing, study languages, and the learning journey. Answers stay
+in the rendered HTML, with inactive panels hidden; buttons expose `aria-expanded`, `aria-controls`
+and labelled answer regions. Opening a question retains the anonymous `faq_viewed` event.
+
+The English static project site in `docs/index.html` retains its general overview, feature cards,
+deployment comparison and open-source/licensing section. It shares the Cloud/self-hosted terminology,
+learning journey and operational distinctions without duplicating dynamic prices or trial durations.
+Its CTAs lead to FreeLingo Cloud and the repository installation guide. The CSS keeps the existing
+solid blue-tinted theme and language orbit, compact hero spacing, visible keyboard focus and
+reduced-motion support.
 
 Hero and end-of-journey CTAs share the same destination: `/dashboard` for a session cookie,
 `/register` for anonymous visitors when registration is open, otherwise `/login`. Anonymous signup
 copy invites visitors to start learning free. When Stripe is enabled, both signup CTAs clarify that
-registration needs no card and free access has usage limits, with Premium available. No fixed quotas
-or trial durations are promised by this copy.
+registration needs no card. If the public `freemium_trial_enabled` flag is true, they explain that
+initial Premium access starts at signup and becomes limited free access unless the learner subscribes.
+Otherwise, they describe limited free access directly. Neither copy promises a fixed duration: public
+config exposes the signup-trial flag but not `FREEMIUM_TRIAL_DAYS`. This signup period is independent
+of the optional Stripe subscription trial. A missing Stripe trial duration defaults to zero on the
+landing rather than advertising unconfirmed additional days.
 
 Landing copy and page-specific metadata use `next-intl` in all fifteen interface catalogs. Metadata,
 Open Graph, Twitter and the software-application description communicate the structured learning
 journey. The new content renders without reveal gating, and CTA transitions respect reduced motion
 and include visible keyboard focus.
+
+Authenticated FAQ copy in `faq` describes the selected study language, optional beginner entry at A1,
+the adaptive static-bank placement quiz and plan creation on level/duration confirmation. Flashcards
+belong to their language's study plan even though review does not require advancing lessons. Tutor
+guidance follows the active language and plan context; provider copy refers to operator configuration
+rather than a fixed model name.
 
 Public metadata is defined through server pages/layouts and the shared `lib/seo.ts` helper.
 The indexing, sitemap, robots, structured-data, and Search Console contract belongs to

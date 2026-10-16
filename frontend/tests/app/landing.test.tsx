@@ -68,7 +68,11 @@ let config: Record<string, unknown>
 let configStatus: number
 
 beforeEach(() => {
-  config = { allow_registration: true, stripe_enabled: false }
+  config = {
+    allow_registration: true,
+    stripe_enabled: false,
+    stripe_trial_days: 7,
+  }
   configStatus = 200
   mockHas.mockReset().mockReturnValue(false)
   vi.stubGlobal(
@@ -176,6 +180,104 @@ describe('Landing Home', () => {
       '/register?plan=yearly',
       '/register?plan=yearly',
     ])
+  })
+
+  it('distinguishes the study plan from limited lessons and games', async () => {
+    config.stripe_enabled = true
+    render(await Home())
+
+    const table = screen.getByRole('table')
+    expect(screen.getByText('pricingContext')).toBeInTheDocument()
+    for (const label of ['freeFeature.lessons', 'freeFeature.games']) {
+      const row = within(table).getByRole('row', {
+        name: `${label} limitedLabel`,
+      })
+      expect(within(row).getAllByRole('cell')[1]).toHaveTextContent(
+        'limitedLabel'
+      )
+    }
+    const studyPlan = within(table).getByRole('row', { name: 'freeFeature.f2' })
+    expect(within(studyPlan).queryByText('limitedLabel')).toBeNull()
+    expect(within(table).queryByText('freeFeature.l5')).toBeNull()
+  })
+
+  it.each([0, 7])(
+    'shows card-trial terms only when configured trial days are positive: %s',
+    async (days) => {
+      config.stripe_enabled = true
+      config.stripe_trial_days = days
+      render(await Home())
+
+      expect(screen.queryAllByText('paywallNoCharge')).toHaveLength(
+        days > 0 ? 2 : 0
+      )
+      expect(screen.queryAllByText('paywallNoChargeTrialUsed')).toHaveLength(
+        days > 0 ? 0 : 2
+      )
+      expect(screen.queryAllByText('ctaRegister')).toHaveLength(
+        days > 0 ? 3 : 0
+      )
+    }
+  )
+
+  it.each([true, false])(
+    'describes the no-card signup period independently of Stripe trial days: %s',
+    async (freemiumTrialEnabled) => {
+      config.stripe_enabled = true
+      config.stripe_trial_days = 0
+      config.freemium_trial_enabled = freemiumTrialEnabled
+      render(await Home())
+
+      expect(screen.queryAllByText('freeTrialNote')).toHaveLength(
+        freemiumTrialEnabled ? 2 : 0
+      )
+      expect(screen.queryAllByText('freeNote')).toHaveLength(
+        freemiumTrialEnabled ? 0 : 2
+      )
+      expect(
+        screen.getByText(
+          freemiumTrialEnabled ? 'planFreeTrialDesc' : 'planFreeDesc'
+        )
+      ).toBeInTheDocument()
+      expect(screen.getByText('pricingDescTrialUsed')).toBeInTheDocument()
+      expect(screen.queryByText('trialBadge')).toBeNull()
+      expect(screen.queryByText('ctaRegister')).toBeNull()
+      expect(screen.queryByText('paywallNoCharge')).toBeNull()
+    }
+  )
+
+  it('does not advertise a signup trial when billing is disabled', async () => {
+    config.freemium_trial_enabled = true
+    render(await Home())
+
+    expect(screen.queryByText('freeTrialNote')).toBeNull()
+    expect(screen.queryByText('planFreeTrialDesc')).toBeNull()
+    expect(screen.queryByText('pricingTitle')).toBeNull()
+  })
+
+  it('does not invent a Stripe trial when its duration is missing', async () => {
+    config.stripe_enabled = true
+    delete config.stripe_trial_days
+    render(await Home())
+
+    expect(screen.queryByText('trialBadge')).toBeNull()
+    expect(screen.getAllByText('ctaRegisterTrialUsed')).toHaveLength(3)
+  })
+
+  it('keeps Cloud access distinct from closed registration on the current instance', async () => {
+    config.allow_registration = false
+    const { container } = render(await Home())
+
+    const modes = screen.getByRole('region', { name: 'modes.title' })
+    expect(within(modes).getByText('modes.accounts')).toBeInTheDocument()
+    expect(screen.queryByText('pricingTitle')).toBeNull()
+    expect(
+      within(modes).getByRole('link', { name: 'modes.cloud.cta' })
+    ).toHaveAttribute('href', 'https://freelingo.app/login')
+    expect(
+      within(modes).getByRole('link', { name: 'modes.selfHosted.cta' })
+    ).toHaveAttribute('href', 'https://github.com/artcc/freelingo#quick-start')
+    expect(container.querySelector('a[href^="/register"]')).toBeNull()
   })
 
   it('replaces both landing CTAs and every pricing signup CTA with Sign in when closed', async () => {

@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Indledende Premium-adgang ved tilmelding uden kort. Derefter gratis med forbrugsgrænser, hvis du ikke tegner abonnement.",
+    "modes": {
+      "intro": "Tilgængelig i skyen uden installation eller på din egen server.",
+      "compare": "Sammenlign muligheder",
+      "accounts": "Hver installation har sine egne konti og fremskridt. Hovedknappen åbner denne installation; FreeLingo Cloud-linket åbner den officielle tjeneste.",
+      "title": "To måder at bruge FreeLingo på",
+      "cloud": {
+        "title": "Cloud · Vi står for driften",
+        "description": "Lær i browseren med FreeLingos administrerede tjeneste.",
+        "setup": "Hosting, vedligeholdelse og opdateringer er inkluderet.",
+        "access": "AI og tale er inkluderet inden for din plans forbrugsgrænser.",
+        "cost": "Start gratis, og vælg Premium for at øve mere.",
+        "cta": "Åbn FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Egen server · Du står for driften",
+        "description": "Installér FreeLingo på din infrastruktur, og vælg dine AI- og taleudbydere.",
+        "setup": "Kontrollér installation, konfiguration og datalagring.",
+        "access": "Fri og gratis software under AGPL-3.0.",
+        "cost": "Du betaler for infrastruktur, vedligeholdelse og eventuelle udbyderomkostninger.",
+        "cta": "Installationsvejledning"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Hvad er forskellen på cloud og egen server?",
+        "answer": "FreeLingo Cloud er den administrerede tjeneste på freelingo.app: opret en konto, og lær uden at administrere en server. Med egen server installerer og vedligeholder du FreeLingo på din infrastruktur og konfigurerer AI- og taletjenester. De tilgængelige funktioner afhænger af din konfiguration."
+      },
+      "free": {
+        "question": "Kan jeg starte gratis? Skal jeg bruge et kort?",
+        "answer": "Tilmelding kræver ikke kort. Hvis installationen tilbyder indledende Premium-adgang, starter den ved tilmelding; derefter fortsætter du gratis med grænser, hvis du ikke tegner abonnement. Det betalte abonnement begynder ved købet, medmindre planen udtrykkeligt tilbyder ekstra prøvedage. Denne prøveperiode er adskilt fra den indledende periode og kræver en betalingsmetode."
+      },
+      "hosting": {
+        "question": "Hvad skal jeg bruge for selv at hoste FreeLingo?",
+        "answer": "Du skal bruge en server, Docker Compose og konfigurerede AI- og taletjenester. Du står for installation, opdateringer og sikkerhedskopier. AGPL-3.0-softwaren er gratis; infrastruktur og eksterne udbydere kan koste penge. Hardwarekrav og understøttede talesprog afhænger af de valgte udbydere."
+      },
+      "data": {
+        "question": "Hvor gemmes og behandles mine data?",
+        "answer": "I Cloud administrerer FreeLingo-teamet lagringen og sender AI- og taleindhold til tjenestens udbydere til behandling. På egen server styrer du lagring og udbydere: eksterne AI- eller taletjenester modtager det relevante indhold. Egen server betyder ikke automatisk, at al behandling er lokal."
+      },
+      "languages": {
+        "question": "Hvilke sprog kan jeg lære?",
+        "answer": "Britisk og amerikansk engelsk, spansk, italiensk, portugisisk, tysk, fransk, japansk, koreansk og kinesisk fra det kinesiske fastland. Du kan lære flere samtidig med separate planer og fremskridt for hvert sprog."
+      },
+      "start": {
+        "question": "Hvordan kommer jeg i gang med at lære?",
+        "answer": "Vælg dit studiesprog, vurder dit niveau, og opret din personlige plan. Gennemfør lektioner, styrk din viden med øvelser og spil, og øv samtaler med Lingu, også med udgangspunkt i afsluttede lektioner."
+      }
+    },
     "microDemo": {
       "title": "Sådan hjælper Lingu dig",
       "exampleLabel": "Skriftligt eksempel på engelskøvelse",
@@ -1229,28 +1278,28 @@
     "title": "Ofte stillede spørgsmål",
     "subtitle": "Ofte stillede spørgsmål og svar",
     "q_start": "Hvor skal jeg starte?",
-    "a_start": "Start med <strong>niveauvurderingen</strong>. Den finder dit engelskniveau (A1–C2) samt dine styrker og svagheder. Med resultatet kan du oprette en personlig <strong>læringsplan</strong>, som fylder din oversigt med daglige lektioner. Uden niveauvurderingen er oversigten tom.",
+    "a_start": "Vælg det sprog, du vil lære, og åbn <strong>niveauvurderingen</strong> for at vurdere dit niveau. Begyndere kan vælge A1 uden testen. Bekræft niveau og varighed for at oprette en <strong>læringsplan</strong> for sproget.",
     "q_workflow": "Hvordan fungerer hele forløbet?",
-    "workflowStep1": "Opret en konto, og vælg dit modersmål",
-    "workflowStep2": "Tag niveauvurderingen → dit CEFR-niveau findes",
-    "workflowStep3": "Opret din læringsplan fra oversigten",
+    "workflowStep1": "Opret en konto, angiv dit modersmål, og vælg det sprog, du vil lære",
+    "workflowStep2": "Vurder dit niveau i sproget, eller begynd på A1 som nybegynder",
+    "workflowStep3": "Bekræft niveau og varighed for at oprette din læringsplan",
     "workflowStep4": "Gennemfør dine daglige lektioner (START-knappen på oversigten)",
     "workflowStep5": "Brug flashcards til at træne ordforråd ved siden af",
     "workflowStep6": "Øv frie samtaler med Lingu",
     "q_language": "Hvilket sprog kommer jeg til at lære?",
     "a_language": "FreeLingo understøtter i øjeblikket flere sprog (amerikansk engelsk, britisk engelsk, fransk, tysk, italiensk, japansk, koreansk, kinesisk fra Fastlandskina, portugisisk og spansk), og vi tilføjer flere med tiden. Når et nyt sprog bliver tilgængeligt, finder du det under Indstillinger → Mine sprog – tilføj det, og begynd at lære med det samme.",
     "q_assessment": "Hvad er niveauvurderingen?",
-    "a_assessment": "En AI-genereret test med 15 spørgsmål om grammatik, ordforråd, læseforståelse og omskrivning af sætninger med sværhedsgrader fra A1 til C1. Når du er færdig, får du dit CEFR-niveau, en score og en analyse af dine styrker og svagheder. Resultatet bruges i læringsplanen og de genererede flashcards.",
+    "a_assessment": "En adaptiv test med højst 15 spørgsmål fra en spørgsmålsbank for dit studiesprog. Den dækker grammatik, ordforråd og læseforståelse fra A1 til C2. Resultatet anslår dit CEFR-niveau og viser styrker og øveområder; du kan ændre det foreslåede niveau, før du opretter planen.",
     "q_studyPlan": "Hvad er læringsplanen, og hvordan opretter jeg en?",
-    "a_studyPlan": "Efter niveauvurderingen går du til oversigten og klikker på <strong>Opret læringsplan</strong>. Der oprettes automatisk en plan uge for uge med daglige lektioner tilpasset dit CEFR-niveau og dine mål. Hver lektion indeholder multiple choice- og skriveøvelser, som vurderes af AI.",
+    "a_studyPlan": "Bekræft dit niveau efter vurderingen, og vælg 4, 8, 12 eller 16 uger. Bekræftelsen opretter din <strong>læringsplan</strong> med enheder og lektioner efter læreplanen for dit sprog og niveau. Hvert sprog har sin egen plan og fremgang.",
     "q_resources": "Hvad er Ressourcer?",
     "a_resources": "Under <strong>Ressourcer</strong> finder du opslagsmateriale, som er uafhængigt af din læringsplan: grammatik efter niveau, ordsamlinger og nyttige fraser. Brug det når som helst til at repetere, slå forklaringer op eller udvide dit ordforråd uden at vente på en daglig lektion.",
     "q_flashcards": "Hvad bruges flashcards til?",
-    "a_flashcards": "Et system til at øve ord med <strong>SM-2</strong>-algoritmen til gentagelser fordelt over tid. Opret kort om ethvert emne (f.eks. \"arbejde\", \"fraseverber\" eller \"mad\") med definition, eksempelsætning og oversættelse til dit modersmål. Systemet beregner, hvornår du skal se hvert kort igen, lige før du risikerer at glemme det. Helt uafhængigt af læringsplanen.",
+    "a_flashcards": "Repetér ord med spredt gentagelse via <strong>SM-2</strong>: dine svar afgør, hvornår hvert kort vises igen. Du kan generere kort, gemme ord fra tekster eller tilføje ordsamlinger. Kort og gentagelser tilhører sprogets læringsplan, men du kan øve dem uden at gå videre i lektionerne.",
     "q_vocabulary": "Hvordan tilføjer jeg ord til mit ordforråd?",
     "a_vocabulary": "Du kan gemme ord på to måder: (1) Markér et ord med musen, mens du læser en lektion, laver en lytteøvelse eller chatter med læreren, og klik på <strong>Gem</strong> i menuen, der vises. Lingu forbereder så en definition, en eksempelsætning og en oversættelse til dit modersmål. (2) Gå til <strong>Ordforråd</strong>, åbn en ordsamling til dit niveau, og klik på <strong>Tilføj alle</strong> for at importere hele samlingen. Dine gemte ord vises under <strong>Mit ordforråd</strong> i Flashcards.",
     "q_tutor": "Hvordan kan jeg øve mig med Lingu?",
-    "a_tutor": "En åben chat, hvor svarene vises løbende. Læreren kender dit CEFR-niveau og dine svage områder og tilpasser sine svar. Stil spørgsmål om grammatik, bed om forklaringer, øv dig i at skrive engelsk, eller tal bare sammen. Samtalerne gemmes og kan findes i sidepanelet, også næste gang du logger ind.",
+    "a_tutor": "Lingu tilpasser svarene til dit aktive studiesprog og din plans kontekst. Stil grammatikspørgsmål, bed om forklaringer, øv dig i at skrive på sproget, eller tal sammen. Samtaler gemmes efter sprog og kan genoptages fra historikken.",
     "q_voice": "Hvordan fungerer stemmesamtaler?",
     "a_voice": "Med <strong>Stemmesamtale</strong> kan du tale med Lingu i realtid. Tryk på Start – appen lytter automatisk med stemmeaktivitetsregistrering (VAD), og læreren svarer med syntetisk tale. Du kan afbryde læreren når som helst. Samtalen slutter, når tidsgrænsen nås, eller når du trykker på Stop. Sørg for, at din browser har adgang til mikrofonen.",
     "q_listening": "Hvordan fungerer lytteøvelser?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Hvilke AI-udbydere understøtter FreeLingo?",
     "a_providers_intro": "Konfigureres i <code>.env</code> med <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Lokal og gratis. Kræver, at Ollama kører på værtsmaskinen. Anbefalet model: gemma4:e4b. Kan være langsom uden GPU.",
-    "provider_openai": "OpenAI API (GPT-4o m.fl.). Hurtig og pålidelig. Kræver OPENAI_API_KEY.",
+    "provider_openai": "OpenAI-tjeneste med den model, administratoren har valgt. Kræver OPENAI_API_KEY og kan medføre forbrugsomkostninger.",
     "provider_anthropic": "Anthropic Claude. Kræver ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Kræver DEEPSEEK_API_KEY.",
     "q_invite": "Kan jeg invitere andre?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Prøv Premium ved tilmelding uden kort eller abonnement. Fortsæt derefter gratis med forbrugsgrænser.",
     "paywallGamesTitle": "Fortsæt med at øve gennem spil",
     "paywallGamesDesc": "Din gratis spilkvote er opbrugt, eller spil kræver Premium. Du kan fortsætte eksisterende spil.",
     "paywallLabel": "Premium påkrævet",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Fleksibelt månedsabonnement · €{price}/måned →",
     "planYearly": "Mest for pengene · €{price}/år · 2 måneder gratis →",
     "checkoutError": "Betalingen kunne ikke startes. Prøv igen.",
-    "pricingTitle": "Enkle, gennemskuelige priser",
-    "pricingDesc": "{days} dage gratis · Ingen betaling i dag · Opsig når som helst",
-    "pricingDescTrialUsed": "Vælg månedligt eller årligt · Opsig når som helst",
+    "pricingTitle": "Planer og priser",
+    "pricingContext": "Disse planer gælder denne installation. Egen hosting kræver ikke et FreeLingo Cloud-abonnement; administratoren indstiller adgang og grænser.",
+    "pricingDesc": "Ekstra prøveperiode ved abonnement: {days} dage · kort påkrævet · derefter gælder planens pris",
+    "pricingDescTrialUsed": "Betalt måneds- eller årsabonnement fra købstidspunktet. Opsig når som helst.",
     "planMonthlyName": "Månedligt",
     "planYearlyName": "Årligt",
     "bestValue": "Mest for pengene",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Vælg abonnement",
     "freeFeature": {
       "f1": "Niveautest og niveauvurdering",
-      "f2": "Lektioner og læringsplan",
+      "f2": "Personlig læringsplan",
+      "lessons": "Gennemførelse af lektioner",
+      "games": "Læringsspil",
       "f3": "Opslagsværk for grammatik og ordforråd",
       "f4": "Oversigt og opfølgning på fremskridt",
       "f5": "Flashcards og gentagelser fordelt over tid",
@@ -1641,7 +1694,7 @@
     "priceAmount": "€{amount}",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "€{price} / {period}",
-    "planFreeDesc": "7 dages prøveperiode med fuld adgang, derefter gratis med daglige og ugentlige grænser",
+    "planFreeDesc": "Intet kort kræves. Gratis adgang med forbrugsgrænser; vælg Premium, når du har brug for mere.",
     "planFreeCta": "Start",
     "limitedLabel": "Begrænset"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Nyheder",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Forstået",
     "entry1": {
       "label": "Dine flashcards, på din måde",

@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Początkowy dostęp Premium po rejestracji, bez karty. Potem bezpłatnie z limitami, jeśli nie wykupisz subskrypcji.",
+    "modes": {
+      "intro": "Dostępne w chmurze, bez instalacji, lub na własnym serwerze.",
+      "compare": "Porównaj opcje",
+      "accounts": "Każda instalacja ma własne konta i postępy. Główny przycisk otwiera tę instalację; link FreeLingo Cloud prowadzi do oficjalnej usługi.",
+      "title": "Dwa sposoby korzystania z FreeLingo",
+      "cloud": {
+        "title": "Cloud · My zarządzamy",
+        "description": "Ucz się w przeglądarce dzięki zarządzanej usłudze FreeLingo.",
+        "setup": "Hosting, utrzymanie i aktualizacje w cenie usługi.",
+        "access": "AI i funkcje głosowe w ramach limitów Twojego planu.",
+        "cost": "Zacznij od darmowego planu i wybierz Premium, aby ćwiczyć więcej.",
+        "cta": "Otwórz FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Własny serwer · Ty zarządzasz",
+        "description": "Zainstaluj FreeLingo we własnej infrastrukturze i wybierz dostawców AI oraz usług głosowych.",
+        "setup": "Kontroluj instalację, konfigurację i przechowywanie danych.",
+        "access": "Wolne i bezpłatne oprogramowanie na licencji AGPL-3.0.",
+        "cost": "Pokrywasz koszty infrastruktury, utrzymania i ewentualnych usług zewnętrznych.",
+        "cta": "Instrukcja instalacji"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Czym różni się chmura od własnego hostingu?",
+        "answer": "FreeLingo Cloud to zarządzana usługa na freelingo.app: załóż konto i ucz się bez zarządzania serwerem. Przy własnym hostingu instalujesz i utrzymujesz FreeLingo we własnej infrastrukturze oraz konfigurujesz usługi AI i głosowe. Dostępne możliwości zależą od konfiguracji."
+      },
+      "free": {
+        "question": "Czy mogę zacząć za darmo? Czy potrzebuję karty?",
+        "answer": "Rejestracja nie wymaga karty. Jeśli instalacja oferuje początkowy dostęp Premium, zaczyna się on przy rejestracji; potem korzystasz bezpłatnie z limitami, jeśli nie wykupisz subskrypcji. Płatna subskrypcja zaczyna się przy zakupie, chyba że plan wyraźnie oferuje dodatkowe dni próbne. Ta próba jest niezależna od okresu początkowego i wymaga metody płatności."
+      },
+      "hosting": {
+        "question": "Czego potrzebuję do własnego hostingu FreeLingo?",
+        "answer": "Potrzebujesz serwera, Docker Compose oraz skonfigurowanych usług AI i głosowych. Odpowiadasz za instalację, aktualizacje i kopie zapasowe. Oprogramowanie AGPL-3.0 jest bezpłatne; infrastruktura i dostawcy zewnętrzni mogą generować koszty. Wymagania sprzętowe i obsługiwane języki głosowe zależą od wybranych dostawców."
+      },
+      "data": {
+        "question": "Gdzie są przechowywane i przetwarzane moje dane?",
+        "answer": "W Cloud zespół FreeLingo zarządza przechowywaniem i wysyła treści AI oraz głosowe do dostawców usługi w celu przetwarzania. Przy własnym hostingu kontrolujesz przechowywanie i dostawców: zewnętrzne usługi AI lub głosowe otrzymują odpowiednie treści. Własny hosting nie oznacza automatycznie wyłącznie lokalnego przetwarzania."
+      },
+      "languages": {
+        "question": "Jakich języków mogę się uczyć?",
+        "answer": "Angielskiego brytyjskiego i amerykańskiego, hiszpańskiego, włoskiego, portugalskiego, niemieckiego, francuskiego, japońskiego, koreańskiego i chińskiego kontynentalnego. Możesz uczyć się kilku jednocześnie, z osobnymi planami i postępami dla każdego języka."
+      },
+      "start": {
+        "question": "Jak zacząć naukę?",
+        "answer": "Wybierz język nauki, sprawdź swój poziom i utwórz spersonalizowany plan. Przechodź przez lekcje, utrwalaj wiedzę dzięki ćwiczeniom i grom oraz ćwicz mówienie z Lingu, również na podstawie ukończonych lekcji."
+      }
+    },
     "microDemo": {
       "title": "Tak pomaga Ci Lingu",
       "exampleLabel": "Pisemny przykład ćwiczenia z angielskiego",
@@ -1229,28 +1278,28 @@
     "title": "FAQ",
     "subtitle": "Często zadawane pytania",
     "q_start": "Od czego zacząć?",
-    "a_start": "Zacznij od <strong>Oceny poziomu</strong>. Wykrywa ona Twój poziom angielskiego (A1–C2) oraz mocne i słabe strony. Na podstawie wyniku możesz wygenerować spersonalizowany <strong>Plan nauki</strong>, który wypełni Twój panel codziennymi lekcjami.",
+    "a_start": "Wybierz język nauki i otwórz <strong>Ocenę poziomu</strong>, aby oszacować swoje umiejętności. Początkujący mogą wybrać A1 bez testu. Potwierdź poziom i czas trwania, aby utworzyć <strong>Plan nauki</strong> dla tego języka.",
     "q_workflow": "Jaki jest pełny przebieg pracy?",
-    "workflowStep1": "Zarejestruj się i wybierz swój język ojczysty",
-    "workflowStep2": "Oceń poziom → wykrywany jest Twój poziom CEFR",
-    "workflowStep3": "Wygeneruj plan nauki z panelu",
+    "workflowStep1": "Zarejestruj się, podaj język ojczysty i wybierz język nauki",
+    "workflowStep2": "Oceń poziom w tym języku lub zacznij od A1 jako osoba początkująca",
+    "workflowStep3": "Potwierdź poziom i czas trwania, aby utworzyć plan nauki",
     "workflowStep4": "Ukończ codzienne lekcje (przycisk START w panelu)",
     "workflowStep5": "Używaj fiszek do trenowania słownictwa równolegle",
     "workflowStep6": "Ćwicz swobodną rozmowę z Lingu",
     "q_language": "Jakiego języka będę się uczyć?",
     "a_language": "FreeLingo obsługuje obecnie kilka języków (amerykański angielski, brytyjski angielski, chiński kontynentalny, francuski, hiszpański, japoński, koreański, niemiecki, portugalski, włoski) i z czasem będziemy dodawać kolejne. Gdy nowy język będzie dostępny, znajdziesz go w Ustawieniach → Moje języki — dodaj go i zacznij się uczyć od razu.",
     "q_assessment": "Czym jest ocena poziomu?",
-    "a_assessment": "Test z 15 pytaniami generowanych przez AI, obejmujący gramatykę, słownictwo, czytanie ze zrozumieniem i transformację zdań, z poziomem trudności od A1 do C1.",
+    "a_assessment": "Adaptacyjny test z maksymalnie 15 pytaniami z banku pytań dla języka nauki. Obejmuje gramatykę, słownictwo i czytanie ze zrozumieniem od A1 do C2. Wynik szacuje poziom CEFR i wskazuje mocne strony oraz obszary do ćwiczeń; przed utworzeniem planu możesz zmienić sugerowany poziom.",
     "q_studyPlan": "Czym jest plan nauki i jak go wygenerować?",
-    "a_studyPlan": "Po ocenie poziomu przejdź do panelu i kliknij <strong>Wygeneruj plan nauki</strong>. Automatycznie zostanie utworzony tygodniowy plan z codziennymi lekcjami dostosowanymi do Twojego poziomu CEFR i celów.",
+    "a_studyPlan": "Po ocenie potwierdź poziom i wybierz 4, 8, 12 lub 16 tygodni. Potwierdzenie tworzy <strong>Plan nauki</strong> podzielony na jednostki i lekcje według programu Twojego języka i poziomu. Każdy język ma osobny plan i postępy.",
     "q_resources": "Czym są Zasoby?",
     "a_resources": "Sekcja <strong>Zasoby</strong> zawiera materiały referencyjne niezależne od Twojego planu nauki: gramatykę według poziomu, zestawy słownictwa i przydatne zwroty. Możesz korzystać z niej w dowolnym momencie, aby powtarzać, sprawdzać wyjaśnienia lub poszerzać słownictwo bez czekania na codzienną lekcję.",
     "q_flashcards": "Do czego służą fiszki?",
-    "a_flashcards": "System trenowania słownictwa wykorzystujący algorytm powtórek rozłożonych w czasie <strong>SM-2</strong>. Generuj karty na dowolny temat z definicją, przykładowym zdaniem i tłumaczeniem na język ojczysty.",
+    "a_flashcards": "Powtarzaj słownictwo z algorytmem <strong>SM-2</strong>: odpowiedzi określają termin kolejnej powtórki. Możesz generować karty, zapisywać słowa z tekstów lub dodawać zestawy słownictwa. Karty i powtórki należą do planu danego języka, ale możesz ćwiczyć je niezależnie od postępów w lekcjach.",
     "q_vocabulary": "Jak dodać słowa do mojego słownictwa?",
     "a_vocabulary": "Możesz zapisywać słowa na dwa sposoby: (1) Podczas czytania lekcji, ćwiczenia ze słuchu lub rozmowy z tutorem zaznacz myszką dowolne słowo i kliknij <strong>Zapisz</strong> w dymku, który się pojawi — Lingu przygotuje definicję, przykładowe zdanie i tłumaczenie na Twój język ojczysty. (2) Przejdź do <strong>Słownictwo</strong>, otwórz zestaw słownictwa dla swojego poziomu i kliknij <strong>Dodaj wszystkie</strong>, aby zaimportować cały zestaw naraz. Zapisane słowa pojawiają się w <strong>Mój słownik</strong> w sekcji Fiszki.",
     "q_tutor": "Jak mogę ćwiczyć z Lingu?",
-    "a_tutor": "Swobodny czat strumieniowy. Korepetytor zna Twój poziom CEFR i słabe punkty, aby dostosować odpowiedzi. Zadawaj pytania gramatyczne, proś o wyjaśnienia, ćwicz pisanie po angielsku lub po prostu rozmawiaj.",
+    "a_tutor": "Lingu dostosowuje odpowiedzi do aktywnego języka nauki i kontekstu planu. Zadawaj pytania gramatyczne, proś o wyjaśnienia, ćwicz pisanie w tym języku lub rozmawiaj. Rozmowy są zapisywane osobno dla każdego języka i można je wznowić z historii.",
     "q_voice": "Jak działa rozmowa głosowa?",
     "a_voice": "Tryb <strong>Rozmowy głosowej</strong> umożliwia rozmowę z Lingu w czasie rzeczywistym. Naciśnij Start, aby rozpocząć — aplikacja automatycznie wykrywa Twój głos za pomocą detekcji aktywności głosowej (VAD), a tutor odpowiada syntezą mowy. Możesz przerwać tutorowi w dowolnym momencie (barge-in). Sesja kończy się po osiągnięciu limitu czasu lub naciśnięciu Zatrzymaj. Upewnij się, że przeglądarka ma uprawnienia do mikrofonu.",
     "q_listening": "Jak działają ćwiczenia ze słuchu?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Jakich dostawców AI obsługuje FreeLingo?",
     "a_providers_intro": "Konfigurowane w <code>.env</code> przez <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Lokalny, bezpłatny. Wymaga Ollama działającego na hoście. Zalecany model: gemma4:e4b.",
-    "provider_openai": "OpenAI API (GPT-4o itp.). Szybki i niezawodny. Wymaga OPENAI_API_KEY.",
+    "provider_openai": "Usługa OpenAI z modelem skonfigurowanym przez administratora. Wymaga OPENAI_API_KEY i może generować koszty użytkowania.",
     "provider_anthropic": "Anthropic Claude. Wymaga ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Wymaga DEEPSEEK_API_KEY.",
     "q_invite": "Czy mogę zapraszać innych?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Wypróbuj Premium po rejestracji, bez karty i subskrypcji. Potem korzystaj bezpłatnie z limitami użytkowania.",
     "paywallGamesTitle": "Ćwicz dalej z grami",
     "paywallGamesDesc": "Darmowy limit został wyczerpany lub gry wymagają Premium. Możesz wznowić istniejące rozgrywki.",
     "paywallLabel": "Wymagane Premium",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Elastycznie co miesiąc · {price}€/miesiąc →",
     "planYearly": "Najlepsza oferta · {price}€/rok · 2 miesiące gratis →",
     "checkoutError": "Nie można uruchomić płatności. Spróbuj ponownie.",
-    "pricingTitle": "Prosta i przejrzysta cena",
-    "pricingDesc": "{days} dni gratis · dzisiaj bez opłat · anuluj kiedy chcesz",
-    "pricingDescTrialUsed": "Wybierz miesięcznie lub rocznie · anuluj kiedy chcesz",
+    "pricingTitle": "Plany i ceny",
+    "pricingContext": "Te plany dotyczą tej instalacji. Własny hosting nie wymaga subskrypcji FreeLingo Cloud; administrator konfiguruje dostęp i limity.",
+    "pricingDesc": "Dodatkowa próba przy zakupie subskrypcji: {days} dni · wymagana karta · potem obowiązuje cena planu",
+    "pricingDescTrialUsed": "Płatna subskrypcja miesięczna lub roczna od zakupu. Anuluj kiedy chcesz.",
     "planMonthlyName": "Miesięczny",
     "planYearlyName": "Roczny",
     "bestValue": "Najlepsza oferta",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Wybierz plan",
     "freeFeature": {
       "f1": "Test poziomujący & ocena",
-      "f2": "Lekcje & plan nauki",
+      "f2": "Spersonalizowany plan nauki",
+      "lessons": "Kończenie lekcji",
+      "games": "Gry edukacyjne",
       "f3": "Gramatyka & słownictwo",
       "f4": "Panel & śledzenie postępów",
       "f5": "Fiszki & powtarzanie w odstępach",
@@ -1641,7 +1694,7 @@
     "priceAmount": "{amount} zł",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "{price} zł / {period}",
-    "planFreeDesc": "7 dni pełnego dostępu testowego, potem za darmo z dziennymi i tygodniowymi limitami",
+    "planFreeDesc": "Bez karty. Bezpłatny dostęp z limitami użytkowania; wybierz Premium, gdy potrzebujesz więcej.",
     "planFreeCta": "Zacznij",
     "limitedLabel": "Limitowane"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Co nowego",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Rozumiem",
     "entry1": {
       "label": "Twoje fiszki, po Twojemu",
