@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Inledande Premium-åtkomst vid registrering, utan kort. Därefter gratis med användningsgränser om du inte tecknar abonnemang.",
+    "modes": {
+      "intro": "Tillgängligt i molnet utan installation eller på din egen server.",
+      "compare": "Jämför alternativen",
+      "accounts": "Varje installation har egna konton och framsteg. Huvudknappen öppnar denna installation; FreeLingo Cloud-länken öppnar den officiella tjänsten.",
+      "title": "Två sätt att använda FreeLingo",
+      "cloud": {
+        "title": "Cloud · Vi sköter driften",
+        "description": "Lär dig i webbläsaren med FreeLingos hanterade tjänst.",
+        "setup": "Hosting, underhåll och uppdateringar ingår.",
+        "access": "AI och röst ingår inom din plans användningsgränser.",
+        "cost": "Börja gratis och välj Premium för att öva mer.",
+        "cta": "Öppna FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Egen server · Du sköter driften",
+        "description": "Installera FreeLingo på din infrastruktur och välj leverantörer för AI och röst.",
+        "setup": "Kontrollera installation, konfiguration och datalagring.",
+        "access": "Fri och kostnadsfri programvara under AGPL-3.0.",
+        "cost": "Du står för infrastruktur, underhåll och eventuella leverantörskostnader.",
+        "cta": "Installationsguide"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Vad är skillnaden mellan molnet och egen server?",
+        "answer": "FreeLingo Cloud är den hanterade tjänsten på freelingo.app: skapa ett konto och lär dig utan att sköta en server. Med egen server installerar och underhåller du FreeLingo på din infrastruktur och konfigurerar AI- och rösttjänster. Tillgängliga funktioner beror på din konfiguration."
+      },
+      "free": {
+        "question": "Kan jag börja gratis? Behöver jag ett kort?",
+        "answer": "Registrering kräver inget kort. Om installationen erbjuder inledande Premium-åtkomst börjar den vid registrering; därefter fortsätter du gratis med gränser om du inte tecknar abonnemang. Betalabonnemanget börjar vid köpet, om planen inte uttryckligen erbjuder extra provdagar. Den provperioden är separat från den inledande perioden och kräver en betalningsmetod."
+      },
+      "hosting": {
+        "question": "Vad behöver jag för att köra FreeLingo på egen server?",
+        "answer": "Du behöver en server, Docker Compose och konfigurerade AI- och rösttjänster. Du ansvarar för installation, uppdateringar och säkerhetskopior. AGPL-3.0-programvaran är gratis; infrastruktur och externa leverantörer kan kosta pengar. Hårdvarukrav och stödda röstspråk beror på valda leverantörer."
+      },
+      "data": {
+        "question": "Var lagras och behandlas mina data?",
+        "answer": "I Cloud hanterar FreeLingo-teamet lagringen och skickar AI- och röstinnehåll till tjänstens leverantörer för behandling. På egen server styr du lagring och leverantörer: externa AI- eller rösttjänster får relevant innehåll. Egen server innebär inte automatiskt att all behandling sker lokalt."
+      },
+      "languages": {
+        "question": "Vilka språk kan jag lära mig?",
+        "answer": "Brittisk och amerikansk engelska, spanska, italienska, portugisiska, tyska, franska, japanska, koreanska och fastlandskinesiska. Du kan lära dig flera samtidigt med separata planer och framsteg för varje språk."
+      },
+      "start": {
+        "question": "Hur börjar jag lära mig?",
+        "answer": "Välj studiespråk, bedöm din nivå och skapa din personliga plan. Gå igenom lektioner, befäst kunskaper med övningar och spel och öva på att tala med Lingu, även utifrån avslutade lektioner."
+      }
+    },
     "microDemo": {
       "title": "Så hjälper Lingu dig",
       "exampleLabel": "Skriftligt exempel på engelsk övning",
@@ -1229,28 +1278,28 @@
     "title": "Vanliga frågor",
     "subtitle": "Vanliga frågor och svar",
     "q_start": "Var börjar jag?",
-    "a_start": "Börja med <strong>nivåbedömningen</strong>. Den identifierar din nivå i engelska (A1–C2) samt dina styrkor och svagheter. Med resultatet kan du skapa en personlig <strong>studieplan</strong> som fyller din översikt med dagliga lektioner. Utan nivåbedömningen är översikten tom.",
+    "a_start": "Välj språket du vill lära dig och öppna <strong>nivåbedömningen</strong> för att uppskatta din nivå. Nybörjare kan välja A1 utan test. Bekräfta nivå och längd för att skapa en <strong>studieplan</strong> för det språket.",
     "q_workflow": "Hur går det till från början till slut?",
-    "workflowStep1": "Registrera dig och välj ditt modersmål",
-    "workflowStep2": "Gör nivåbedömningen → din GERS-nivå identifieras",
-    "workflowStep3": "Skapa din studieplan från översikten",
+    "workflowStep1": "Registrera dig, ange ditt modersmål och välj språket du vill lära dig",
+    "workflowStep2": "Bedöm din nivå i språket eller börja på A1 som nybörjare",
+    "workflowStep3": "Bekräfta nivå och längd för att skapa din studieplan",
     "workflowStep4": "Slutför dina dagliga lektioner (STARTA-knappen på översikten)",
     "workflowStep5": "Använd gloskort för att öva ordförråd parallellt",
     "workflowStep6": "Öva fria samtal med Lingu",
     "q_language": "Vilket språk kommer jag att lära mig?",
     "a_language": "FreeLingo stöder för närvarande flera språk (amerikansk engelska, brittisk engelska, franska, tyska, italienska, japanska, koreanska, kinesiska från Fastlandskina, portugisiska och spanska), och vi kommer att lägga till fler med tiden. När ett nytt språk blir tillgängligt hittar du det under Inställningar → Mina språk – lägg till det och börja lära dig direkt.",
     "q_assessment": "Vad är nivåbedömningen?",
-    "a_assessment": "Ett AI-genererat test med 15 frågor om grammatik, ordförråd, läsförståelse och meningsomvandling, med svårighetsgrader från A1 till C1. När du är klar får du din GERS-nivå, ett resultat och en analys av dina styrkor och svagheter. Resultatet används i studieplanen och de genererade gloskorten.",
+    "a_assessment": "Ett adaptivt test med högst 15 frågor från en frågebank för ditt studiespråk. Det omfattar grammatik, ordförråd och läsförståelse från A1 till C2. Resultatet uppskattar din GERS-nivå och visar styrkor och övningsområden; du kan ändra den föreslagna nivån innan du skapar planen.",
     "q_studyPlan": "Vad är studieplanen och hur skapar jag en?",
-    "a_studyPlan": "Efter nivåbedömningen går du till översikten och klickar på <strong>Skapa studieplan</strong>. En plan vecka för vecka med dagliga lektioner anpassade till din GERS-nivå och dina mål skapas automatiskt. Varje lektion innehåller flervalsfrågor och skrivövningar som bedöms av AI.",
+    "a_studyPlan": "Bekräfta din nivå efter nivåbedömningen och välj 4, 8, 12 eller 16 veckor. Bekräftelsen skapar din <strong>studieplan</strong> med enheter och lektioner enligt läroplanen för ditt språk och din nivå. Varje språk har en egen plan och egna framsteg.",
     "q_resources": "Vad är Resurser?",
     "a_resources": "Under <strong>Resurser</strong> hittar du referensmaterial som är fristående från din studieplan: grammatik per nivå, ordsamlingar och användbara fraser. Du kan använda det när som helst för att repetera, slå upp förklaringar eller utöka ditt ordförråd utan att vänta på en daglig lektion.",
     "q_flashcards": "Vad används gloskort till?",
-    "a_flashcards": "Ett system för att öva ord med algoritmen <strong>SM-2</strong> för utspridd repetition. Skapa kort om valfritt ämne (t.ex. \"arbete\", \"frasverb\" eller \"mat\") med definition, exempelmening och översättning till ditt modersmål. Systemet räknar ut när varje kort ska visas igen, precis innan du riskerar att glömma det. Helt fristående från studieplanen.",
+    "a_flashcards": "Repetera ord med utspridd repetition enligt <strong>SM-2</strong>: dina svar avgör när varje kort visas igen. Du kan skapa kort, spara ord från texter eller lägga till ordsamlingar. Kort och repetitioner tillhör språkets studieplan, men du kan öva dem utan att gå vidare i lektionerna.",
     "q_vocabulary": "Hur lägger jag till ord i mitt ordförråd?",
     "a_vocabulary": "Du kan spara ord på två sätt: (1) Markera ett ord med musen när du läser en lektion, gör en hörövning eller chattar med handledaren och klicka på <strong>Spara</strong> i menyn som visas. Lingu förbereder då en definition, en exempelmening och en översättning till ditt modersmål. (2) Gå till <strong>Ordförråd</strong>, öppna en ordsamling för din nivå och klicka på <strong>Lägg till alla</strong> för att importera hela samlingen. Dina sparade ord visas under <strong>Mitt ordförråd</strong> bland gloskorten.",
     "q_tutor": "Hur kan jag öva med Lingu?",
-    "a_tutor": "En öppen chatt där svaren visas allt eftersom. Handledaren känner till din GERS-nivå och vad du behöver öva mer på och anpassar sina svar därefter. Ställ frågor om grammatik, be om förklaringar, öva på att skriva engelska eller bara samtala. Samtal sparas och finns i sidofältet även nästa gång du loggar in.",
+    "a_tutor": "Lingu anpassar svaren till ditt aktiva studiespråk och din plans sammanhang. Ställ grammatikfrågor, be om förklaringar, öva på att skriva på språket eller samtala. Samtal sparas per språk och kan återupptas från historiken.",
     "q_voice": "Hur fungerar röstsamtal?",
     "a_voice": "I läget <strong>Röstsamtal</strong> kan du prata med Lingu i realtid. Tryck på Starta så lyssnar appen automatiskt med röstaktivitetsdetektering (VAD), och handledaren svarar med syntetiskt tal. Du kan avbryta handledaren när som helst. Samtalet avslutas när tidsgränsen nås eller när du trycker på Stoppa. Se till att webbläsaren har åtkomst till mikrofonen.",
     "q_listening": "Hur fungerar hörövningar?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Vilka AI-leverantörer stöder FreeLingo?",
     "a_providers_intro": "Konfigureras i <code>.env</code> med <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Lokalt och kostnadsfritt. Kräver att Ollama körs på värddatorn. Rekommenderad modell: gemma4:e4b. Kan vara långsam utan GPU.",
-    "provider_openai": "OpenAI API (GPT-4o med flera). Snabbt och tillförlitligt. Kräver OPENAI_API_KEY.",
+    "provider_openai": "OpenAI-tjänst med modellen som administratören har valt. Kräver OPENAI_API_KEY och kan medföra användningskostnader.",
     "provider_anthropic": "Anthropic Claude. Kräver ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Kräver DEEPSEEK_API_KEY.",
     "q_invite": "Kan jag bjuda in andra?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Prova Premium vid registrering utan kort eller abonnemang. Fortsätt sedan gratis med användningsgränser.",
     "paywallGamesTitle": "Fortsätt öva med spel",
     "paywallGamesDesc": "Din gratis spelkvot är slut eller spelen kräver Premium. Du kan fortsätta befintliga spel.",
     "paywallLabel": "Premium krävs",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Flexibel månadsplan · €{price}/månad →",
     "planYearly": "Bästa värdet · €{price}/år · 2 månader gratis →",
     "checkoutError": "Det gick inte att starta betalningen. Försök igen.",
-    "pricingTitle": "Enkla, tydliga priser",
-    "pricingDesc": "{days} dagar gratis · Ingen debitering i dag · Avsluta när du vill",
-    "pricingDescTrialUsed": "Välj månads- eller årsplan · Avsluta när du vill",
+    "pricingTitle": "Planer och priser",
+    "pricingContext": "Dessa planer gäller denna installation. Egen server kräver inget FreeLingo Cloud-abonnemang; administratören ställer in åtkomst och gränser.",
+    "pricingDesc": "Extra provperiod när du tecknar abonnemang: {days} dagar · kort krävs · därefter gäller planens pris",
+    "pricingDescTrialUsed": "Betalt månads- eller årsabonnemang från köptillfället. Avsluta när du vill.",
     "planMonthlyName": "Månadsvis",
     "planYearlyName": "Årsvis",
     "bestValue": "Bästa värdet",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Välj plan",
     "freeFeature": {
       "f1": "Nivåtest och nivåbedömning",
-      "f2": "Lektioner och studieplan",
+      "f2": "Personlig studieplan",
+      "lessons": "Slutföra lektioner",
+      "games": "Lärspel",
       "f3": "Referensmaterial för grammatik och ordförråd",
       "f4": "Översikt och uppföljning av framsteg",
       "f5": "Gloskort och utspridd repetition",
@@ -1641,7 +1694,7 @@
     "priceAmount": "€{amount}",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "€{price} / {period}",
-    "planFreeDesc": "7 dagars provperiod med full åtkomst, därefter gratis med dagliga och veckovisa gränser",
+    "planFreeDesc": "Inget kort krävs. Gratis åtkomst med användningsgränser; välj Premium när du behöver mer.",
     "planFreeCta": "Starta",
     "limitedLabel": "Begränsat"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Nyheter",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Jag förstår",
     "entry1": {
       "label": "Dina gloskort, på ditt sätt",

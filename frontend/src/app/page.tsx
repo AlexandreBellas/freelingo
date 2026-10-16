@@ -1,9 +1,16 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { cookies } from 'next/headers'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
-import { ArrowDown, ArrowRight, BookOpen, Gamepad2, Mic } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowRight,
+  BookOpen,
+  Cloud,
+  Gamepad2,
+  Mic,
+  Server,
+} from 'lucide-react'
 import PricingSection from '@/components/billing/PricingSection'
 import { LandingFAQ } from '@/components/ui/landing-faq'
 import { LandingNav } from '@/components/ui/landing-nav'
@@ -45,13 +52,13 @@ export default async function Home() {
   const hasSession = cookieStore.has('refresh_token')
   const t = await getTranslations('landing')
   const tCommon = await getTranslations('common')
-  const tBilling = await getTranslations('billing')
   const tGames = await getTranslations('games')
   const locale = await getLocale()
 
   let allowRegistration = false
   let stripeEnabled = false
-  let trialDays = 7
+  let freemiumTrialEnabled = false
+  let trialDays = 0
   let priceMonthly = 0.0
   let priceYearly = 0.0
   let totalPriceMonthly = 0.0
@@ -71,7 +78,8 @@ export default async function Home() {
       const cfg = await configRes.json()
       allowRegistration = cfg.allow_registration === true
       stripeEnabled = cfg.stripe_enabled ?? false
-      trialDays = cfg.stripe_trial_days ?? 7
+      freemiumTrialEnabled = cfg.freemium_trial_enabled === true
+      trialDays = cfg.stripe_trial_days ?? 0
       priceMonthly = cfg.price_monthly ?? 0.0
       priceYearly = cfg.price_yearly ?? 0.0
       totalPriceMonthly = cfg.total_price_monthly ?? 0.0
@@ -180,9 +188,18 @@ export default async function Home() {
           </div>
           {showFreeNote && (
             <p className="text-fl-muted-1 mt-4 max-w-lg font-sans text-sm leading-relaxed">
-              {t('freeNote')}
+              {t(freemiumTrialEnabled ? 'freeTrialNote' : 'freeNote')}
             </p>
           )}
+          <p className="text-fl-muted-1 mt-4 max-w-xl font-sans text-sm leading-relaxed">
+            {t('modes.intro')}{' '}
+            <a
+              href="#modalities"
+              className="text-fl-accent focus-visible:outline-fl-accent underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+            >
+              {t('modes.compare')}
+            </a>
+          </p>
         </section>
 
         {/* Learning journey */}
@@ -325,7 +342,7 @@ export default async function Home() {
             </Link>
             {showFreeNote && (
               <p className="text-fl-muted-1 max-w-lg font-sans text-sm leading-relaxed">
-                {t('freeNote')}
+                {t(freemiumTrialEnabled ? 'freeTrialNote' : 'freeNote')}
               </p>
             )}
           </div>
@@ -336,12 +353,68 @@ export default async function Home() {
           <LandingReviewsCarousel reviews={reviews} />
         </ScrollReveal>
 
+        {/* Cloud and self-hosting */}
+        <section
+          id="modalities"
+          aria-labelledby="modalities-title"
+          className="mx-auto w-full max-w-5xl scroll-mt-20 px-6 pb-16"
+        >
+          <h2
+            id="modalities-title"
+            className="text-fl-fg mb-8 font-sans text-2xl font-bold tracking-tight md:text-3xl"
+          >
+            {t('modes.title')}
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              { key: 'cloud', Icon: Cloud, href: `${SITE_URL}/login` },
+              {
+                key: 'selfHosted',
+                Icon: Server,
+                href: 'https://github.com/artcc/freelingo#quick-start',
+              },
+            ].map(({ key, Icon, href }) => (
+              <article
+                key={key}
+                className="border-fl-border bg-fl-surface flex flex-col border p-6"
+              >
+                <Icon
+                  className="text-fl-accent mb-4 size-5"
+                  aria-hidden="true"
+                />
+                <h3 className="text-fl-fg mb-3 font-sans text-lg font-semibold">
+                  {t(`modes.${key}.title`)}
+                </h3>
+                <p className="text-fl-muted-1 font-sans text-base leading-relaxed">
+                  {t(`modes.${key}.description`)}
+                </p>
+                <ul className="text-fl-muted-1 mt-4 mb-6 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed">
+                  {['setup', 'access', 'cost'].map((detail) => (
+                    <li key={detail}>{t(`modes.${key}.${detail}`)}</li>
+                  ))}
+                </ul>
+                <a
+                  href={href}
+                  className="text-fl-accent focus-visible:outline-fl-accent mt-auto inline-flex items-center gap-2 self-start font-sans text-sm font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+                >
+                  {t(`modes.${key}.cta`)}
+                  <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+                </a>
+              </article>
+            ))}
+          </div>
+          <p className="text-fl-muted-1 mt-4 max-w-3xl font-sans text-sm leading-relaxed">
+            {t('modes.accounts')}
+          </p>
+        </section>
+
         {/* Pricing */}
         <ScrollReveal>
           <div id="pricing" className="scroll-mt-16">
             <PricingSection
               allowRegistration={allowRegistration}
               stripeEnabled={stripeEnabled}
+              freemiumTrialEnabled={freemiumTrialEnabled}
               trialDays={trialDays}
               hasSession={hasSession}
               priceMonthly={priceMonthly}
@@ -350,46 +423,6 @@ export default async function Home() {
               totalPriceYearly={totalPriceYearly}
             />
           </div>
-        </ScrollReveal>
-
-        {/* Open Source */}
-        <ScrollReveal>
-          <section className="mx-auto w-full max-w-5xl px-6 pb-16">
-            <div className="border-fl-border bg-fl-surface flex flex-col items-center justify-between gap-4 border px-8 py-5 sm:flex-row">
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/github.svg"
-                  alt="GitHub"
-                  width={20}
-                  height={20}
-                  className="block opacity-80 dark:hidden"
-                />
-                <Image
-                  src="/github_white.svg"
-                  alt="GitHub"
-                  width={20}
-                  height={20}
-                  className="hidden opacity-80 dark:block"
-                />
-                <div className="text-left">
-                  <p className="text-fl-fg font-sans text-sm font-semibold tracking-tight">
-                    {tBilling('openSourceTitle')}
-                  </p>
-                  <p className="text-fl-hint text-fl-muted-2 mt-0.5 font-mono tracking-widest uppercase">
-                    {tBilling('openSourceDesc')}
-                  </p>
-                </div>
-              </div>
-              <a
-                href="https://github.com/artcc/freelingo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-fl-border text-fl-muted-1 hover:text-fl-fg hover:border-fl-border-2 border px-6 py-2.5 font-mono text-xs font-bold tracking-widest whitespace-nowrap uppercase transition-colors"
-              >
-                {tBilling('openSourceCta')}
-              </a>
-            </div>
-          </section>
         </ScrollReveal>
 
         {/* FAQ */}

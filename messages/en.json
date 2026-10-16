@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Initial Premium access at signup, without a card. Afterwards, stay free with usage limits unless you subscribe.",
+    "modes": {
+      "intro": "Available in the cloud, with no installation, or self-hosted on your server.",
+      "compare": "Compare options",
+      "accounts": "Each installation has its own accounts and progress. The main button opens this installation; the FreeLingo Cloud link opens the official service.",
+      "title": "Two ways to use FreeLingo",
+      "cloud": {
+        "title": "Cloud · We manage it",
+        "description": "Learn in your browser with FreeLingo's managed service.",
+        "setup": "Hosting, maintenance and updates included.",
+        "access": "AI and voice included within your plan's usage limits.",
+        "cost": "Start with a free plan, with Premium available for more practice.",
+        "cta": "Access FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Self-hosted · You manage it",
+        "description": "Run FreeLingo on your infrastructure and choose your AI and voice providers.",
+        "setup": "Control your installation, configuration and data storage.",
+        "access": "Free, open-source software under AGPL-3.0.",
+        "cost": "You cover infrastructure, maintenance and any external provider costs.",
+        "cta": "Installation guide"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "What is the difference between cloud and self-hosted?",
+        "answer": "FreeLingo Cloud is the managed service at freelingo.app: create an account and learn without managing a server. With self-hosting, you install and maintain FreeLingo on your infrastructure and configure its AI and voice services. Available capabilities depend on your configuration."
+      },
+      "free": {
+        "question": "Can I start for free? Do I need a card?",
+        "answer": "Signup does not require a card. If the installation offers initial Premium access, it starts at registration; afterwards you stay free with usage limits unless you subscribe. A paid subscription starts when you take it out, unless the plan explicitly offers additional trial days. That subscription trial is separate from the initial signup period and requires a payment method."
+      },
+      "hosting": {
+        "question": "What do I need to self-host FreeLingo?",
+        "answer": "You need a server, Docker Compose and configured AI and voice services. You handle setup, updates and backups. The AGPL-3.0 software is free; infrastructure and external providers may cost money. Hardware requirements and supported voice languages depend on the providers you choose."
+      },
+      "data": {
+        "question": "Where is my data stored and processed?",
+        "answer": "In Cloud, the FreeLingo team manages storage, and AI and voice content is sent to the service's providers for processing. With self-hosting, you control storage and providers: using external AI or voice services sends the relevant content to them. Self-hosting does not automatically mean all processing is local."
+      },
+      "languages": {
+        "question": "Which languages can I learn?",
+        "answer": "English (British and American), Spanish, Italian, Portuguese, German, French, Japanese, Korean and Mainland Chinese. You can learn several at once, with separate plans and progress for each language."
+      },
+      "start": {
+        "question": "How do I start learning?",
+        "answer": "Choose your study language, assess your level and create your personalised plan. Progress through lessons, reinforce what you learn with exercises and games, and practise speaking with Lingu, including conversations based on completed lessons."
+      }
+    },
     "microDemo": {
       "title": "Here's how Lingu helps you",
       "exampleLabel": "Written example of English practice",
@@ -1229,28 +1278,28 @@
     "title": "FAQ",
     "subtitle": "Frequently Asked Questions",
     "q_start": "Where do I start?",
-    "a_start": "Start with the <strong>Assessment</strong>. It detects your English level (A1–C2) and your strengths and weaknesses. With that result you can generate a personalized <strong>Study Plan</strong> that fills your Dashboard with daily lessons. Without the Assessment, the Dashboard is empty.",
+    "a_start": "Select the language you want to learn and open the <strong>Assessment</strong> to estimate your level. Complete beginners can choose A1 without taking the quiz. Confirm your level and duration to create a <strong>Study Plan</strong> for that language.",
     "q_workflow": "What is the full workflow?",
-    "workflowStep1": "Register and select your native language",
-    "workflowStep2": "Take the Assessment → your CEFR level is detected",
-    "workflowStep3": "Generate your Study Plan from the Dashboard",
+    "workflowStep1": "Register, set your native language and choose the language you want to learn",
+    "workflowStep2": "Assess your level in that language or start at A1 as a beginner",
+    "workflowStep3": "Confirm your level and duration to create your Study Plan",
     "workflowStep4": "Complete your daily lessons (START button in the Dashboard)",
     "workflowStep5": "Use Flashcards to train vocabulary in parallel",
     "workflowStep6": "Practice free conversation with Lingu",
     "q_language": "What language will I learn?",
     "a_language": "FreeLingo currently supports several languages (American English, British English, French, German, Italian, Japanese, Korean, Mainland Chinese, Portuguese, Spanish), and we will keep adding more over time. When a new language becomes available, you will find it in Settings → My Languages — add it and start learning right away.",
     "q_assessment": "What is the Assessment?",
-    "a_assessment": "A 15-question AI-generated test covering grammar, vocabulary, reading comprehension, and sentence transformation, with difficulty ranging from A1 to C1. When you finish, you get your CEFR level, a score, and an analysis of your strengths and weaknesses. This result feeds into the Study Plan and generated Flashcards.",
+    "a_assessment": "An adaptive quiz with up to 15 questions from a bank specific to your study language. It covers grammar, vocabulary and reading comprehension from A1 to C2. The result estimates your CEFR level and highlights strengths and areas to practise; you can adjust the suggested level before creating your plan.",
     "q_studyPlan": "What is the Study Plan and how do I generate one?",
-    "a_studyPlan": "After the Assessment, go to the Dashboard and click <strong>Generate Study Plan</strong>. A week-by-week plan with daily lessons tailored to your CEFR level and goals will be created automatically. Each lesson includes multiple-choice and free-writing exercises evaluated by AI.",
+    "a_studyPlan": "At the end of the Assessment, confirm your level and choose a duration of 4, 8, 12 or 16 weeks. Confirming creates your <strong>Study Plan</strong>, organised into units and lessons following the curriculum for your language and level. Each language has its own plan and progress.",
     "q_resources": "What are Resources?",
     "a_resources": "The <strong>Resources</strong> section brings together reference material that is independent from your Study Plan: grammar by level, vocabulary sets, and useful phrases. You can use it anytime to review, look up explanations, or expand your vocabulary without waiting for a daily lesson.",
     "q_flashcards": "What are Flashcards for?",
-    "a_flashcards": "A vocabulary training system using the <strong>SM-2</strong> spaced repetition algorithm. Generate cards on any topic (e.g. \"business\", \"phrasal verbs\", \"food\") with a definition, example sentence, and translation into your native language. The system calculates when to show each card again just before you forget it. Completely independent from the Study Plan.",
+    "a_flashcards": "Review vocabulary with <strong>SM-2</strong> spaced repetition: your answers determine when each card appears again. You can generate cards, save words from texts or add vocabulary sets. Cards and their reviews belong to their language's study plan, but you can review them without advancing through lessons.",
     "q_vocabulary": "How do I add words to my vocabulary?",
     "a_vocabulary": "You can save words in two ways: (1) While reading a lesson, listening exercise, or chatting with the tutor, highlight any word with your mouse and click <strong>Save</strong> in the tooltip that appears — Lingu will prepare a definition, an example sentence, and a translation into your native language. (2) Go to <strong>Vocabulary</strong>, open a vocabulary set for your level, and click <strong>Add All</strong> to import the whole set at once. Your saved words appear in <strong>My Vocabulary</strong> under the Flashcards section.",
     "q_tutor": "How can I practice with Lingu?",
-    "a_tutor": "A free-form streaming chat. The tutor knows your CEFR level and weak points to tailor its responses. Ask grammar questions, request explanations, practice writing in English, or just have a conversation. Conversations are saved and accessible from the sidebar across sessions.",
+    "a_tutor": "Lingu tailors its replies to your active study language and plan context. Ask grammar questions, request explanations, practise writing in that language or have a conversation. Conversations are saved by language and can be resumed from your history.",
     "q_voice": "How does the voice conversation work?",
     "a_voice": "The <strong>Voice Conversation</strong> mode lets you speak with Lingu in real time. Press Start to begin — the app listens for your voice automatically using voice activity detection (VAD) and the tutor replies with synthesised speech. You can interrupt the tutor at any moment (barge-in). The session ends when you reach the time limit or press Stop. Make sure your browser has microphone permission enabled.",
     "q_listening": "How do listening exercises work?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Which AI providers does FreeLingo support?",
     "a_providers_intro": "Configurable in <code>.env</code> via <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Local, free. Requires Ollama running on the host. Recommended model: gemma4:e4b. May be slow without a GPU.",
-    "provider_openai": "OpenAI API (GPT-4o, etc.). Fast and reliable. Requires OPENAI_API_KEY.",
+    "provider_openai": "OpenAI service using the model configured by the administrator. Requires OPENAI_API_KEY and may incur usage costs.",
     "provider_anthropic": "Anthropic Claude. Requires ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Requires DEEPSEEK_API_KEY.",
     "q_invite": "Can I invite other people?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Try Premium access at signup, without a card or subscription. Afterwards, continue free with usage limits.",
     "paywallGamesTitle": "Keep practising with games",
     "paywallGamesDesc": "Your free game allowance is used up or games require Premium. Existing games remain available to resume.",
     "paywallLabel": "Premium required",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Flexible monthly · €{price}/month →",
     "planYearly": "Best value · €{price}/year · 2 months free →",
     "checkoutError": "Unable to start checkout. Please try again.",
-    "pricingTitle": "Simple, transparent pricing",
-    "pricingDesc": "{days} days free · No charge today · Cancel anytime",
-    "pricingDescTrialUsed": "Choose monthly or yearly · Cancel anytime",
+    "pricingTitle": "Plans and pricing",
+    "pricingContext": "These plans apply to this installation. Self-hosting FreeLingo does not require a FreeLingo Cloud subscription; the administrator configures access and limits.",
+    "pricingDesc": "Additional trial when subscribing: {days} days · Card required · The plan price applies afterwards",
+    "pricingDescTrialUsed": "Monthly or yearly paid subscription starting at purchase. Cancel anytime.",
     "planMonthlyName": "Monthly",
     "planYearlyName": "Yearly",
     "bestValue": "Best value",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Choose plan",
     "freeFeature": {
       "f1": "Level test & assessment",
-      "f2": "Lessons & study plan",
+      "f2": "Personalised study plan",
+      "lessons": "Lesson completion",
+      "games": "Learning games",
       "f3": "Grammar & vocabulary reference",
       "f4": "Dashboard & progress tracking",
       "f5": "Flashcards & spaced repetition",
@@ -1641,7 +1694,7 @@
     "priceAmount": "€{amount}",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "€{price} / {period}",
-    "planFreeDesc": "7-day full trial, then free with daily and weekly limits",
+    "planFreeDesc": "No card required. Free access with usage limits; upgrade to Premium when you need more.",
     "planFreeCta": "Start",
     "limitedLabel": "Limited"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "What's New",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Got it",
     "entry1": {
       "label": "Your flashcards, your way",

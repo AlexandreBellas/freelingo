@@ -14,6 +14,7 @@ type BillingInterval = 'monthly' | 'yearly'
 interface PricingSectionProps {
   allowRegistration: boolean
   stripeEnabled: boolean
+  freemiumTrialEnabled?: boolean
   trialDays: number
   hasSession: boolean
   priceMonthly: number
@@ -25,6 +26,7 @@ interface PricingSectionProps {
 export default function PricingSection({
   allowRegistration,
   stripeEnabled,
+  freemiumTrialEnabled = false,
   trialDays,
   hasSession,
   priceMonthly,
@@ -108,7 +110,7 @@ export default function PricingSection({
   const planIcons = [Circle, CircleDot, Diamond]
 
   const freeRows = ['f1', 'f2', 'f3', 'f4', 'f5']
-  const limitedRows = ['l1', 'l2', 'l3', 'l4', 'l5']
+  const limitedRows = ['lessons', 'games', 'l1', 'l2', 'l3', 'l4']
   const tableRows = [
     ...freeRows.map((k) => ({
       label: tBilling(`freeFeature.${k}`),
@@ -143,7 +145,9 @@ export default function PricingSection({
       price: null,
       priceLabel: null,
       badge: null,
-      desc: tBilling('planFreeDesc'),
+      desc: tBilling(
+        freemiumTrialEnabled ? 'planFreeTrialDesc' : 'planFreeDesc'
+      ),
       badgeStyle: '',
       href: hasSession ? '/dashboard' : '/register',
       cta: tBilling('planFreeCta'),
@@ -185,6 +189,9 @@ export default function PricingSection({
         <h2 className="text-fl-fg mb-2 font-sans text-xl font-bold tracking-tight">
           {tBilling('pricingTitle')}
         </h2>
+        <p className="text-fl-muted-1 mx-auto mb-4 max-w-2xl font-sans text-sm leading-relaxed">
+          {tBilling('pricingContext')}
+        </p>
         <p className="text-fl-muted-1 font-sans text-sm">
           {tBilling(canStartTrial ? 'pricingDesc' : 'pricingDescTrialUsed', {
             days: trialDays,
@@ -286,6 +293,15 @@ export default function PricingSection({
                     ? tLanding('signIn')
                     : plan.cta}
                 </Link>
+              )}
+              {!plan.isFree && (
+                <p className="text-fl-muted-1 font-sans text-xs leading-relaxed">
+                  {tBilling(
+                    canStartTrial
+                      ? 'paywallNoCharge'
+                      : 'paywallNoChargeTrialUsed'
+                  )}
+                </p>
               )}
             </div>
           )

@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Kayıt sırasında kart gerektirmeyen başlangıç Premium erişimi. Abone olmazsanız sonrasında kullanım sınırlarıyla ücretsiz devam edin.",
+    "modes": {
+      "intro": "Kurulum gerektirmeyen bulut hizmetiyle veya kendi sunucunuzda kullanın.",
+      "compare": "Seçenekleri karşılaştırın",
+      "accounts": "Her kurulumun hesapları ve ilerlemesi ayrıdır. Ana düğme bu kurulumu açar; FreeLingo Cloud bağlantısı resmî hizmeti açar.",
+      "title": "FreeLingo'yu kullanmanın iki yolu",
+      "cloud": {
+        "title": "Cloud · Biz yönetiyoruz",
+        "description": "FreeLingo'nun yönetilen hizmetiyle tarayıcınızdan öğrenin.",
+        "setup": "Barındırma, bakım ve güncellemeler dahildir.",
+        "access": "Yapay zekâ ve ses, planınızın kullanım sınırları içinde dahildir.",
+        "cost": "Ücretsiz planla başlayın, daha fazla pratik için Premium'a geçin.",
+        "cta": "FreeLingo Cloud'a erişin"
+      },
+      "selfHosted": {
+        "title": "Kendi sunucunuz · Siz yönetiyorsunuz",
+        "description": "FreeLingo'yu kendi altyapınıza kurun, yapay zekâ ve ses sağlayıcılarınızı seçin.",
+        "setup": "Kurulumu, yapılandırmayı ve veri depolamayı kontrol edin.",
+        "access": "AGPL-3.0 lisanslı, ücretsiz ve açık kaynaklı yazılım.",
+        "cost": "Altyapı, bakım ve olası sağlayıcı maliyetleri size aittir.",
+        "cta": "Kurulum kılavuzu"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Bulut ile kendi sunucumda barındırma arasındaki fark nedir?",
+        "answer": "FreeLingo Cloud, freelingo.app üzerindeki yönetilen hizmettir: hesap oluşturun ve sunucu yönetmeden öğrenin. Kendi sunucunuzda barındırırken FreeLingo'yu altyapınıza kurar, bakımını yapar, yapay zekâ ve ses hizmetlerini yapılandırırsınız. Kullanılabilir özellikler yapılandırmanıza bağlıdır."
+      },
+      "free": {
+        "question": "Ücretsiz başlayabilir miyim? Kart gerekiyor mu?",
+        "answer": "Kayıt için kart gerekmez. Kurulum başlangıç Premium erişimi sunuyorsa kayıtla başlar; abone olmazsanız ardından kullanım sınırlarıyla ücretsiz devam edersiniz. Plan açıkça ek deneme günleri sunmadıkça ücretli abonelik satın alındığında başlar. Bu abonelik denemesi başlangıç döneminden ayrıdır ve ödeme yöntemi gerektirir."
+      },
+      "hosting": {
+        "question": "FreeLingo'yu kendim barındırmak için ne gerekiyor?",
+        "answer": "Bir sunucu, Docker Compose ve yapılandırılmış yapay zekâ ile ses hizmetleri gerekir. Kurulum, güncellemeler ve yedeklemeler sizin sorumluluğunuzdadır. AGPL-3.0 yazılımı ücretsizdir; altyapı ve harici sağlayıcılar ücretli olabilir. Donanım gereksinimleri ve desteklenen ses dilleri seçtiğiniz sağlayıcılara bağlıdır."
+      },
+      "data": {
+        "question": "Verilerim nerede saklanıyor ve işleniyor?",
+        "answer": "Cloud'da FreeLingo ekibi depolamayı yönetir ve yapay zekâ ile ses içeriklerini işlenmek üzere hizmet sağlayıcılarına gönderir. Kendi sunucunuzda depolamayı ve sağlayıcıları siz seçersiniz: harici yapay zekâ veya ses hizmetleri ilgili içerikleri alır. Kendi sunucunuzda barındırma, tüm işlemlerin yerel olduğu anlamına gelmez."
+      },
+      "languages": {
+        "question": "Hangi dilleri öğrenebilirim?",
+        "answer": "İngiliz ve Amerikan İngilizcesi, İspanyolca, İtalyanca, Portekizce, Almanca, Fransızca, Japonca, Korece ve Çin anakarasında kullanılan Çince. Her dil için ayrı planlar ve ilerlemeyle aynı anda birden fazla dil öğrenebilirsiniz."
+      },
+      "start": {
+        "question": "Öğrenmeye nasıl başlarım?",
+        "answer": "Öğrenmek istediğiniz dili seçin, seviyenizi değerlendirin ve kişisel planınızı oluşturun. Derslerle ilerleyin, alıştırma ve oyunlarla öğrendiklerinizi pekiştirin ve tamamladığınız dersleri de temel alarak Lingu ile konuşma pratiği yapın."
+      }
+    },
     "microDemo": {
       "title": "Lingu size şöyle yardımcı olur",
       "exampleLabel": "Yazılı İngilizce pratik örneği",
@@ -1229,28 +1278,28 @@
     "title": "SSS",
     "subtitle": "Sıkça Sorulan Sorular",
     "q_start": "Nereden başlamalıyım?",
-    "a_start": "<strong>Seviye Tespiti</strong> ile başlayın. İngilizce seviyenizi (A1–C2), güçlü ve zayıf yönlerinizi belirler. Bu sonuçla, Pano'nuzu günlük derslerle dolduran size özel bir <strong>Çalışma Planı</strong> oluşturabilirsiniz. Seviye Tespiti yapılmadan Pano boş kalır.",
+    "a_start": "Öğrenmek istediğiniz dili seçin ve seviyenizi tahmin etmek için <strong>Seviye Tespiti</strong> bölümünü açın. Sıfırdan başlayanlar testi çözmeden A1 seçebilir. O dil için <strong>Çalışma Planı</strong> oluşturmak üzere seviyeyi ve süreyi onaylayın.",
     "q_workflow": "Adım adım süreç nasıl işliyor?",
-    "workflowStep1": "Kaydolun ve ana dilinizi seçin",
-    "workflowStep2": "Seviye Tespitine girin → CEFR seviyeniz belirlenir",
-    "workflowStep3": "Pano'dan Çalışma Planınızı oluşturun",
+    "workflowStep1": "Kaydolun, ana dilinizi belirtin ve öğrenmek istediğiniz dili seçin",
+    "workflowStep2": "O dildeki seviyenizi değerlendirin veya yeni başlıyorsanız A1 seçin",
+    "workflowStep3": "Çalışma Planınızı oluşturmak için seviyeyi ve süreyi onaylayın",
     "workflowStep4": "Günlük derslerinizi tamamlayın (Pano'daki BAŞLA düğmesi)",
     "workflowStep5": "Kelime bilginizi geliştirmek için paralel olarak Bilgi Kartlarını kullanın",
     "workflowStep6": "Lingu ile serbest konuşma pratiği yapın",
     "q_language": "Hangi dili öğreneceğim?",
     "a_language": "FreeLingo şu anda birçok dili destekliyor (Amerikan İngilizcesi, İngiliz İngilizcesi, Fransızca, Almanca, İtalyanca, Japonca, Korece, Çince (Çin anakarası), Portekizce, İspanyolca) ve zamanla yenilerini eklemeye devam edeceğiz. Yeni bir dil kullanıma sunulduğunda onu Ayarlar → Dillerim bölümünde bulacaksınız — ekleyin ve hemen öğrenmeye başlayın.",
     "q_assessment": "Seviye Tespiti nedir?",
-    "a_assessment": "Dil bilgisi, kelime bilgisi, okuduğunu anlama ve cümle dönüştürmeyi kapsayan, zorluğu A1'den C1'e kadar değişen, yapay zekâ ile üretilmiş 15 soruluk bir testtir. Bitirdiğinizde CEFR seviyenizi, bir puanı ve güçlü ve zayıf yönlerinizin analizini alırsınız. Bu sonuç, Çalışma Planına ve oluşturulan Bilgi Kartlarına temel oluşturur.",
+    "a_assessment": "Öğrendiğiniz dile özel soru bankasından en fazla 15 soruluk uyarlanabilir bir testtir. A1–C2 düzeylerinde dil bilgisi, kelime bilgisi ve okuduğunu anlamayı kapsar. Sonuç CEFR seviyenizi tahmin eder, güçlü yönleri ve pratik gerektiren alanları gösterir; planı oluşturmadan önce önerilen seviyeyi değiştirebilirsiniz.",
     "q_studyPlan": "Çalışma Planı nedir ve nasıl oluşturulur?",
-    "a_studyPlan": "Seviye Tespitinden sonra Pano'ya gidin ve <strong>Çalışma Planı Oluştur</strong>'a tıklayın. CEFR seviyenize ve hedeflerinize göre uyarlanmış, günlük derslerden oluşan haftalık bir plan otomatik olarak oluşturulur. Her derste yapay zekâ tarafından değerlendirilen çoktan seçmeli ve serbest yazma alıştırmaları bulunur.",
+    "a_studyPlan": "Seviye Tespitinin sonunda seviyenizi onaylayın ve 4, 8, 12 veya 16 hafta seçin. Onayladığınızda, dilinizin ve seviyenizin müfredatına göre ünite ve derslerden oluşan <strong>Çalışma Planınız</strong> oluşturulur. Her dilin ayrı planı ve ilerlemesi vardır.",
     "q_resources": "Kaynaklar nedir?",
     "a_resources": "<strong>Kaynaklar</strong> bölümü, Çalışma Planınızdan bağımsız başvuru materyallerini bir araya getirir: seviyeye göre dil bilgisi, kelime setleri ve faydalı ifadeler. Tekrar yapmak, açıklamalara bakmak veya günlük dersi beklemeden kelime bilginizi genişletmek için istediğiniz zaman kullanabilirsiniz.",
     "q_flashcards": "Bilgi Kartları ne işe yarar?",
-    "a_flashcards": "<strong>SM-2</strong> aralıklı tekrar algoritmasını kullanan bir kelime çalışma sistemidir. Herhangi bir konuda (ör. \"iş\", \"phrasal verb'ler\", \"yemek\") tanım, örnek cümle ve ana dilinize çeviri içeren kartlar oluşturun. Sistem, her kartı tam unutmak üzereyken tekrar göstermek için ne zaman göstereceğini hesaplar. Çalışma Planından tamamen bağımsızdır.",
+    "a_flashcards": "Kelimeleri <strong>SM-2</strong> aralıklı tekrarla çalışın: yanıtlarınız her kartın ne zaman yeniden gösterileceğini belirler. Kart oluşturabilir, metinlerden kelime kaydedebilir veya kelime setleri ekleyebilirsiniz. Kartlar ve tekrarları ilgili dilin planına aittir, ancak derslerde ilerlemeden de tekrar yapabilirsiniz.",
     "q_vocabulary": "Kelime dağarcığıma nasıl kelime eklerim?",
     "a_vocabulary": "Kelimeleri iki şekilde kaydedebilirsiniz: (1) Bir ders, dinleme alıştırması okurken veya eğitmenle sohbet ederken herhangi bir kelimeyi farenizle seçin ve beliren ipucundaki <strong>Kaydet</strong>'e tıklayın — Lingu bir tanım, örnek cümle ve ana dilinize çeviri hazırlar. (2) <strong>Kelime Bilgisi</strong> bölümüne gidin, seviyenize uygun bir kelime setini açın ve setin tamamını tek seferde eklemek için <strong>Tümünü Ekle</strong>'ye tıklayın. Kaydettiğiniz kelimeler Bilgi Kartları bölümündeki <strong>Kelimelerim</strong> altında görünür.",
     "q_tutor": "Lingu ile nasıl pratik yapabilirim?",
-    "a_tutor": "Akış hâlinde yanıt veren serbest bir sohbettir. Eğitmen, yanıtlarını size göre uyarlamak için CEFR seviyenizi ve zayıf noktalarınızı bilir. Dil bilgisi soruları sorun, açıklama isteyin, İngilizce yazma pratiği yapın ya da sadece sohbet edin. Konuşmalar kaydedilir ve oturumlar arasında kenar çubuğundan erişilebilir.",
+    "a_tutor": "Lingu yanıtlarını aktif öğrenme dilinize ve planınızın bağlamına uyarlar. Dil bilgisi soruları sorun, açıklama isteyin, o dilde yazma pratiği yapın veya sohbet edin. Konuşmalar dile göre kaydedilir ve geçmişten devam ettirilebilir.",
     "q_voice": "Sesli konuşma nasıl çalışır?",
     "a_voice": "<strong>Sesli Konuşma</strong> modu, Lingu ile gerçek zamanlı konuşmanızı sağlar. Başlamak için Başla'ya basın — uygulama ses etkinliği algılama (VAD) ile sesinizi otomatik olarak dinler ve eğitmen sentezlenmiş sesle yanıt verir. Eğitmenin sözünü istediğiniz an kesebilirsiniz. Oturum, süre sınırına ulaştığınızda veya Durdur'a bastığınızda sona erer. Tarayıcınızda mikrofon izninin açık olduğundan emin olun.",
     "q_listening": "Dinleme alıştırmaları nasıl çalışır?",
@@ -1260,7 +1309,7 @@
     "q_providers": "FreeLingo hangi yapay zekâ sağlayıcılarını destekliyor?",
     "a_providers_intro": "<code>.env</code> dosyasında <code>LLM_PROVIDER</code> ile ayarlanabilir:",
     "provider_ollama": "Yerel, ücretsiz. Sunucuda çalışan bir Ollama gerektirir. Önerilen model: gemma4:e4b. GPU olmadan yavaş olabilir.",
-    "provider_openai": "OpenAI API (GPT-4o vb.). Hızlı ve güvenilir. OPENAI_API_KEY gerektirir.",
+    "provider_openai": "Yöneticinin yapılandırdığı modeli kullanan OpenAI hizmeti. OPENAI_API_KEY gerektirir ve kullanım ücreti oluşabilir.",
     "provider_anthropic": "Anthropic Claude. ANTHROPIC_API_KEY gerektirir.",
     "provider_deepseek": "DeepSeek API. DEEPSEEK_API_KEY gerektirir.",
     "q_invite": "Başka kişileri davet edebilir miyim?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Kayıt sırasında kart veya abonelik olmadan Premium erişimini deneyin. Ardından kullanım sınırlarıyla ücretsiz devam edin.",
     "paywallGamesTitle": "Oyunlarla pratiğe devam et",
     "paywallGamesDesc": "Ücretsiz oyun kotan bitti veya oyunlar Premium gerektiriyor. Mevcut oyunlara devam edebilirsin.",
     "paywallLabel": "Premium gerekli",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Esnek aylık · aylık €{price} →",
     "planYearly": "En avantajlı · yıllık €{price} · 2 ay ücretsiz →",
     "checkoutError": "Ödeme başlatılamadı. Lütfen tekrar deneyin.",
-    "pricingTitle": "Basit ve şeffaf fiyatlandırma",
-    "pricingDesc": "{days} gün ücretsiz · Bugün ücret alınmaz · İstediğiniz zaman iptal edin",
-    "pricingDescTrialUsed": "Aylık veya yıllık seçin · İstediğiniz zaman iptal edin",
+    "pricingTitle": "Planlar ve fiyatlar",
+    "pricingContext": "Bu planlar bu kurulum için geçerlidir. Kendi sunucunuzda barındırma FreeLingo Cloud aboneliği gerektirmez; erişim ve sınırları yönetici yapılandırır.",
+    "pricingDesc": "Abone olurken ek deneme: {days} gün · kart gerekir · ardından plan ücreti uygulanır",
+    "pricingDescTrialUsed": "Satın alma anından itibaren ücretli aylık veya yıllık abonelik. İstediğiniz zaman iptal edin.",
     "planMonthlyName": "Aylık",
     "planYearlyName": "Yıllık",
     "bestValue": "En avantajlı",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Plan seç",
     "freeFeature": {
       "f1": "Seviye testi ve seviye tespiti",
-      "f2": "Dersler ve çalışma planı",
+      "f2": "Kişiselleştirilmiş çalışma planı",
+      "lessons": "Ders tamamlama",
+      "games": "Öğrenme oyunları",
       "f3": "Dil bilgisi ve kelime başvuru kaynakları",
       "f4": "Pano ve ilerleme takibi",
       "f5": "Bilgi kartları ve aralıklı tekrar",
@@ -1641,7 +1694,7 @@
     "priceAmount": "€{amount}",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "€{price} / {period}",
-    "planFreeDesc": "7 günlük tam deneme, ardından günlük ve haftalık sınırlarla ücretsiz",
+    "planFreeDesc": "Kart gerekmez. Kullanım sınırlarıyla ücretsiz erişim; ihtiyacınız olduğunda Premium'a geçin.",
     "planFreeCta": "Başla",
     "limitedLabel": "Sınırlı"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Yenilikler",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Anladım",
     "entry1": {
       "label": "Kartların, senin tercihin",

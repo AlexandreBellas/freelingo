@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Anfänglicher Premium-Zugang bei der Registrierung, ohne Karte. Danach kostenlos mit Nutzungslimits, sofern du kein Abo abschließt.",
+    "modes": {
+      "intro": "In der Cloud ohne Installation oder selbst gehostet auf deinem Server verfügbar.",
+      "compare": "Optionen vergleichen",
+      "accounts": "Jede Installation hat eigene Konten und Lernfortschritte. Die Hauptschaltfläche öffnet diese Installation; der FreeLingo-Cloud-Link führt zum offiziellen Dienst.",
+      "title": "Zwei Möglichkeiten, FreeLingo zu nutzen",
+      "cloud": {
+        "title": "Cloud · Wir kümmern uns darum",
+        "description": "Lerne im Browser mit dem verwalteten Dienst von FreeLingo.",
+        "setup": "Hosting, Wartung und Updates inklusive.",
+        "access": "KI und Sprachfunktionen im Rahmen deines Tarifs enthalten.",
+        "cost": "Starte kostenlos und wähle Premium, wenn du mehr üben möchtest.",
+        "cta": "FreeLingo Cloud öffnen"
+      },
+      "selfHosted": {
+        "title": "Selbst gehostet · Du verwaltest es",
+        "description": "Installiere FreeLingo auf deiner Infrastruktur und wähle deine KI- und Sprachanbieter.",
+        "setup": "Kontrolle über Installation, Konfiguration und Datenspeicherung.",
+        "access": "Kostenlose Open-Source-Software unter AGPL-3.0.",
+        "cost": "Infrastruktur, Wartung und mögliche Anbieterkosten trägst du selbst.",
+        "cta": "Installationsanleitung"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Was unterscheidet Cloud und Self-Hosting?",
+        "answer": "FreeLingo Cloud ist der verwaltete Dienst auf freelingo.app: Erstelle ein Konto und lerne, ohne einen Server zu betreiben. Beim Self-Hosting installierst und wartest du FreeLingo auf deiner Infrastruktur und richtest KI- und Sprachdienste ein. Die verfügbaren Funktionen hängen von deiner Konfiguration ab."
+      },
+      "free": {
+        "question": "Kann ich kostenlos starten? Brauche ich eine Karte?",
+        "answer": "Für die Registrierung ist keine Karte nötig. Bietet die Installation einen anfänglichen Premium-Zugang, beginnt dieser mit der Registrierung; danach bleibst du ohne Abo kostenlos mit Nutzungslimits. Ein kostenpflichtiges Abo beginnt beim Abschluss, sofern der Tarif nicht ausdrücklich zusätzliche Testtage anbietet. Diese Abo-Testphase ist vom anfänglichen Zugang getrennt und erfordert eine Zahlungsmethode."
+      },
+      "hosting": {
+        "question": "Was brauche ich für Self-Hosting?",
+        "answer": "Du brauchst einen Server, Docker Compose sowie eingerichtete KI- und Sprachdienste. Installation, Updates und Backups übernimmst du selbst. Die AGPL-3.0-Software ist kostenlos; Infrastruktur und externe Anbieter können Kosten verursachen. Hardwarebedarf und unterstützte Sprachen der Sprachdienste hängen von den gewählten Anbietern ab."
+      },
+      "data": {
+        "question": "Wo werden meine Daten gespeichert und verarbeitet?",
+        "answer": "In der Cloud verwaltet das FreeLingo-Team die Speicherung und sendet KI- und Sprachinhalte zur Verarbeitung an die Anbieter des Dienstes. Beim Self-Hosting bestimmst du Speicherort und Anbieter: Externe KI- oder Sprachdienste erhalten die jeweiligen Inhalte. Self-Hosting bedeutet nicht automatisch ausschließlich lokale Verarbeitung."
+      },
+      "languages": {
+        "question": "Welche Sprachen kann ich lernen?",
+        "answer": "Britisches und amerikanisches Englisch, Spanisch, Italienisch, Portugiesisch, Deutsch, Französisch, Japanisch, Koreanisch und Festlandchinesisch. Du kannst mehrere Sprachen gleichzeitig lernen, mit eigenen Lernplänen und Fortschritten für jede Sprache."
+      },
+      "start": {
+        "question": "Wie fange ich an zu lernen?",
+        "answer": "Wähle deine Lernsprache, ermittle dein Niveau und erstelle deinen persönlichen Lernplan. Bearbeite Lektionen, festige dein Wissen mit Übungen und Spielen und übe das Sprechen mit Lingu, auch auf Grundlage abgeschlossener Lektionen."
+      }
+    },
     "microDemo": {
       "title": "So hilft dir Lingu",
       "exampleLabel": "Schriftliches Beispiel einer Englischübung",
@@ -1229,28 +1278,28 @@
     "title": "FAQ",
     "subtitle": "Häufig gestellte Fragen",
     "q_start": "Wo fange ich an?",
-    "a_start": "Beginnen Sie mit der <strong>Einstufung</strong>. Sie erkennt Ihr Englischniveau (A1–C2) sowie Ihre Stärken und Schwächen. Mit diesem Ergebnis können Sie einen personalisierten <strong>Lernplan</strong> erstellen, der Ihr Dashboard mit täglichen Lektionen füllt. Ohne die Einstufung ist das Dashboard leer.",
+    "a_start": "Wählen Sie Ihre Lernsprache und öffnen Sie die <strong>Einstufung</strong>, um Ihr Niveau einzuschätzen. Ohne Vorkenntnisse können Sie A1 ohne Test wählen. Bestätigen Sie Niveau und Dauer, um Ihren <strong>Lernplan</strong> für diese Sprache zu erstellen.",
     "q_workflow": "Wie sieht der vollständige Ablauf aus?",
-    "workflowStep1": "Registrieren Sie sich und wählen Sie Ihre Muttersprache",
-    "workflowStep2": "Absolvieren Sie die Einstufung → Ihr GER-Niveau wird erkannt",
-    "workflowStep3": "Erstellen Sie Ihren Lernplan über das Dashboard",
+    "workflowStep1": "Registrieren Sie sich, geben Sie Ihre Muttersprache an und wählen Sie Ihre Lernsprache",
+    "workflowStep2": "Ermitteln Sie Ihr Niveau in dieser Sprache oder beginnen Sie ohne Vorkenntnisse bei A1",
+    "workflowStep3": "Bestätigen Sie Niveau und Dauer, um Ihren Lernplan zu erstellen",
     "workflowStep4": "Schließen Sie Ihre täglichen Lektionen ab (START-Schaltfläche im Dashboard)",
     "workflowStep5": "Nutzen Sie Karteikarten, um parallel Vokabular zu üben",
     "workflowStep6": "Üben Sie freie Gespräche mit Lingu",
     "q_language": "Welche Sprache werde ich lernen?",
     "a_language": "FreeLingo unterstützt derzeit mehrere Sprachen (Amerikanisches Englisch, Britisches Englisch, Chinesisch (Festland), Deutsch, Französisch, Italienisch, Japanisch, Koreanisch, Portugiesisch, Spanisch), und wir werden mit der Zeit weitere hinzufügen. Wenn eine neue Sprache verfügbar ist, findest du sie unter Einstellungen → Meine Sprachen — füge sie hinzu und beginne sofort zu lernen.",
     "q_assessment": "Was ist die Einstufung?",
-    "a_assessment": "Ein von KI generierter Test mit 15 Fragen, der Grammatik, Vokabular, Leseverständnis und Satztransformation abdeckt, mit Schwierigkeiten von A1 bis C1. Am Ende erhalten Sie Ihr GER-Niveau, eine Punktzahl und eine Analyse Ihrer Stärken und Schwächen. Dieses Ergebnis fließt in den Lernplan und die generierten Karteikarten ein.",
+    "a_assessment": "Ein adaptiver Test mit bis zu 15 Fragen aus einem Fragenkatalog für Ihre Lernsprache. Er umfasst Grammatik, Wortschatz und Leseverständnis von A1 bis C2. Das Ergebnis schätzt Ihr GER-Niveau ein und zeigt Stärken und Übungsbedarf; vor der Planerstellung können Sie das vorgeschlagene Niveau anpassen.",
     "q_studyPlan": "Was ist der Lernplan und wie erstelle ich einen?",
-    "a_studyPlan": "Gehen Sie nach der Einstufung zum Dashboard und klicken Sie auf <strong>Lernplan erstellen</strong>. Ein wöchentlicher Plan mit täglichen Lektionen, die auf Ihr GER-Niveau und Ihre Ziele zugeschnitten sind, wird automatisch erstellt. Jede Lektion umfasst Multiple-Choice- und Freischreib-Übungen, die von KI bewertet werden.",
+    "a_studyPlan": "Bestätigen Sie am Ende der Einstufung Ihr Niveau und wählen Sie 4, 8, 12 oder 16 Wochen. Mit der Bestätigung entsteht Ihr <strong>Lernplan</strong> aus Einheiten und Lektionen nach dem Lehrplan Ihrer Sprache und Ihres Niveaus. Jede Sprache hat einen eigenen Plan und Lernfortschritt.",
     "q_resources": "Was sind Ressourcen?",
     "a_resources": "Der Bereich <strong>Ressourcen</strong> bündelt Nachschlagematerial, das unabhängig von Ihrem Lernplan ist: Grammatik nach Niveau, Vokabelsets und nützliche Redewendungen. Sie können ihn jederzeit zum Wiederholen, Nachschlagen von Erklärungen oder Erweitern Ihres Wortschatzes nutzen, ohne auf eine tägliche Lektion zu warten.",
     "q_flashcards": "Wofür sind die Karteikarten?",
-    "a_flashcards": "Ein Vokabeltrainingssystem, das den Spaced-Repetition-Algorithmus <strong>SM-2</strong> verwendet. Generieren Sie Karten zu jedem Thema (z. B. „Business“, „Phrasal Verbs“, „Essen“) mit Definition, Beispielsatz und Übersetzung in Ihre Muttersprache. Das System berechnet, wann jede Karte kurz vor dem Vergessen wieder angezeigt werden soll. Vollständig unabhängig vom Lernplan.",
+    "a_flashcards": "Wiederholen Sie Vokabeln mit <strong>SM-2</strong>: Ihre Antworten bestimmen, wann jede Karte erneut erscheint. Sie können Karten generieren, Wörter aus Texten speichern oder Vokabelsammlungen hinzufügen. Karten und Wiederholungen gehören zum Lernplan ihrer Sprache, lassen sich aber unabhängig vom Fortschritt in den Lektionen üben.",
     "q_vocabulary": "Wie füge ich Wörter zu meinem Wortschatz hinzu?",
     "a_vocabulary": "Sie können Wörter auf zwei Arten speichern: (1) Markieren Sie beim Lesen einer Lektion, einer Hörübung oder beim Chatten mit dem Tutor ein Wort mit der Maus und klicken Sie im erscheinenden Tooltip auf <strong>Speichern</strong> — Lingu bereitet eine Definition, einen Beispielsatz und eine Übersetzung in Ihre Muttersprache vor. (2) Gehen Sie zu <strong>Vokabular</strong>, öffnen Sie ein Vokabelset für Ihr Niveau und klicken Sie auf <strong>Alle hinzufügen</strong>, um das ganze Set auf einmal zu importieren. Ihre gespeicherten Wörter erscheinen unter <strong>Mein Vokabular</strong> im Karteikarten-Bereich.",
     "q_tutor": "Wie kann ich mit Lingu üben?",
-    "a_tutor": "Ein freier Streaming-Chat. Der Tutor kennt Ihr GER-Niveau und Ihre Schwachstellen, um seine Antworten anzupassen. Stellen Sie Grammatikfragen, bitten Sie um Erklärungen, üben Sie das Schreiben auf Englisch oder führen Sie einfach ein Gespräch. Gespräche werden gespeichert und sind in der Seitenleiste sitzungsübergreifend zugänglich.",
+    "a_tutor": "Lingu passt seine Antworten an Ihre aktive Lernsprache und den Kontext Ihres Plans an. Stellen Sie Grammatikfragen, bitten Sie um Erklärungen, üben Sie das Schreiben in dieser Sprache oder führen Sie ein Gespräch. Gespräche werden nach Sprache gespeichert und können im Verlauf fortgesetzt werden.",
     "q_voice": "Wie funktioniert die Sprachkonversation?",
     "a_voice": "Der Modus <strong>Sprachkonversation</strong> ermöglicht es dir, in Echtzeit mit Lingu zu sprechen. Drücke auf Start — die App erkennt deine Stimme automatisch über Sprachaktivitätserkennung (VAD) und der Tutor antwortet mit Sprachsynthese. Du kannst den Tutor jederzeit unterbrechen (Barge-in). Die Sitzung endet, wenn das Zeitlimit erreicht ist oder du auf Stopp drückst. Stelle sicher, dass dein Browser die Mikrofonberechtigung erteilt hat.",
     "q_listening": "Wie funktionieren die Hörübungen?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Welche KI-Anbieter unterstützt FreeLingo?",
     "a_providers_intro": "Konfigurierbar in <code>.env</code> über <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Lokal, kostenlos. Erfordert Ollama auf dem Host. Empfohlenes Modell: gemma4:e4b. Kann ohne GPU langsam sein.",
-    "provider_openai": "OpenAI API (GPT-4o usw.). Schnell und zuverlässig. Erfordert OPENAI_API_KEY.",
+    "provider_openai": "OpenAI-Dienst mit dem vom Administrator konfigurierten Modell. Erfordert OPENAI_API_KEY und kann Nutzungskosten verursachen.",
     "provider_anthropic": "Anthropic Claude. Erfordert ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Erfordert DEEPSEEK_API_KEY.",
     "q_invite": "Kann ich andere Personen einladen?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Teste Premium bei der Registrierung ohne Karte oder Abo. Danach weiterhin kostenlos mit Nutzungslimits.",
     "paywallGamesTitle": "Mit Spielen weiterlernen",
     "paywallGamesDesc": "Dein kostenloses Kontingent ist aufgebraucht oder Spiele erfordern Premium. Vorhandene Spiele kannst du fortsetzen.",
     "paywallLabel": "Premium erforderlich",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Flexibel monatlich · {price}€/Monat →",
     "planYearly": "Bester Wert · {price}€/Jahr · 2 Monate gratis →",
     "checkoutError": "Checkout konnte nicht gestartet werden. Bitte erneut versuchen.",
-    "pricingTitle": "Einfache, transparente Preise",
-    "pricingDesc": "{days} Tage gratis · heute keine Abbuchung · jederzeit kündbar",
-    "pricingDescTrialUsed": "Wähle monatlich oder jährlich · jederzeit kündbar",
+    "pricingTitle": "Tarife und Preise",
+    "pricingContext": "Diese Tarife gelten für diese Installation. Self-Hosting erfordert kein FreeLingo-Cloud-Abo; der Administrator konfiguriert Zugang und Limits.",
+    "pricingDesc": "Zusätzliche Testphase beim Abo-Abschluss: {days} Tage · Karte erforderlich · danach gilt der Tarifpreis",
+    "pricingDescTrialUsed": "Monatliches oder jährliches kostenpflichtiges Abo ab Abschluss. Jederzeit kündbar.",
     "planMonthlyName": "Monatlich",
     "planYearlyName": "Jährlich",
     "bestValue": "Bestes Angebot",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Plan wählen",
     "freeFeature": {
       "f1": "Einstufungstest & Bewertung",
-      "f2": "Lektionen & Lernplan",
+      "f2": "Persönlicher Lernplan",
+      "lessons": "Lektionen abschließen",
+      "games": "Lernspiele",
       "f3": "Grammatik & Wortschatz",
       "f4": "Dashboard & Lernfortschritt",
       "f5": "Karteikarten & Spaced Repetition",
@@ -1641,7 +1694,7 @@
     "priceAmount": "{amount}€",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "{price}€ / {period}",
-    "planFreeDesc": "7 Tage volle Testphase, dann kostenlos mit täglichen und wöchentlichen Limits",
+    "planFreeDesc": "Keine Karte erforderlich. Kostenloser Zugang mit Nutzungslimits; bei Bedarf auf Premium erweitern.",
     "planFreeCta": "Starten",
     "limitedLabel": "Limitiert"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Neuigkeiten",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Verstanden",
     "entry1": {
       "label": "Deine Karteikarten, wie du sie magst",

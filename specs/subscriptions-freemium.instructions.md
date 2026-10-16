@@ -141,7 +141,11 @@ completion reports `trialing`; direct `active` activation and administrative ove
 The landing pricing subtitle, monthly badge, and all paid-plan CTAs advertise a Stripe trial only
 when configured trial days are positive and the user has not already used it. Otherwise, the subtitle
 uses the monthly/yearly plan-selection text, the monthly badge says Premium, and paid-plan CTAs use
-the plan-selection label. When a trial is available, the subtitle displays its configured duration.
+the plan-selection label. When a trial is available, the subtitle displays its configured duration,
+identifying it as additional trial days on subscription, with the card requirement and the paid
+plan price applying afterwards. Without a subscription trial, the subtitle states that the paid
+subscription starts on purchase. Paid cards also show the existing trial/payment terms next to
+their CTAs. The landing defaults missing Stripe trial days to zero.
 
 The Stripe card trial and the freemium no-card trial are independent. A Stripe `trialing` status has
 subscription precedence and does not consume freemium counters.
@@ -282,6 +286,19 @@ readable history where backend policy permits.
 `incomplete_expired`, and `canceled` offer monthly/yearly checkout.
 
 Landing pricing exists only when Stripe is enabled and the visitor is not known to be subscribed.
+Its heading is deployment-neutral and its context identifies prices as belonging to the current
+installation. Self-hosting does not require an official FreeLingo Cloud subscription; the operator
+configures access and limits. Stripe being enabled must not label an arbitrary installation as Cloud.
+The free card and anonymous signup notes describe initial no-card Premium access when the public
+`freemium_trial_enabled` flag is true, followed by limited free access unless the learner subscribes.
+With the flag off, they describe limited free access directly. No fixed signup-trial duration is
+promised because public config does not expose `FREEMIUM_TRIAL_DAYS`. The comparison separates
+the ungated study plan from limited lesson completion and lists games among limited features.
+The card-based subscription trial uses the configured duration and eligibility above. Public FAQ
+copy distinguishes initial no-card Premium access from the optional additional subscription trial.
+It explains that
+subscribing starts the paid subscription unless additional trial days are explicitly offered, and
+does not present self-hosting as free infrastructure or necessarily local processing.
 Anonymous plan selection is carried through registration; authenticated users can start checkout
 directly. Billing success refreshes authentication and polls profile state before claiming Premium
 or redirecting. Billing cancellation never claims a charge occurred.

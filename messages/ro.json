@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Acces Premium inițial la înregistrare, fără card. Apoi continui gratuit cu limite dacă nu te abonezi.",
+    "modes": {
+      "intro": "Disponibil în cloud, fără instalare, sau găzduit pe propriul server.",
+      "compare": "Compară opțiunile",
+      "accounts": "Fiecare instalare are propriile conturi și progres. Butonul principal deschide această instalare; linkul FreeLingo Cloud deschide serviciul oficial.",
+      "title": "Două moduri de a folosi FreeLingo",
+      "cloud": {
+        "title": "Cloud · Noi îl administrăm",
+        "description": "Învață în browser cu serviciul administrat de FreeLingo.",
+        "setup": "Găzduire, întreținere și actualizări incluse.",
+        "access": "IA și voce incluse în limitele planului tău.",
+        "cost": "Începe cu un plan gratuit și treci la Premium pentru mai multă practică.",
+        "cta": "Accesează FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Găzduire proprie · Tu îl administrezi",
+        "description": "Instalează FreeLingo pe infrastructura ta și alege furnizorii de IA și voce.",
+        "setup": "Controlează instalarea, configurarea și stocarea datelor.",
+        "access": "Software liber și gratuit sub licența AGPL-3.0.",
+        "cost": "Tu acoperi infrastructura, întreținerea și eventualele costuri ale furnizorilor.",
+        "cta": "Ghid de instalare"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Care este diferența dintre cloud și găzduirea proprie?",
+        "answer": "FreeLingo Cloud este serviciul administrat de pe freelingo.app: creează un cont și învață fără să administrezi un server. Cu găzduirea proprie, instalezi și întreții FreeLingo pe infrastructura ta și configurezi serviciile de IA și voce. Funcționalitățile disponibile depind de configurație."
+      },
+      "free": {
+        "question": "Pot începe gratuit? Am nevoie de card?",
+        "answer": "Înregistrarea nu necesită card. Dacă instalarea oferă acces Premium inițial, acesta începe la înregistrare; apoi continui gratuit cu limite dacă nu te abonezi. Abonamentul plătit începe la contractare, cu excepția zilelor suplimentare de probă oferite explicit de plan. Această probă este separată de perioada inițială și necesită o metodă de plată."
+      },
+      "hosting": {
+        "question": "De ce am nevoie pentru a găzdui FreeLingo?",
+        "answer": "Ai nevoie de un server, Docker Compose și servicii de IA și voce configurate. Te ocupi de instalare, actualizări și copii de siguranță. Software-ul AGPL-3.0 este gratuit; infrastructura și furnizorii externi pot implica costuri. Cerințele hardware și limbile pentru voce depind de furnizorii aleși."
+      },
+      "data": {
+        "question": "Unde sunt stocate și procesate datele mele?",
+        "answer": "În Cloud, echipa FreeLingo gestionează stocarea și trimite conținutul IA și voce furnizorilor serviciului pentru procesare. Cu găzduirea proprie, controlezi stocarea și furnizorii: serviciile externe de IA sau voce primesc conținutul relevant. Găzduirea proprie nu înseamnă automat că toată procesarea este locală."
+      },
+      "languages": {
+        "question": "Ce limbi pot învăța?",
+        "answer": "Engleză britanică și americană, spaniolă, italiană, portugheză, germană, franceză, japoneză, coreeană și chineză continentală. Poți învăța mai multe simultan, cu planuri și progres separat pentru fiecare limbă."
+      },
+      "start": {
+        "question": "Cum încep să învăț?",
+        "answer": "Alege limba de studiu, evaluează-ți nivelul și creează planul personalizat. Parcurge lecțiile, consolidează ce înveți prin exerciții și jocuri și exersează vorbirea cu Lingu, inclusiv pornind de la lecțiile finalizate."
+      }
+    },
     "microDemo": {
       "title": "Iată cum te ajută Lingu",
       "exampleLabel": "Exemplu scris de exercițiu în engleză",
@@ -1229,28 +1278,28 @@
     "title": "Întrebări frecvente",
     "subtitle": "Întrebări frecvente",
     "q_start": "De unde încep?",
-    "a_start": "Începe cu <strong>Evaluarea</strong>. Aceasta detectează nivelul tău de engleză (A1–C2) și punctele forte și slabe. Cu acel rezultat poți genera un <strong>Plan de studiu</strong> personalizat care îți va umple tabloul de bord cu lecții zilnice.",
+    "a_start": "Alege limba de studiu și deschide <strong>Evaluarea</strong> pentru a-ți estima nivelul. Dacă începi de la zero, poți alege A1 fără test. Confirmă nivelul și durata pentru a crea <strong>Planul de studiu</strong> pentru acea limbă.",
     "q_workflow": "Care este fluxul complet de lucru?",
-    "workflowStep1": "Înregistrează-te și selectează limba ta maternă",
-    "workflowStep2": "Fă evaluarea → nivelul tău CEFR este determinat",
-    "workflowStep3": "Generează planul de studiu din tabloul de bord",
+    "workflowStep1": "Înregistrează-te, indică limba maternă și alege limba pe care vrei să o înveți",
+    "workflowStep2": "Evaluează nivelul în acea limbă sau începe la A1 dacă ești începător",
+    "workflowStep3": "Confirmă nivelul și durata pentru a crea planul de studiu",
     "workflowStep4": "Finalizează lecțiile zilnice (butonul START din tabloul de bord)",
     "workflowStep5": "Folosește carduri flash pentru a antrena vocabularul în paralel",
     "workflowStep6": "Exersează conversația liberă cu Lingu",
     "q_language": "Ce limbă voi învăța?",
     "a_language": "FreeLingo suportă în prezent mai multe limbi (chineză continentală, coreeană, engleză americană, engleză britanică, franceză, germană, italiană, japoneză, portugheză, spaniolă) și vom adăuga mai multe în timp. Când o nouă limbă devine disponibilă, o vei găsi în Setări → Limbile mele — adaug-o și începe să înveți imediat.",
     "q_assessment": "Ce este Evaluarea?",
-    "a_assessment": "Un test generat de AI cu 15 de întrebări despre gramatică, vocabular, înțelegerea lecturii și transformarea propozițiilor, cu dificultate de la A1 la C1.",
+    "a_assessment": "Un test adaptiv cu cel mult 15 întrebări dintr-o bancă specifică limbii de studiu. Acoperă gramatica, vocabularul și înțelegerea lecturii de la A1 la C2. Rezultatul estimează nivelul CEFR și indică punctele forte și aspectele de exersat; poți ajusta nivelul sugerat înainte de a crea planul.",
     "q_studyPlan": "Ce este Planul de studiu și cum îl generez?",
-    "a_studyPlan": "După Evaluare, mergi la tabloul de bord și apasă <strong>Generează plan de studiu</strong>. Va fi creat automat un plan săptămânal cu lecții zilnice adaptate nivelului și obiectivelor tale CEFR.",
+    "a_studyPlan": "La finalul Evaluării, confirmă nivelul și alege o durată de 4, 8, 12 sau 16 săptămâni. Confirmarea creează <strong>Planul de studiu</strong>, organizat în unități și lecții după programa limbii și nivelului tău. Fiecare limbă are propriul plan și progres.",
     "q_resources": "Ce sunt Resursele?",
     "a_resources": "Secțiunea <strong>Resurse</strong> reunește material de referință independent de Planul tău de studiu: gramatică pe niveluri, seturi de vocabular și expresii utile. O poți folosi oricând pentru recapitulare, explicații sau extinderea vocabularului fără să aștepți o lecție zilnică.",
     "q_flashcards": "La ce folosesc Cardurile flash?",
-    "a_flashcards": "Un sistem de antrenament al vocabularului care folosește algoritmul de repetiție spațiată <strong>SM-2</strong>. Generează carduri pe orice subiect cu o definiție, propoziție exemplu și traducere în limba ta maternă.",
+    "a_flashcards": "Recapitulează vocabularul cu repetiția spațiată <strong>SM-2</strong>: răspunsurile determină când reapare fiecare card. Poți genera carduri, salva cuvinte din texte sau adăuga seturi de vocabular. Cardurile și recapitulările aparțin planului limbii lor, dar le poți exersa fără să avansezi în lecții.",
     "q_vocabulary": "Cum adaug cuvinte în vocabularul meu?",
     "a_vocabulary": "Poți salva cuvinte în două moduri: (1) În timp ce citești o lecție, un exercițiu de ascultare sau discuți cu tutorele, selectează orice cuvânt cu mouse-ul și dă clic pe <strong>Salvează</strong> în tooltip-ul care apare — Lingu va pregăti o definiție, o propoziție exemplu și o traducere în limba ta maternă. (2) Mergi la <strong>Vocabular</strong>, deschide un set de vocabular pentru nivelul tău și dă clic pe <strong>Adaugă toate</strong> pentru a importa întregul set dintr-o dată. Cuvintele tale salvate apar în <strong>Vocabularul meu</strong> în secțiunea Carduri flash.",
     "q_tutor": "Cum pot exersa cu Lingu?",
-    "a_tutor": "Un chat în format liber cu streaming. Tutorele cunoaște nivelul tău CEFR și punctele slabe pentru a-și adapta răspunsurile. Pune întrebări de gramatică, cere explicații, exersează scrierea în engleză sau pur și simplu poartă o conversație.",
+    "a_tutor": "Lingu adaptează răspunsurile la limba de studiu activă și contextul planului. Pune întrebări de gramatică, cere explicații, exersează scrierea în acea limbă sau conversează. Conversațiile sunt salvate separat pe limbi și pot fi reluate din istoric.",
     "q_voice": "Cum funcționează conversația vocală?",
     "a_voice": "Modul <strong>Conversație vocală</strong> îți permite să vorbești cu Lingu în timp real. Apasă Start pentru a începe — aplicația detectează automat vocea ta prin detecția activității vocale (VAD) și tutorele răspunde cu sinteză vocală. Poți întrerupe tutorele în orice moment (barge-in). Sesiunea se încheie când se atinge limita de timp sau apeși Stop. Asigură-te că browserul are permisiunea de a accesa microfonul.",
     "q_listening": "Cum funcționează exercițiile de ascultare?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Ce furnizori AI acceptă FreeLingo?",
     "a_providers_intro": "Configurabil în <code>.env</code> prin <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Local, gratuit. Necesită Ollama pe gazdă. Model recomandat: gemma4:e4b.",
-    "provider_openai": "OpenAI API (GPT-4o etc.). Rapid și fiabil. Necesită OPENAI_API_KEY.",
+    "provider_openai": "Serviciul OpenAI cu modelul configurat de administrator. Necesită OPENAI_API_KEY și poate genera costuri de utilizare.",
     "provider_anthropic": "Anthropic Claude. Necesită ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Necesită DEEPSEEK_API_KEY.",
     "q_invite": "Pot invita pe alții?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Încearcă accesul Premium la înregistrare, fără card sau abonament. Apoi continuă gratuit cu limite de utilizare.",
     "paywallGamesTitle": "Continuă să exersezi prin jocuri",
     "paywallGamesDesc": "Ai epuizat cota gratuită sau jocurile necesită Premium. Poți relua jocurile existente.",
     "paywallLabel": "Premium necesar",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Lunar flexibil · {price}€/lună →",
     "planYearly": "Cea mai bună ofertă · {price}€/an · 2 luni gratuite →",
     "checkoutError": "Nu s-a putut iniția plata. Încearcă din nou.",
-    "pricingTitle": "Preț simplu și transparent",
-    "pricingDesc": "{days} zile gratuite · fără taxă azi · anulează oricând",
-    "pricingDescTrialUsed": "Alege lunar sau anual · anulează oricând",
+    "pricingTitle": "Planuri și prețuri",
+    "pricingContext": "Aceste planuri se aplică acestei instalări. Găzduirea proprie nu necesită abonament FreeLingo Cloud; administratorul configurează accesul și limitele.",
+    "pricingDesc": "Probă suplimentară la abonare: {days} zile · card necesar · apoi se aplică prețul planului",
+    "pricingDescTrialUsed": "Abonament lunar sau anual plătit de la contractare. Anulează oricând.",
     "planMonthlyName": "Lunar",
     "planYearlyName": "Anual",
     "bestValue": "Cea mai bună ofertă",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Alege planul",
     "freeFeature": {
       "f1": "Test de nivel & evaluare",
-      "f2": "Lecții & plan de studiu",
+      "f2": "Plan de studiu personalizat",
+      "lessons": "Finalizarea lecțiilor",
+      "games": "Jocuri de învățare",
       "f3": "Gramatică & vocabular",
       "f4": "Panou de control & urmărire progres",
       "f5": "Flashcard-uri & repetiție spațiată",
@@ -1641,7 +1694,7 @@
     "priceAmount": "{amount} lei",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "{price} lei / {period}",
-    "planFreeDesc": "Probă completă de 7 zile, apoi gratuit cu limite zilnice și săptămânale",
+    "planFreeDesc": "Fără card. Acces gratuit cu limite de utilizare; treci la Premium când ai nevoie de mai mult.",
     "planFreeCta": "Începe",
     "limitedLabel": "Limitat"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Noutăți",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Am înțeles",
     "entry1": {
       "label": "Cardurile tale, așa cum le dorești",
