@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Početni Premium pristup pri registraciji, bez kartice. Nakon toga besplatno uz ograničenja ako se ne pretplatiš.",
+    "modes": {
+      "intro": "Dostupno u oblaku bez instalacije ili na vlastitom poslužitelju.",
+      "compare": "Usporedi mogućnosti",
+      "accounts": "Svaka instalacija ima vlastite račune i napredak. Glavni gumb otvara ovu instalaciju; poveznica FreeLingo Cloud otvara službenu uslugu.",
+      "title": "Dva načina korištenja FreeLinga",
+      "cloud": {
+        "title": "Cloud · Mi upravljamo",
+        "description": "Uči u pregledniku uz uslugu kojom upravlja FreeLingo.",
+        "setup": "Hosting, održavanje i ažuriranja su uključeni.",
+        "access": "AI i glasovne značajke uključeni su unutar ograničenja tvog plana.",
+        "cost": "Počni besplatno i odaberi Premium za više vježbanja.",
+        "cta": "Otvori FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Vlastiti poslužitelj · Ti upravljaš",
+        "description": "Instaliraj FreeLingo na vlastitoj infrastrukturi i odaberi pružatelje AI i glasovnih usluga.",
+        "setup": "Kontroliraj instalaciju, konfiguraciju i pohranu podataka.",
+        "access": "Slobodan i besplatan softver pod licencijom AGPL-3.0.",
+        "cost": "Ti pokrivaš infrastrukturu, održavanje i eventualne troškove pružatelja usluga.",
+        "cta": "Vodič za instalaciju"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Koja je razlika između oblaka i vlastitog poslužitelja?",
+        "answer": "FreeLingo Cloud je upravljana usluga na freelingo.app: izradi račun i uči bez upravljanja poslužiteljem. Na vlastitom poslužitelju instaliraš i održavaš FreeLingo na svojoj infrastrukturi te konfiguriraš AI i glasovne usluge. Dostupne mogućnosti ovise o konfiguraciji."
+      },
+      "free": {
+        "question": "Mogu li početi besplatno? Trebam li karticu?",
+        "answer": "Registracija ne zahtijeva karticu. Ako instalacija nudi početni Premium pristup, on počinje registracijom; nakon toga nastavljaš besplatno uz ograničenja ako se ne pretplatiš. Plaćena pretplata počinje kupnjom, osim ako plan izričito nudi dodatne probne dane. To probno razdoblje odvojeno je od početnog razdoblja i zahtijeva način plaćanja."
+      },
+      "hosting": {
+        "question": "Što trebam za vlastiti hosting FreeLinga?",
+        "answer": "Trebaš poslužitelj, Docker Compose te konfigurirane AI i glasovne usluge. Brineš se o instalaciji, ažuriranjima i sigurnosnim kopijama. Softver AGPL-3.0 je besplatan; infrastruktura i vanjski pružatelji mogu imati troškove. Hardverski zahtjevi i podržani glasovni jezici ovise o odabranim pružateljima."
+      },
+      "data": {
+        "question": "Gdje se moji podaci pohranjuju i obrađuju?",
+        "answer": "U Cloudu tim FreeLingo upravlja pohranom i šalje AI i glasovne sadržaje pružateljima usluge na obradu. Na vlastitom poslužitelju kontroliraš pohranu i pružatelje: vanjske AI ili glasovne usluge primaju odgovarajući sadržaj. Vlastiti hosting ne znači automatski da je sva obrada lokalna."
+      },
+      "languages": {
+        "question": "Koje jezike mogu učiti?",
+        "answer": "Britanski i američki engleski, španjolski, talijanski, portugalski, njemački, francuski, japanski, korejski i kontinentalni kineski. Možeš učiti više jezika istodobno, uz zasebne planove i napredak za svaki jezik."
+      },
+      "start": {
+        "question": "Kako započeti učenje?",
+        "answer": "Odaberi jezik učenja, procijeni razinu i izradi personalizirani plan. Napreduj kroz lekcije, učvrsti naučeno vježbama i igrama te vježbaj govor s Linguom, uključujući razgovore na temelju dovršenih lekcija."
+      }
+    },
     "microDemo": {
       "title": "Ovako ti Lingu pomaže",
       "exampleLabel": "Pisani primjer vježbe engleskog jezika",
@@ -1229,28 +1278,28 @@
     "title": "Česta pitanja",
     "subtitle": "Često postavljana pitanja i odgovori",
     "q_start": "Odakle početi?",
-    "a_start": "Počni s <strong>procjenom razine</strong>. Ona utvrđuje tvoju razinu engleskog (A1–C2) te tvoje prednosti i slabosti. Na temelju rezultata možeš stvoriti osobni <strong>plan učenja</strong> koji ispunjava nadzornu ploču dnevnim lekcijama. Bez procjene nadzorna ploča ostaje prazna.",
+    "a_start": "Odaberi jezik koji želiš učiti i otvori <strong>procjenu razine</strong> kako bi procijenio znanje. Početnici mogu odabrati A1 bez testa. Potvrdi razinu i trajanje za izradu <strong>plana učenja</strong> za taj jezik.",
     "q_workflow": "Kako izgleda cijeli postupak?",
-    "workflowStep1": "Registriraj se i odaberi materinski jezik",
-    "workflowStep2": "Riješi procjenu → utvrdit će se tvoja CEFR razina",
-    "workflowStep3": "Stvori plan učenja s nadzorne ploče",
+    "workflowStep1": "Registriraj se, navedi materinski jezik i odaberi jezik koji želiš učiti",
+    "workflowStep2": "Procijeni razinu u tom jeziku ili počni od A1 ako si početnik",
+    "workflowStep3": "Potvrdi razinu i trajanje za izradu plana učenja",
     "workflowStep4": "Dovrši dnevne lekcije (gumb ZAPOČNI na nadzornoj ploči)",
     "workflowStep5": "Istodobno vježbaj rječnik karticama",
     "workflowStep6": "Vježbaj slobodan razgovor s Linguom",
     "q_language": "Koji ću jezik učiti?",
     "a_language": "FreeLingo trenutačno podržava više jezika (američki engleski, britanski engleski, francuski, njemački, talijanski, japanski, korejski, kineski koji se govori u kontinentalnoj Kini, portugalski i španjolski), a s vremenom ćemo dodati još jezika. Kad novi jezik postane dostupan, pronaći ćeš ga pod Postavke → Moji jezici – dodaj ga i odmah počni učiti.",
     "q_assessment": "Što je procjena razine?",
-    "a_assessment": "Test od 15 pitanja koji stvara AI, a obuhvaća gramatiku, rječnik, razumijevanje pročitanog i preoblikovanje rečenica, od razine A1 do C1. Kad ga dovršiš, dobit ćeš svoju CEFR razinu, rezultat i analizu prednosti i slabosti. Rezultat se koristi u planu učenja i stvorenim karticama.",
+    "a_assessment": "Prilagodljivi test s najviše 15 pitanja iz banke pitanja za jezik koji učiš. Obuhvaća gramatiku, rječnik i razumijevanje pročitanog od A1 do C2. Rezultat procjenjuje CEFR razinu i pokazuje prednosti i područja za vježbu; predloženu razinu možeš prilagoditi prije izrade plana.",
     "q_studyPlan": "Što je plan učenja i kako ga stvaram?",
-    "a_studyPlan": "Nakon procjene idi na nadzornu ploču i klikni <strong>Stvori plan učenja</strong>. Automatski nastaje tjedni plan s dnevnim lekcijama prilagođenima tvojoj CEFR razini i ciljevima. Svaka lekcija sadrži pitanja s višestrukim odabirom i zadatke slobodnog pisanja koje procjenjuje AI.",
+    "a_studyPlan": "Na kraju procjene potvrdi razinu i odaberi 4, 8, 12 ili 16 tjedana. Potvrda stvara <strong>plan učenja</strong> s jedinicama i lekcijama prema kurikulumu tvog jezika i razine. Svaki jezik ima svoj plan i napredak.",
     "q_resources": "Što su Materijali?",
     "a_resources": "Odjeljak <strong>Materijali</strong> okuplja sadržaj koji ne ovisi o tvojem planu učenja: gramatiku po razinama, zbirke riječi i korisne izraze. Koristi ga kad god želiš ponavljati, potražiti objašnjenje ili proširiti rječnik bez čekanja na dnevnu lekciju.",
     "q_flashcards": "Čemu služe kartice?",
-    "a_flashcards": "Sustav za učenje riječi uz algoritam ponavljanja u razmacima <strong>SM-2</strong>. Stvori kartice za bilo koju temu (npr. \"posao\", \"frazni glagoli\" ili \"hrana\") s definicijom, primjerom rečenice i prijevodom na tvoj materinski jezik. Sustav računa kada ponovno prikazati karticu, neposredno prije nego što je zaboraviš. Potpuno je neovisan o planu učenja.",
+    "a_flashcards": "Ponavljaj riječi uz raspoređeno ponavljanje <strong>SM-2</strong>: odgovori određuju kada se kartica ponovno pojavljuje. Možeš generirati kartice, spremati riječi iz tekstova ili dodavati skupove rječnika. Kartice i ponavljanja pripadaju planu svog jezika, ali ih možeš vježbati bez napredovanja kroz lekcije.",
     "q_vocabulary": "Kako dodajem riječi u svoj rječnik?",
     "a_vocabulary": "Riječi možeš spremiti na dva načina: (1) Dok čitaš lekciju, rješavaš vježbu slušanja ili razgovaraš s učiteljem, označi riječ mišem i klikni <strong>Spremi</strong> u izborniku koji se prikaže. Lingu će pripremiti definiciju, primjer rečenice i prijevod na tvoj materinski jezik. (2) Idi u <strong>Rječnik</strong>, otvori zbirku riječi za svoju razinu i klikni <strong>Dodaj sve</strong> za uvoz cijele zbirke. Spremljene riječi prikazuju se u <strong>Mojem rječniku</strong> među karticama.",
     "q_tutor": "Kako mogu vježbati s Linguom?",
-    "a_tutor": "Slobodan chat u kojem se odgovori prikazuju tijekom stvaranja. Učitelj zna tvoju CEFR razinu i slabe točke te prilagođava odgovore. Pitaj o gramatici, zatraži objašnjenje, vježbaj pisanje na engleskom ili jednostavno razgovaraj. Razgovori se spremaju i dostupni su u bočnoj traci između sesija.",
+    "a_tutor": "Lingu prilagođava odgovore aktivnom jeziku učenja i kontekstu tvog plana. Pitaj o gramatici, zatraži objašnjenja, vježbaj pisanje na tom jeziku ili razgovaraj. Razgovori se spremaju po jeziku i možeš ih nastaviti iz povijesti.",
     "q_voice": "Kako funkcionira glasovni razgovor?",
     "a_voice": "U načinu <strong>Glasovni razgovor</strong> možeš razgovarati s Linguom u stvarnom vremenu. Pritisni Započni – aplikacija automatski sluša tvoj glas prepoznavanjem govorne aktivnosti (VAD), a učitelj odgovara sintetiziranim govorom. Učitelja možeš prekinuti u bilo kojem trenutku. Sesija završava kada istekne vrijeme ili pritisneš Zaustavi. Dopusti pregledniku pristup mikrofonu.",
     "q_listening": "Kako funkcioniraju vježbe slušanja?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Koje AI pružatelje FreeLingo podržava?",
     "a_providers_intro": "Postavlja se u datoteci <code>.env</code> putem <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Lokalno i besplatno. Ollama mora biti pokrenuta na poslužitelju. Preporučeni model: gemma4:e4b. Bez GPU-a može biti sporo.",
-    "provider_openai": "OpenAI API (GPT-4o itd.). Brz i pouzdan. Potreban je OPENAI_API_KEY.",
+    "provider_openai": "Usluga OpenAI s modelom koji je konfigurirao administrator. Zahtijeva OPENAI_API_KEY i može stvarati troškove korištenja.",
     "provider_anthropic": "Anthropic Claude. Potreban je ANTHROPIC_API_KEY.",
     "provider_deepseek": "DeepSeek API. Potreban je DEEPSEEK_API_KEY.",
     "q_invite": "Mogu li pozvati druge?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Isprobaj Premium pri registraciji, bez kartice ili pretplate. Nakon toga nastavi besplatno uz ograničenja korištenja.",
     "paywallGamesTitle": "Nastavi vježbati uz igre",
     "paywallGamesDesc": "Besplatna kvota je potrošena ili igre zahtijevaju Premium. Možeš nastaviti postojeće igre.",
     "paywallLabel": "Potreban je Premium",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Fleksibilni mjesečni plan · €{price}/mjesečno →",
     "planYearly": "Najbolja vrijednost · €{price}/godišnje · 2 mjeseca gratis →",
     "checkoutError": "Plaćanje nije bilo moguće pokrenuti. Pokušaj ponovno.",
-    "pricingTitle": "Jednostavne, jasne cijene",
-    "pricingDesc": "{days} besplatnih dana · Danas nema naplate · Otkaži kad god želiš",
-    "pricingDescTrialUsed": "Odaberi mjesečni ili godišnji plan · Otkaži kad god želiš",
+    "pricingTitle": "Planovi i cijene",
+    "pricingContext": "Ovi planovi vrijede za ovu instalaciju. Vlastiti hosting ne zahtijeva pretplatu na FreeLingo Cloud; administrator konfigurira pristup i ograničenja.",
+    "pricingDesc": "Dodatno probno razdoblje pri pretplati: {days} dana · potrebna kartica · zatim vrijedi cijena plana",
+    "pricingDescTrialUsed": "Plaćena mjesečna ili godišnja pretplata od kupnje. Otkaži kad god želiš.",
     "planMonthlyName": "Mjesečno",
     "planYearlyName": "Godišnje",
     "bestValue": "Najbolja vrijednost",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Odaberi plan",
     "freeFeature": {
       "f1": "Test i procjena razine",
-      "f2": "Lekcije i plan učenja",
+      "f2": "Personalizirani plan učenja",
+      "lessons": "Dovršavanje lekcija",
+      "games": "Igre za učenje",
       "f3": "Materijali za gramatiku i rječnik",
       "f4": "Nadzorna ploča i praćenje napretka",
       "f5": "Kartice i ponavljanje u razmacima",
@@ -1641,7 +1694,7 @@
     "priceAmount": "€{amount}",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "€{price} / {period}",
-    "planFreeDesc": "Sedmodnevno probno razdoblje s punim pristupom, zatim besplatno uz dnevna i tjedna ograničenja",
+    "planFreeDesc": "Bez kartice. Besplatan pristup uz ograničenja korištenja; odaberi Premium kad trebaš više.",
     "planFreeCta": "Započni",
     "limitedLabel": "Ograničeno"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Novosti",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Razumijem",
     "entry1": {
       "label": "Tvoje kartice, po tvojoj mjeri",

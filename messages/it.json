@@ -1,5 +1,54 @@
 {
   "landing": {
+    "freeTrialNote": "Accesso Premium iniziale alla registrazione, senza carta. Poi resti gratis con limiti se non ti abboni.",
+    "modes": {
+      "intro": "Disponibile nel cloud, senza installazione, oppure sul tuo server.",
+      "compare": "Confronta le modalità",
+      "accounts": "Ogni installazione ha account e progressi propri. Il pulsante principale apre questa installazione; il link FreeLingo Cloud apre il servizio ufficiale.",
+      "title": "Due modi per usare FreeLingo",
+      "cloud": {
+        "title": "Cloud · Lo gestiamo noi",
+        "description": "Impara dal browser con il servizio gestito di FreeLingo.",
+        "setup": "Hosting, manutenzione e aggiornamenti inclusi.",
+        "access": "IA e voce incluse nei limiti del tuo piano.",
+        "cost": "Inizia con il piano gratuito e passa a Premium per esercitarti di più.",
+        "cta": "Accedi a FreeLingo Cloud"
+      },
+      "selfHosted": {
+        "title": "Self-hosted · Lo gestisci tu",
+        "description": "Installa FreeLingo sulla tua infrastruttura e scegli i fornitori di IA e voce.",
+        "setup": "Controlla installazione, configurazione e archiviazione dei dati.",
+        "access": "Software libero e gratuito con licenza AGPL-3.0.",
+        "cost": "Infrastruttura, manutenzione ed eventuali costi dei fornitori sono a tuo carico.",
+        "cta": "Guida all'installazione"
+      }
+    },
+    "faq": {
+      "modes": {
+        "question": "Qual è la differenza tra cloud e self-hosted?",
+        "answer": "FreeLingo Cloud è il servizio gestito su freelingo.app: crea un account e impara senza gestire un server. Con il self-hosting installi e mantieni FreeLingo sulla tua infrastruttura e configuri i servizi di IA e voce. Le funzionalità disponibili dipendono dalla configurazione."
+      },
+      "free": {
+        "question": "Posso iniziare gratis? Serve una carta?",
+        "answer": "La registrazione non richiede una carta. Se l'installazione offre un accesso Premium iniziale, si attiva alla registrazione; poi resti gratis con limiti se non ti abboni. L'abbonamento a pagamento inizia alla sottoscrizione, salvo giorni di prova aggiuntivi espressamente offerti dal piano. Questa prova è distinta dal periodo iniziale e richiede un metodo di pagamento."
+      },
+      "hosting": {
+        "question": "Cosa serve per ospitare FreeLingo sul mio server?",
+        "answer": "Servono un server, Docker Compose e servizi di IA e voce configurati. Gestisci installazione, aggiornamenti e backup. Il software AGPL-3.0 è gratuito; infrastruttura e fornitori esterni possono avere costi. Requisiti hardware e lingue vocali supportate dipendono dai fornitori scelti."
+      },
+      "data": {
+        "question": "Dove vengono archiviati ed elaborati i miei dati?",
+        "answer": "Nel cloud, il team FreeLingo gestisce l'archiviazione e invia i contenuti di IA e voce ai fornitori del servizio per elaborarli. Nel self-hosting controlli archiviazione e fornitori: usando servizi esterni di IA o voce, invii loro i contenuti interessati. Il self-hosting non implica che tutta l'elaborazione sia locale."
+      },
+      "languages": {
+        "question": "Quali lingue posso imparare?",
+        "answer": "Inglese britannico e americano, spagnolo, italiano, portoghese, tedesco, francese, giapponese, coreano e cinese continentale. Puoi studiarne diverse insieme, con piani e progressi separati per ogni lingua."
+      },
+      "start": {
+        "question": "Come inizio a imparare?",
+        "answer": "Scegli la lingua da studiare, valuta il tuo livello e crea il piano personalizzato. Avanza con le lezioni, consolida ciò che impari con esercizi e giochi e pratica la conversazione con Lingu, anche a partire dalle lezioni completate."
+      }
+    },
     "microDemo": {
       "title": "Ecco come ti aiuta Lingu",
       "exampleLabel": "Esempio scritto di pratica in inglese",
@@ -1229,28 +1278,28 @@
     "title": "FAQ",
     "subtitle": "Domande frequenti",
     "q_start": "Da dove inizio?",
-    "a_start": "Inizia con la <strong>Valutazione</strong>. Rileva il tuo livello di inglese (A1–C2) e i tuoi punti di forza e di debolezza. Con quel risultato puoi generare un <strong>Piano di Studio</strong> personalizzato che riempie il tuo Dashboard con lezioni quotidiane. Senza la Valutazione, il Dashboard è vuoto.",
+    "a_start": "Scegli la lingua da imparare e apri la <strong>Valutazione</strong> per stimare il tuo livello. Se parti da zero, puoi scegliere A1 senza fare il test. Conferma livello e durata per creare il tuo <strong>Piano di Studio</strong> per quella lingua.",
     "q_workflow": "Qual è il flusso di lavoro completo?",
-    "workflowStep1": "Registrati e seleziona la tua lingua madre",
-    "workflowStep2": "Esegui la Valutazione → il tuo livello QCER viene rilevato",
-    "workflowStep3": "Genera il tuo Piano di Studio dal Dashboard",
+    "workflowStep1": "Registrati, indica la tua lingua madre e scegli la lingua da imparare",
+    "workflowStep2": "Valuta il tuo livello in quella lingua o inizia da A1 se sei principiante",
+    "workflowStep3": "Conferma livello e durata per creare il tuo Piano di Studio",
     "workflowStep4": "Completa le tue lezioni quotidiane (pulsante INIZIA nel Dashboard)",
     "workflowStep5": "Usa le Flashcard per allenare il vocabolario in parallelo",
     "workflowStep6": "Pratica la conversazione libera con Lingu",
     "q_language": "Che lingua imparerò?",
     "a_language": "FreeLingo include attualmente diverse lingue (cinese continentale, coreano, francese, giapponese, inglese americano, inglese britannico, italiano, portoghese, spagnolo, tedesco) e ne aggiungeremo altre nel tempo. Quando una nuova lingua sarà disponibile, la troverai in Impostazioni → Le mie lingue — aggiungila e inizia subito a imparare.",
     "q_assessment": "Cos'è la Valutazione?",
-    "a_assessment": "Un test di 15 domande generato dall'IA che copre grammatica, vocabolario, comprensione della lettura e trasformazione di frasi, con difficoltà da A1 a C1. Al termine, ottieni il tuo livello QCER, un punteggio e un'analisi dei tuoi punti di forza e di debolezza. Questo risultato alimenta il Piano di Studio e le Flashcard generate.",
+    "a_assessment": "Un test adattivo con un massimo di 15 domande da una banca specifica della lingua studiata. Copre grammatica, vocabolario e comprensione scritta da A1 a C2. Il risultato stima il tuo livello QCER e indica punti di forza e aspetti da migliorare; puoi modificare il livello suggerito prima di creare il piano.",
     "q_studyPlan": "Cos'è il Piano di Studio e come ne genero uno?",
-    "a_studyPlan": "Dopo la Valutazione, vai al Dashboard e clicca su <strong>Genera Piano di Studio</strong>. Verrà creato automaticamente un piano settimana per settimana con lezioni quotidiane personalizzate per il tuo livello QCER e i tuoi obiettivi. Ogni lezione include esercizi a scelta multipla e di scrittura libera valutati dall'IA.",
+    "a_studyPlan": "Alla fine della Valutazione, conferma il livello e scegli una durata di 4, 8, 12 o 16 settimane. La conferma crea il tuo <strong>Piano di Studio</strong>, organizzato in unità e lezioni secondo il programma della tua lingua e del tuo livello. Ogni lingua ha il proprio piano e i propri progressi.",
     "q_resources": "Che cosa sono le Risorse?",
     "a_resources": "La sezione <strong>Risorse</strong> raccoglie materiale di consultazione indipendente dal tuo Piano di Studio: grammatica per livello, set di vocabolario e frasi utili. Puoi usarla in qualsiasi momento per ripassare, cercare spiegazioni o ampliare il vocabolario senza aspettare una lezione giornaliera.",
     "q_flashcards": "A cosa servono le Flashcard?",
-    "a_flashcards": "Un sistema di allenamento del vocabolario che usa l'algoritmo di ripetizione spaziata <strong>SM-2</strong>. Genera carte su qualsiasi argomento (es. \"business\", \"phrasal verbs\", \"cibo\") con definizione, frase d'esempio e traduzione nella tua lingua madre. Il sistema calcola quando rimostrare ogni carta appena prima che tu la dimentichi. Completamente indipendente dal Piano di Studio.",
+    "a_flashcards": "Ripassa il vocabolario con la ripetizione spaziata <strong>SM-2</strong>: le tue risposte determinano quando ricompare ogni carta. Puoi generare carte, salvare parole dai testi o aggiungere raccolte di vocaboli. Carte e ripassi appartengono al piano della loro lingua, ma puoi ripassarle senza avanzare nelle lezioni.",
     "q_vocabulary": "Come aggiungo parole al mio vocabolario?",
     "a_vocabulary": "Puoi salvare le parole in due modi: (1) Mentre leggi una lezione, un esercizio di ascolto o chatti con il tutor, seleziona una parola con il mouse e clicca su <strong>Salva</strong> nel tooltip che appare — Lingu preparerà una definizione, una frase di esempio e una traduzione nella tua lingua madre. (2) Vai su <strong>Vocabolario</strong>, apri un set di vocabolario per il tuo livello e clicca su <strong>Aggiungi tutte</strong> per importare l'intero set in una volta. Le parole salvate appaiono ne <strong>Il mio vocabolario</strong> nella sezione Flashcard.",
     "q_tutor": "Come posso esercitarmi con Lingu?",
-    "a_tutor": "Una chat libera con streaming. Il tutor conosce il tuo livello QCER e i tuoi punti deboli per adattare le risposte. Fai domande di grammatica, chiedi spiegazioni, esercitati a scrivere in inglese o fai semplicemente una conversazione. Le conversazioni vengono salvate e sono accessibili dalla barra laterale tra una sessione e l'altra.",
+    "a_tutor": "Lingu adatta le risposte alla lingua di studio attiva e al contesto del tuo piano. Fai domande di grammatica, chiedi spiegazioni, esercitati a scrivere in quella lingua o conversa. Le conversazioni vengono salvate per lingua e puoi riprenderle dalla cronologia.",
     "q_voice": "Come funziona la conversazione vocale?",
     "a_voice": "La modalità <strong>Conversazione vocale</strong> ti consente di parlare con Lingu in tempo reale. Premi Start per iniziare — l'app rileva automaticamente la tua voce tramite rilevamento dell'attività vocale (VAD) e il tutor risponde con la sintesi vocale. Puoi interrompere il tutor in qualsiasi momento (barge-in). La sessione termina quando si raggiunge il limite di tempo o si preme Stop. Assicurati che il browser abbia il permesso di accedere al microfono.",
     "q_listening": "Come funzionano gli esercizi di ascolto?",
@@ -1260,7 +1309,7 @@
     "q_providers": "Quali provider di IA supporta FreeLingo?",
     "a_providers_intro": "Configurabile in <code>.env</code> tramite <code>LLM_PROVIDER</code>:",
     "provider_ollama": "Locale, gratuito. Richiede Ollama in esecuzione sull'host. Modello consigliato: gemma4:e4b. Può essere lento senza GPU.",
-    "provider_openai": "API OpenAI (GPT-4o, ecc.). Veloce e affidabile. Richiede OPENAI_API_KEY.",
+    "provider_openai": "Servizio OpenAI con il modello configurato dall'amministratore. Richiede OPENAI_API_KEY e può comportare costi di utilizzo.",
     "provider_anthropic": "Anthropic Claude. Richiede ANTHROPIC_API_KEY.",
     "provider_deepseek": "API DeepSeek. Richiede DEEPSEEK_API_KEY.",
     "q_invite": "Posso invitare altre persone?",
@@ -1542,6 +1591,7 @@
     }
   },
   "billing": {
+    "planFreeTrialDesc": "Prova l'accesso Premium alla registrazione, senza carta né abbonamento. Poi continua gratis con limiti di utilizzo.",
     "paywallGamesTitle": "Continua a esercitarti con i giochi",
     "paywallGamesDesc": "Hai esaurito le partite gratuite oppure i giochi richiedono Premium. Puoi riprendere le partite esistenti.",
     "paywallLabel": "Premium richiesto",
@@ -1565,9 +1615,10 @@
     "planMonthly": "Mensile flessibile · {price}€/mese →",
     "planYearly": "Miglior offerta · {price}€/anno · 2 mesi gratis →",
     "checkoutError": "Impossibile avviare il pagamento. Riprova.",
-    "pricingTitle": "Prezzo semplice e trasparente",
-    "pricingDesc": "{days} giorni gratis · nessun addebito oggi · annulla quando vuoi",
-    "pricingDescTrialUsed": "Scegli mensile o annuale · annulla quando vuoi",
+    "pricingTitle": "Piani e prezzi",
+    "pricingContext": "Questi piani si applicano a questa installazione. Il self-hosting non richiede un abbonamento a FreeLingo Cloud; l'amministratore configura accesso e limiti.",
+    "pricingDesc": "Prova aggiuntiva con l'abbonamento: {days} giorni · carta richiesta · poi si applica il prezzo del piano",
+    "pricingDescTrialUsed": "Abbonamento mensile o annuale a pagamento dalla sottoscrizione. Annulla quando vuoi.",
     "planMonthlyName": "Mensile",
     "planYearlyName": "Annuale",
     "bestValue": "Miglior offerta",
@@ -1584,7 +1635,9 @@
     "ctaRegisterTrialUsed": "Scegli piano",
     "freeFeature": {
       "f1": "Test di livello & valutazione",
-      "f2": "Lezioni & piano di studio",
+      "f2": "Piano di studio personalizzato",
+      "lessons": "Completamento delle lezioni",
+      "games": "Giochi didattici",
       "f3": "Grammatica & vocabolario",
       "f4": "Dashboard & monitoraggio progressi",
       "f5": "Flashcard & ripetizione spaziata",
@@ -1641,7 +1694,7 @@
     "priceAmount": "{amount}€",
     "pricePerPeriod": "/ {period}",
     "priceOriginal": "{price}€ / {period}",
-    "planFreeDesc": "Prova completa di 7 giorni, poi gratis con limiti giornalieri e settimanali",
+    "planFreeDesc": "Senza carta. Accesso gratuito con limiti di utilizzo; passa a Premium quando ne hai bisogno.",
     "planFreeCta": "Inizia",
     "limitedLabel": "Limitato"
   },
@@ -1706,7 +1759,7 @@
   },
   "whatsNew": {
     "title": "Novità",
-    "version": "v1.10.35",
+    "version": "v1.10.40",
     "cta": "Capito",
     "entry1": {
       "label": "Le tue schede, su misura per te",

@@ -146,11 +146,17 @@ The landing has one H1, H2 section/footer headings, and H3 learning-step/example
 landmark uses `display: contents` to preserve the existing layout boxes. Public legal documents use
 their translated document title as H1 and the shared legal layout supplies `main`.
 
-Core landing copy is server-rendered independently of animation readiness. Existing image dimensions,
-alternative text, reserved avatar space, and learned-language annotations are retained. The current
-FAQ mounts an answer only after a click; reveal sections depend on IntersectionObserver. Crawlers
-should not be assumed to interact with these controls. Any change to FAQ mounting, reveal behavior,
-or visible content requires a separate presentation review.
+Core landing copy, including the Cloud/self-hosted comparison, is server-rendered independently of
+animation readiness. Existing image dimensions, alternative text, reserved avatar space, and
+learned-language annotations are retained. FAQ answers remain in the HTML with inactive panels hidden
+and accessible button/panel relationships; no click is needed to obtain their text. Reveal sections
+still depend on IntersectionObserver, and crawlers should not be assumed to interact with controls.
+Changes to reveal behavior or visible content require a presentation review.
+
+The separate English project overview in `docs/index.html` retains its own canonical URL,
+`https://www.arturocarreterocalvo.com/freelingo/`. Its description and social metadata describe the
+learning journey and Cloud/self-hosted options without quoting dynamic prices or trial durations.
+It is not an additional route in the application's sitemap.
 
 Geist Sans and Geist Mono retain their existing Next.js font handling. Noto Sans JP/KR/SC remain
 available with the existing typography rules, without global preloads of their Latin subsets.
