@@ -45,6 +45,11 @@ or deployed reverse-proxy behavior.
 
 Frontend coverage reporting is not configured. Do not claim a frontend coverage percentage.
 
+The frontend `tsc --noEmit` command uses `tsconfig.json` and checks application and test files from
+the monorepo, where tests can import the root `messages/` catalogs. Next.js uses `tsconfig.build.json`,
+which inherits the same strict compiler settings and excludes `tests/` from its project. Both
+configurations retain application type checking.
+
 ## Commands
 
 Local setup is `./scripts/bootstrap.sh`. Exact runtimes and archive SHA-256 checksums are committed in
