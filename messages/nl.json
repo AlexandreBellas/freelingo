@@ -1359,6 +1359,7 @@
     "statusListening": "Luisteren...",
     "statusDetecting": "Spraak detecteren...",
     "statusSpeaking": "Spreken...",
+    "statusThinking": "Antwoord voorbereiden...",
     "statusError": "Fout",
     "errorServicesDisabled": "Spraakdiensten zijn niet ingeschakeld op deze server.",
     "errorConnection": "Verbindingsfout. Probeer opnieuw.",
@@ -1759,11 +1760,11 @@
   },
   "whatsNew": {
     "title": "Nieuw",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Begrepen",
     "entry1": {
-      "label": "Jouw flashcards, op jouw manier",
-      "desc": "Bekijk en filter al je flashcards, bewerk de inhoud en kies of je tijdens het herhalen de definitie of vertaling wilt zien. Je kunt kaarten ook verwijderen of bekende kaarten pauzeren zonder je voortgang te verliezen, en ze hervatten wanneer je wilt."
+      "label": "Vloeiendere spraakgesprekken",
+      "desc": "We hebben gesprekken met Lingu verbeterd voor vloeiendere spraakweergave en duidelijkere aanwijzingen over wie aan de beurt is."
     },
     "entry2": {
       "label": "Een soepelere ervaring",
@@ -1921,7 +1922,15 @@
     "eyebrow": "Verhalen van cursisten",
     "title": "Leren voelt echter wanneer je het zelf vertelt",
     "subtitle": "Beoordelingen van studenten die al met Lingu oefenen op FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# beoordeling in totaal} other {# beoordelingen in totaal}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# beoordeling} other {# beoordelingen}}",
+    "ratingCount": "{count, plural, one {# beoordeling} other {# beoordelingen}}",
+    "carouselLabel": "Beoordelingen van studenten",
+    "previous": "Vorige beoordeling",
+    "next": "Volgende beoordeling",
+    "pause": "Scrollen pauzeren",
+    "resume": "Scrollen hervatten",
+    "readMore": "Meer lezen",
+    "readLess": "Minder lezen",
     "learningLanguage": "Leert {language}",
     "starsLabel": "{rating} van 5 sterren",
     "ratingOnly": "Geverifieerde FreeLingo-beoordeling."

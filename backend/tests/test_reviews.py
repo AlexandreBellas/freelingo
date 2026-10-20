@@ -311,6 +311,83 @@ async def test_public_reviews_include_approved_positive_rating(client, test_user
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("comment", [None, ""])
+async def test_public_reviews_exclude_rating_only_reviews(client, test_user, db_session, comment):
+    user, _ = test_user
+    await _add_review(db_session, user_id=user.id, comment=comment, is_approved=True)
+
+    response = await client.get("/api/reviews/public")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_public_review_summary_empty(client):
+    response = await client.get("/api/reviews/public/summary")
+
+    assert response.status_code == 200
+    assert response.json() == {"total": 0, "average_rating": None}
+
+
+@pytest.mark.asyncio
+async def test_public_review_summary_excludes_unapproved(client, test_user, db_session):
+    user, _ = test_user
+    await _add_review(db_session, user_id=user.id, is_approved=False)
+
+    response = await client.get("/api/reviews/public/summary")
+
+    assert response.status_code == 200
+    assert response.json() == {"total": 0, "average_rating": None}
+
+
+@pytest.mark.asyncio
+async def test_public_review_summary_includes_all_approved_ratings_beyond_carousel_limit(
+    client, db_session
+):
+    from app.models.user import User
+
+    ratings = [(5, "Great app", True)] * 51 + [
+        (5, None, True),
+        (4, "", True),
+        (3, "Needs work", True),
+        (2, None, True),
+        (1, None, True),
+        (1, "Pending moderation", False),
+    ]
+    for index, (rating, comment, approved) in enumerate(ratings):
+        user = User(
+            username=f"reviewer{index}",
+            display_name=f"Reviewer {index}",
+            hashed_password="unused",
+            native_language="en",
+            target_language="en-GB",
+        )
+        db_session.add(user)
+        await db_session.flush()
+        await _add_review(
+            db_session,
+            user_id=user.id,
+            rating=rating,
+            comment=comment,
+            is_approved=approved,
+        )
+
+    summary = await client.get("/api/reviews/public/summary")
+    reviews = await client.get("/api/reviews/public")
+
+    assert summary.status_code == 200
+    assert summary.json()["total"] == 56
+    assert summary.json()["average_rating"] == pytest.approx(270 / 56)
+    assert set(summary.json()) == {"total", "average_rating"}
+    assert reviews.status_code == 200
+    assert len(reviews.json()) == 50
+    assert all(
+        review["rating"] == 5 and review["comment"] == "Great app" for review in reviews.json()
+    )
+
+
+@pytest.mark.asyncio
 async def test_admin_list_reviews(client, admin_user, test_user, db_session):
     _, admin_headers = admin_user
     user, _ = test_user

@@ -1359,6 +1359,7 @@
     "statusListening": "Listening...",
     "statusDetecting": "Detecting speech...",
     "statusSpeaking": "Speaking...",
+    "statusThinking": "Preparing a response...",
     "statusError": "Error",
     "errorServicesDisabled": "Voice services are not enabled on this server.",
     "errorConnection": "Connection error. Please try again.",
@@ -1759,11 +1760,11 @@
   },
   "whatsNew": {
     "title": "What's New",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Got it",
     "entry1": {
-      "label": "Your flashcards, your way",
-      "desc": "Browse and filter all your flashcards, edit their content and choose whether to see the definition or translation when reviewing. You can also delete cards or suspend those you already know without losing their progress, and reactivate them whenever you like."
+      "label": "Smoother voice conversations",
+      "desc": "We've refined conversations with Lingu for smoother voice playback and clearer turn indicators."
     },
     "entry2": {
       "label": "A smoother experience",
@@ -1921,7 +1922,15 @@
     "eyebrow": "Learner stories",
     "title": "Learning feels more real when you tell it yourself",
     "subtitle": "Reviews from students already practicing with Lingu on FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# total review} other {# total reviews}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# rating} other {# ratings}}",
+    "ratingCount": "{count, plural, one {# rating} other {# ratings}}",
+    "carouselLabel": "Student reviews",
+    "previous": "Previous review",
+    "next": "Next review",
+    "pause": "Pause scrolling",
+    "resume": "Resume scrolling",
+    "readMore": "Read more",
+    "readLess": "Read less",
     "learningLanguage": "Learning {language}",
     "starsLabel": "{rating} out of 5 stars",
     "ratingOnly": "Verified FreeLingo rating."

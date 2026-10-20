@@ -1,9 +1,12 @@
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen, within } from '@testing-library/react'
+import type { ReviewPublic, ReviewPublicSummary } from '@/types/api'
 
-const { mockHas } = vi.hoisted(() => ({
+const { mockHas, mockLandingNav, mockReviewsCarousel } = vi.hoisted(() => ({
   mockHas: vi.fn(),
+  mockLandingNav: vi.fn(() => null),
+  mockReviewsCarousel: vi.fn(() => null),
 }))
 
 vi.mock('next/headers', () => ({
@@ -41,7 +44,7 @@ vi.mock('@/components/ui/landing-faq', () => ({
 }))
 
 vi.mock('@/components/ui/landing-nav', () => ({
-  LandingNav: () => null,
+  LandingNav: mockLandingNav,
 }))
 
 vi.mock('@/components/ui/scroll-reveal', () => ({
@@ -59,13 +62,15 @@ vi.mock('@/components/LanguageBubbles', () => ({
 }))
 
 vi.mock('@/components/reviews/LandingReviewsCarousel', () => ({
-  LandingReviewsCarousel: () => null,
+  LandingReviewsCarousel: mockReviewsCarousel,
 }))
 
 import Home from '@/app/page'
 
 let config: Record<string, unknown>
 let configStatus: number
+let reviews: ReviewPublic[]
+let reviewSummary: ReviewPublicSummary
 
 beforeEach(() => {
   config = {
@@ -74,6 +79,10 @@ beforeEach(() => {
     stripe_trial_days: 7,
   }
   configStatus = 200
+  reviews = []
+  reviewSummary = { total: 0, average_rating: null }
+  mockLandingNav.mockClear()
+  mockReviewsCarousel.mockClear()
   mockHas.mockReset().mockReturnValue(false)
   vi.stubGlobal(
     'fetch',
@@ -83,7 +92,10 @@ beforeEach(() => {
         return new Response(JSON.stringify(config), { status: configStatus })
       }
       if (pathname === '/api/reviews/public') {
-        return new Response(JSON.stringify([]))
+        return new Response(JSON.stringify(reviews))
+      }
+      if (pathname === '/api/reviews/public/summary') {
+        return new Response(JSON.stringify(reviewSummary))
       }
       throw new Error(`Unexpected fetch: ${url}`)
     })
@@ -96,6 +108,92 @@ afterEach(() => {
 })
 
 describe('Landing Home', () => {
+  it('shows reviews navigation and the full summary even without comments', async () => {
+    reviewSummary = { total: 128, average_rating: 4.9 }
+
+    render(await Home())
+
+    expect(mockLandingNav).toHaveBeenCalledWith(
+      expect.objectContaining({ showReviews: true }),
+      undefined
+    )
+    expect(mockReviewsCarousel).toHaveBeenCalledWith(
+      { reviews: [], summary: reviewSummary },
+      undefined
+    )
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/reviews/public/summary'),
+      { next: { revalidate: 300 } }
+    )
+  })
+
+  it('hides reviews navigation when there are no approved ratings or comments', async () => {
+    render(await Home())
+
+    expect(mockLandingNav).toHaveBeenCalledWith(
+      expect.objectContaining({ showReviews: false }),
+      undefined
+    )
+  })
+
+  it.each(['network', 'HTTP', 'JSON'])(
+    'keeps comments when the summary has a %s failure',
+    async (failure) => {
+      reviews = [
+        {
+          id: 1,
+          user_display_name: 'Ada',
+          target_language: 'en-GB',
+          rating: 5,
+          comment: 'Excellent practice',
+          created_at: '2026-10-20',
+        },
+      ]
+      const originalFetch = vi.mocked(fetch).getMockImplementation()!
+      vi.mocked(fetch).mockImplementation(async (...args) => {
+        if (String(args[0]).endsWith('/api/reviews/public/summary')) {
+          if (failure === 'network') throw new Error('summary unavailable')
+          if (failure === 'HTTP') return new Response(null, { status: 503 })
+          return new Response('invalid JSON')
+        }
+        return originalFetch(...args)
+      })
+
+      render(await Home())
+
+      expect(mockReviewsCarousel).toHaveBeenCalledWith(
+        { reviews, summary: null },
+        undefined
+      )
+      expect(mockLandingNav).toHaveBeenCalledWith(
+        expect.objectContaining({ showReviews: true }),
+        undefined
+      )
+    }
+  )
+
+  it('keeps the summary visible when comments cannot be fetched', async () => {
+    reviewSummary = { total: 128, average_rating: 4.9 }
+    const originalFetch = vi.mocked(fetch).getMockImplementation()!
+    vi.mocked(fetch).mockImplementation(async (...args) => {
+      if (String(args[0]).includes('/api/reviews/public?')) {
+        throw new Error('comments unavailable')
+      }
+      return originalFetch(...args)
+    })
+
+    render(await Home())
+
+    expect(mockReviewsCarousel).toHaveBeenCalledWith(
+      { reviews: [], summary: reviewSummary },
+      undefined
+    )
+    expect(mockLandingNav).toHaveBeenCalledWith(
+      expect.objectContaining({ showReviews: true }),
+      undefined
+    )
+  })
+
   it('renders the main learning content and one H1 in the server response', async () => {
     render(await Home())
     const main = screen.getByRole('main')

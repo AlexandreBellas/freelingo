@@ -1359,6 +1359,7 @@
     "statusListening": "Lyssnar...",
     "statusDetecting": "Identifierar tal...",
     "statusSpeaking": "Talar...",
+    "statusThinking": "Förbereder svar...",
     "statusError": "Fel",
     "errorServicesDisabled": "Rösttjänster är inte aktiverade på den här servern.",
     "errorConnection": "Anslutningsfel. Försök igen.",
@@ -1759,11 +1760,11 @@
   },
   "whatsNew": {
     "title": "Nyheter",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Jag förstår",
     "entry1": {
-      "label": "Dina gloskort, på ditt sätt",
-      "desc": "Bläddra bland och filtrera alla gloskort, redigera innehållet och välj om du vill se definitionen eller översättningen när du repeterar. Du kan också ta bort kort eller pausa dem du redan kan utan att förlora dina framsteg, och återaktivera dem när du vill."
+      "label": "Smidigare röstsamtal",
+      "desc": "Vi har förbättrat samtalen med Lingu för smidigare röstuppspelning och tydligare signaler om vems tur det är att prata."
     },
     "entry2": {
       "label": "En smidigare upplevelse",
@@ -1921,7 +1922,15 @@
     "eyebrow": "Elevernas berättelser",
     "title": "Lärandet blir verkligare när du själv berättar om det",
     "subtitle": "Omdömen från elever som redan övar med Lingu på FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# omdöme totalt} other {# omdömen totalt}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# betyg} other {# betyg}}",
+    "ratingCount": "{count, plural, one {# betyg} other {# betyg}}",
+    "carouselLabel": "Omdömen från studenter",
+    "previous": "Föregående omdöme",
+    "next": "Nästa omdöme",
+    "pause": "Pausa rullning",
+    "resume": "Återuppta rullning",
+    "readMore": "Läs mer",
+    "readLess": "Visa mindre",
     "learningLanguage": "Lär sig {language}",
     "starsLabel": "{rating} av 5 stjärnor",
     "ratingOnly": "Verifierat FreeLingo-betyg."

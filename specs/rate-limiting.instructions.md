@@ -106,6 +106,7 @@ and honor `Retry-After` when present; generation itself remains limited to `5/mi
 - `POST /api/feedback`: `10/hour`.
 - `POST /api/feedback/{entry_id}/comments`: `20/hour`.
 - `POST /api/reviews`: `5/hour`.
+- `GET /api/reviews/public` and `GET /api/reviews/public/summary`: `60/minute` each.
 - `PATCH /api/reviews/me`: `10/hour`.
 - `DELETE /api/reviews/me`: `10/hour`.
 - `POST /api/admin/dashboard-banner/translate`: `10/minute`.

@@ -74,6 +74,11 @@ export interface ReviewPublic {
   created_at: string
 }
 
+export interface ReviewPublicSummary {
+  total: number
+  average_rating: number | null
+}
+
 export interface ReviewAdmin extends ReviewPublic {
   user_id: number
   is_approved: boolean

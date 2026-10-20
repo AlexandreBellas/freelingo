@@ -1359,6 +1359,7 @@
     "statusListening": "Ascultă...",
     "statusDetecting": "Se detectează vocea...",
     "statusSpeaking": "Vorbește...",
+    "statusThinking": "Se pregătește răspunsul...",
     "statusError": "Eroare",
     "errorServicesDisabled": "Serviciile vocale nu sunt activate pe acest server.",
     "errorConnection": "Eroare de conexiune. Încearcă din nou.",
@@ -1759,11 +1760,11 @@
   },
   "whatsNew": {
     "title": "Noutăți",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Am înțeles",
     "entry1": {
-      "label": "Cardurile tale, așa cum le dorești",
-      "desc": "Consultă și filtrează toate cardurile, editează conținutul și alege între definiție și traducere la repetare. Poți și să ștergi carduri sau să le suspenzi pe cele pe care le cunoști deja fără să pierzi progresul, apoi să le reactivezi când dorești."
+      "label": "Conversații vocale mai fluide",
+      "desc": "Am îmbunătățit conversațiile cu Lingu pentru o redare vocală mai fluidă și indicații mai clare despre când este rândul tău să vorbești."
     },
     "entry2": {
       "label": "O experiență mai fluidă",
@@ -1921,7 +1922,15 @@
     "eyebrow": "Povești de la cursanți",
     "title": "Învățarea se vede mai bine când o povestești tu",
     "subtitle": "Recenzii de la studenți care exersează deja cu Lingu pe FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# recenzie în total} few {# recenzii în total} other {# recenzii în total}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# evaluare} few {# evaluări} other {# de evaluări}}",
+    "ratingCount": "{count, plural, one {# evaluare} few {# evaluări} other {# de evaluări}}",
+    "carouselLabel": "Recenziile cursanților",
+    "previous": "Recenzia anterioară",
+    "next": "Recenzia următoare",
+    "pause": "Întrerupe derularea",
+    "resume": "Reia derularea",
+    "readMore": "Citește mai mult",
+    "readLess": "Citește mai puțin",
     "learningLanguage": "Învață {language}",
     "starsLabel": "{rating} din 5 stele",
     "ratingOnly": "Rating FreeLingo verificat."

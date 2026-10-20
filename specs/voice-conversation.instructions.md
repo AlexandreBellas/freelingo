@@ -41,7 +41,8 @@ timer. Attempt identities prevent late responses from opening a WebSocket or cha
 session. A client timeout aborts the request and releases session audio resources. Client timeout,
 network failure details, and HTTP status failures are logged independently of audio-debug logging;
 the interface displays the localized connection error without transport diagnostics. Failed attempts
-can be restarted manually.
+can be restarted manually. Manual start and restart controls invoke the session callback without a
+DOM event argument, preserving supplied chat context in the next authentication payload.
 
 After accepting the WebSocket handshake, the backend waits up to ten seconds for the first JSON
 frame. The payload can contain token, initial context, TTS voice, target language, post-assessment
@@ -138,6 +139,9 @@ concurrently.
 The initial greeting is a cancellable task started while the receive loop is already active. It uses
 memory context loaded at connection, does not offer memory tools, and persists only the assistant
 message after successful completion. Greeting failure is logged without a client error.
+Cancelling the greeting preserves initial chat/topic context. An unfinished normal turn rolls back
+only its own learner message in memory, including cancellation during transcription, memory refresh,
+generation, or synthesis; earlier context is retained.
 
 The voice system prompt requires plain text without Markdown formatting for spoken replies and
 transcripts. The shared output policy in `prompts.instructions.md` also applies to greetings,
@@ -152,7 +156,9 @@ A normal turn:
 5. Refreshes global memories and native language best-effort.
 6. Builds the prompt from system context and up to the latest 20 messages.
 7. Consumes the complete normalized LLM stream, including at most one native memory-tool round.
-8. Splits completed assistant text on full stops.
+8. Splits completed assistant text on full stops, keeping dots between decimal digits and consecutive
+   dot runs (ellipses) inside the same fragment. Fragments without any Unicode letter or number are
+   not sent to TTS; the complete transcript is preserved, including for text-only output.
 9. Synthesizes fragments sequentially, with one retry per failed fragment.
 10. Sends the first successful audio before the complete assistant transcript.
 11. Sends remaining audio in order.
@@ -188,9 +194,14 @@ value:
 - C1/C2: 1200 ms.
 - No level: 1500 ms.
 
-Accepted speech also passes duration, RMS, and speech-start checks. Ordinary minimum duration is
-900 ms and becomes 1200 ms during an assistant turn. `onVADMisfire` clears the pending speech marker
-and user-speaking state.
+Accepted speech also passes duration, RMS, and speech-start checks. The existing duration check uses
+the complete VAD segment: its minimum is 900 ms and becomes 1200 ms during an assistant turn. VAD also
+enforces its own minimum speech-frame count. The RMS check uses only frames classified as speech at
+the configured positive probability threshold of 0.3, excluding pre-speech padding and non-speech
+frames. Its minimum remains 0.012, independently of the chosen end-of-turn pause. The complete segment,
+including padding, is still encoded and sent to STT. Speech energy resets on every segment end,
+misfire, session stop, and restart. `onVADMisfire` also clears the pending speech marker and
+user-speaking state.
 
 Automatic frontend barge-in is disabled. Speech accepted while an assistant turn or playback is
 active is discarded. The backend still supports interruption: new binary audio cancels the active
@@ -203,10 +214,17 @@ turn through transcription, generation, and assistant playback. `listening`, `tu
 recoverable turn error releases the backend-work guard, while the speaking indicator remains tied to
 the real audio queue.
 
+The status indicator and Lingu animation prioritize assistant playback, then pending backend work,
+over microphone detections. The localized preparing-response label covers the wait after sending an
+utterance, transcription, generation, and gaps between audio fragments while backend work is pending.
+The interface returns to listening only after both backend work and playback have finished.
+
 The Web Audio queue preserves decode order, schedules decoded chunks contiguously, and reports idle
 only after pending decodes and active sources drain. If Web Audio decoding fails, it falls back to an
-HTML audio element. Cancellation invalidates pending generations, stops active sources, clears the
-fallback element, and prevents stale decoding callbacks from restarting playback.
+HTML audio element after all preceding Web Audio sources have ended. Subsequent chunks wait for that
+element to finish. Cancellation releases both the wait for preceding sources and active fallback
+playback, removes fallback listeners and Blob URLs, invalidates pending generations, stops active
+sources, and prevents stale callbacks from restarting playback.
 
 ## Persistence
 
@@ -300,7 +318,16 @@ maintenance does not disconnect existing sessions.
 
 The backend runs maximum-duration and inactivity watchers. Each sends one warning in its final 60
 seconds, then emits `session_end` and closes normally. Inactivity is checked every five seconds and
-resets on any received audio frame before transcription confirms speech.
+resets on any received audio frame before transcription confirms speech. The inactivity watcher
+does not warn or close while a greeting or normal backend turn is pending. Finishing, failing, or
+cancelling backend work starts a fresh inactivity interval. Maximum duration continues to apply
+during processing. This timing is based on backend task completion; the protocol has no client
+playback-completion acknowledgement.
+
+The frontend tracks warning deadlines separately for inactivity and maximum duration and displays
+the earliest deadline. A `transcribing` status confirms receipt of new audio and clears only the
+inactivity warning. A maximum-duration warning retains its original deadline. Countdown values are
+derived from the selected deadline rather than restarted when another warning becomes visible.
 
 Current Settings choices are:
 

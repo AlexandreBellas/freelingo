@@ -333,11 +333,20 @@ class ConversationPipeline:
 
     @staticmethod
     def _split_tts_sentences(text: str) -> list[str]:
-        """Split assistant text into ordered TTS chunks using full stops."""
+        """Split on full stops while preserving decimals and ellipses for speech."""
         chunks: list[str] = []
         start = 0
         for idx, char in enumerate(text):
             if char != ".":
+                continue
+            if (idx > 0 and text[idx - 1] == ".") or (idx + 1 < len(text) and text[idx + 1] == "."):
+                continue
+            if (
+                idx > 0
+                and idx + 1 < len(text)
+                and text[idx - 1].isdecimal()
+                and text[idx + 1].isdecimal()
+            ):
                 continue
             sentence = text[start : idx + 1].strip()
             if sentence:
@@ -348,7 +357,7 @@ class ConversationPipeline:
         if tail:
             chunks.append(tail)
 
-        return chunks or ([text.strip()] if text.strip() else [])
+        return [chunk for chunk in chunks if any(char.isalnum() for char in chunk)]
 
     async def _synthesize_and_send_response(
         self,
@@ -396,7 +405,7 @@ class ConversationPipeline:
 
         if chunks_sent == 0 and not transcript_sent and not send_aborted:
             logger.warning(
-                "[pipeline] All TTS sentence chunks failed; publishing text-only transcript: turn_id=%s",
+                "[pipeline] No TTS audio produced; publishing text-only transcript: turn_id=%s",
                 turn_id,
             )
             await self._send_json(ws, transcript_payload)
@@ -468,6 +477,8 @@ class ConversationPipeline:
             raise
         except Exception as exc:
             logger.error("[pipeline] Greeting failed: %s", exc)
+        finally:
+            self._reset_inactivity()
 
     async def run(self, ws: WebSocket) -> None:
         """Main loop: starts timeout watchers then handles incoming messages."""
@@ -521,9 +532,12 @@ class ConversationPipeline:
             for t in self._timer_tasks:
                 t.cancel()
 
-    async def handle_audio(self, audio_bytes: bytes, ws: WebSocket) -> None:
+    def _reset_inactivity(self) -> None:
         self._last_activity = time.monotonic()
-        self._inactivity_warning_sent = False  # reset on new activity
+        self._inactivity_warning_sent = False
+
+    async def handle_audio(self, audio_bytes: bytes, ws: WebSocket) -> None:
+        self._reset_inactivity()
         logger.debug(
             "[pipeline] Audio chunk received (%d bytes); current_task=%s",
             len(audio_bytes),
@@ -540,6 +554,17 @@ class ConversationPipeline:
         self.current_task = asyncio.create_task(self._process(audio_bytes, ws))
 
     async def _process(self, audio_bytes: bytes, ws: WebSocket) -> None:
+        # Turns are serialized by handle_audio. Only this turn owns additions
+        # beyond the snapshot; a cancelled greeting never owns initial context.
+        history_start = len(self.history)
+        try:
+            await self._process_turn(audio_bytes, ws)
+        finally:
+            if len(self.history) > history_start and self.history[-1]["role"] == "user":
+                self.history.pop()
+            self._reset_inactivity()
+
+    async def _process_turn(self, audio_bytes: bytes, ws: WebSocket) -> None:
         turn_t0 = time.perf_counter()
         turn_id = self._next_turn_id()
         stt_ms: float | None = None
@@ -696,7 +721,6 @@ class ConversationPipeline:
                         "[pipeline] No assistant audio was sent and turn is being aborted: turn_id=%s",
                         turn_id,
                     )
-                    self.history.pop()
                     await self._send_json(
                         ws,
                         {
@@ -711,7 +735,6 @@ class ConversationPipeline:
                 logger.warning(
                     "[pipeline] Skipping TTS synthesis because assistant text is empty after cleaning"
                 )
-                self.history.pop()
                 await self._send_status(ws, turn_id, "listening")
                 await self._send_json(ws, {"type": "turn_complete", "turn_id": turn_id})
                 return
@@ -745,8 +768,6 @@ class ConversationPipeline:
                     "turn_id": turn_id,
                 },
             )
-            if self.history and self.history[-1]["role"] == "user":
-                self.history.pop()
             return
         except Exception as exc:
             logger.error("[pipeline] TTS failed: %s", exc)
@@ -769,8 +790,6 @@ class ConversationPipeline:
                     "turn_id": turn_id,
                 },
             )
-            if self.history and self.history[-1]["role"] == "user":
-                self.history.pop()
             return
         finally:
             if llm_stream is not None:
@@ -924,8 +943,6 @@ class ConversationPipeline:
                 pass
             except Exception as exc:
                 logger.debug("[pipeline] cancel_current await failed: %s", self._fmt_exc(exc))
-        if self.history and self.history[-1]["role"] == "user":
-            self.history.pop()
 
     async def cleanup(self) -> None:
         # Record actual session duration once, best-effort
@@ -983,6 +1000,8 @@ class ConversationPipeline:
         """Closes session if user is silent for inactivity_timeout seconds."""
         while True:
             await asyncio.sleep(5)  # check every 5 seconds
+            if self.current_task is not None and not self.current_task.done():
+                continue
             elapsed = time.monotonic() - self._last_activity
             remaining = self.inactivity_timeout - elapsed
 

@@ -1359,6 +1359,7 @@
     "statusListening": "Slušanje...",
     "statusDetecting": "Prepoznavanje govora...",
     "statusSpeaking": "Govori...",
+    "statusThinking": "Priprema odgovora...",
     "statusError": "Pogreška",
     "errorServicesDisabled": "Glasovne usluge nisu omogućene na ovom poslužitelju.",
     "errorConnection": "Pogreška veze. Pokušaj ponovno.",
@@ -1759,11 +1760,11 @@
   },
   "whatsNew": {
     "title": "Novosti",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Razumijem",
     "entry1": {
-      "label": "Tvoje kartice, po tvojoj mjeri",
-      "desc": "Pregledaj i filtriraj sve kartice, uredi njihov sadržaj i odaberi želiš li pri ponavljanju vidjeti definiciju ili prijevod. Kartice možeš i izbrisati ili pauzirati one koje već znaš bez gubitka napretka te ih ponovno aktivirati kad god želiš."
+      "label": "Tečniji glasovni razgovori",
+      "desc": "Poboljšali smo razgovore s Linguom za tečniju reprodukciju glasa i jasnije oznake čiji je red za govor."
     },
     "entry2": {
       "label": "Ugodnije iskustvo",
@@ -1921,7 +1922,15 @@
     "eyebrow": "Iskustva korisnika",
     "title": "Učenje postaje stvarnije kada podijeliš svoje iskustvo",
     "subtitle": "Recenzije korisnika koji već vježbaju s Linguom na FreeLingu.",
-    "averageLabel": "{average}/5 · {count, plural, one {ukupno # recenzija} few {ukupno # recenzije} other {ukupno # recenzija}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# ocjena} few {# ocjene} other {# ocjena}}",
+    "ratingCount": "{count, plural, one {# ocjena} few {# ocjene} other {# ocjena}}",
+    "carouselLabel": "Recenzije polaznika",
+    "previous": "Prethodna recenzija",
+    "next": "Sljedeća recenzija",
+    "pause": "Pauziraj pomicanje",
+    "resume": "Nastavi pomicanje",
+    "readMore": "Pročitaj više",
+    "readLess": "Prikaži manje",
     "learningLanguage": "Uči jezik: {language}",
     "starsLabel": "Ocjena: {rating} od 5",
     "ratingOnly": "Potvrđena ocjena za FreeLingo."
