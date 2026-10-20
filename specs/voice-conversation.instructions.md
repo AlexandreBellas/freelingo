@@ -152,7 +152,7 @@ A normal turn:
 5. Refreshes global memories and native language best-effort.
 6. Builds the prompt from system context and up to the latest 20 messages.
 7. Consumes the complete normalized LLM stream, including at most one native memory-tool round.
-8. Splits completed assistant text on full stops.
+8. Splits completed assistant text on full stops, keeping dots between decimal digits inside the same fragment.
 9. Synthesizes fragments sequentially, with one retry per failed fragment.
 10. Sends the first successful audio before the complete assistant transcript.
 11. Sends remaining audio in order.
@@ -203,10 +203,17 @@ turn through transcription, generation, and assistant playback. `listening`, `tu
 recoverable turn error releases the backend-work guard, while the speaking indicator remains tied to
 the real audio queue.
 
+The status indicator and Lingu animation prioritize assistant playback, then pending backend work,
+over microphone detections. The localized preparing-response label covers the wait after sending an
+utterance, transcription, generation, and gaps between audio fragments while backend work is pending.
+The interface returns to listening only after both backend work and playback have finished.
+
 The Web Audio queue preserves decode order, schedules decoded chunks contiguously, and reports idle
 only after pending decodes and active sources drain. If Web Audio decoding fails, it falls back to an
-HTML audio element. Cancellation invalidates pending generations, stops active sources, clears the
-fallback element, and prevents stale decoding callbacks from restarting playback.
+HTML audio element after all preceding Web Audio sources have ended. Subsequent chunks wait for that
+element to finish. Cancellation releases both the wait for preceding sources and active fallback
+playback, removes fallback listeners and Blob URLs, invalidates pending generations, stops active
+sources, and prevents stale callbacks from restarting playback.
 
 ## Persistence
 
@@ -301,6 +308,11 @@ maintenance does not disconnect existing sessions.
 The backend runs maximum-duration and inactivity watchers. Each sends one warning in its final 60
 seconds, then emits `session_end` and closes normally. Inactivity is checked every five seconds and
 resets on any received audio frame before transcription confirms speech.
+
+The frontend tracks warning deadlines separately for inactivity and maximum duration and displays
+the earliest deadline. A `transcribing` status confirms receipt of new audio and clears only the
+inactivity warning. A maximum-duration warning retains its original deadline. Countdown values are
+derived from the selected deadline rather than restarted when another warning becomes visible.
 
 Current Settings choices are:
 

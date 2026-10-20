@@ -333,11 +333,18 @@ class ConversationPipeline:
 
     @staticmethod
     def _split_tts_sentences(text: str) -> list[str]:
-        """Split assistant text into ordered TTS chunks using full stops."""
+        """Split on full stops without separating the digits of a decimal number."""
         chunks: list[str] = []
         start = 0
         for idx, char in enumerate(text):
             if char != ".":
+                continue
+            if (
+                idx > 0
+                and idx + 1 < len(text)
+                and text[idx - 1].isdecimal()
+                and text[idx + 1].isdecimal()
+            ):
                 continue
             sentence = text[start : idx + 1].strip()
             if sentence:

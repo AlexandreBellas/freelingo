@@ -17,6 +17,7 @@ import {
   buildConversationWsUrl,
   type WsMessage,
   type ChatContextItem,
+  type SessionWarningMessage,
 } from '@/lib/conversation-ws'
 import StatusIndicator, { type ConvStatus } from './StatusIndicator'
 import TranscriptBubble from './TranscriptBubble'
@@ -306,7 +307,13 @@ export default function ConversationMode({
   const [sessionActive, setSessionActive] = useState(false)
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([])
   const [streamingText, setStreamingText] = useState<string | null>(null)
-  const [warningSeconds, setWarningSeconds] = useState<number | null>(null)
+  const [warningDeadlines, setWarningDeadlines] = useState<
+    Record<SessionWarningMessage['reason'], number | null>
+  >({ inactivity: null, max_duration: null })
+  const warningDeadline = Math.min(
+    warningDeadlines.inactivity ?? Infinity,
+    warningDeadlines.max_duration ?? Infinity
+  )
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [userSpeaking, setUserSpeaking] = useState(false)
   const [assistantSpeaking, setAssistantSpeaking] = useState(false)
@@ -443,7 +450,7 @@ export default function ConversationMode({
       })
       speechStartedAtRef.current = performance.now()
       setUserSpeaking(true)
-      setAssistantThinking(false)
+      if (!assistantTurnActiveRef.current) setAssistantThinking(false)
     },
     onVADMisfire: () => {
       speechStartedAtRef.current = null
@@ -559,6 +566,7 @@ export default function ConversationMode({
             assistantSpeaking: assistantSpeakingRef.current,
           })
           ws.send(wav)
+          setAssistantThinking(true)
           setErrorMsg(null)
           setStatus('live')
         } catch {
@@ -678,7 +686,7 @@ export default function ConversationMode({
         setAssistantThinking(false)
         setUserSpeaking(false)
         setStreamingText(null)
-        setWarningSeconds(null)
+        setWarningDeadlines({ inactivity: null, max_duration: null })
         setSessionActive(false)
         dismissTooltip()
       }
@@ -768,14 +776,13 @@ export default function ConversationMode({
         })
         lastAssistantAudioAtRef.current = performance.now()
         assistantTurnActiveRef.current = true
+        setAssistantThinking(true)
         if (!audioQueueRef.current) {
           convLogger.warn('audio queue missing for playback')
           setAssistantSpeaking(false)
-          setAssistantThinking(false)
           return
         }
         assistantSpeakingRef.current = true
-        setAssistantThinking(false)
         setAssistantSpeaking(true)
         void audioQueueRef.current.enqueue(arrayBuffer).catch((error) => {
           if (!isCurrent()) return
@@ -825,6 +832,7 @@ export default function ConversationMode({
                 ])
               } else {
                 assistantTurnActiveRef.current = true
+                setAssistantThinking(true)
                 // LLM token stream
                 if (msg.final) {
                   setStreamingText(null)
@@ -859,13 +867,27 @@ export default function ConversationMode({
               convLogger.debug('session warning', {
                 remainingSeconds: msg.remaining_seconds,
               })
-              setWarningSeconds(msg.remaining_seconds)
+              if (
+                msg.reason === 'inactivity' ||
+                msg.reason === 'max_duration'
+              ) {
+                const deadline = Date.now() + msg.remaining_seconds * 1000
+                setWarningDeadlines((previous) => ({
+                  ...previous,
+                  [msg.reason]: deadline,
+                }))
+              }
               break
 
             case 'status':
               setStatus('live')
               convLogger.debug('status update', { value: msg.value })
               if (msg.value === 'transcribing') {
+                // The backend resets inactivity when it receives this utterance.
+                setWarningDeadlines((previous) => ({
+                  ...previous,
+                  inactivity: null,
+                }))
                 assistantTurnActiveRef.current = true
                 setAssistantThinking(true)
                 setAssistantSpeaking(false)
@@ -1025,7 +1047,7 @@ export default function ConversationMode({
     setTranscript([])
     setStreamingText(null)
     dismissTooltip()
-    setWarningSeconds(null)
+    setWarningDeadlines({ inactivity: null, max_duration: null })
     setErrorMsg(null)
     setUserSpeaking(false)
     setAssistantSpeaking(false)
@@ -1178,13 +1200,11 @@ export default function ConversationMode({
 
   const linguAnimation = assistantSpeaking
     ? 'hablando'
-    : userSpeaking
-      ? 'escuchando'
-      : assistantThinking || status === 'warming' || status === 'connecting'
-        ? 'pensando'
-        : status === 'live'
-          ? 'escuchando'
-          : 'reposo'
+    : assistantThinking || status === 'warming' || status === 'connecting'
+      ? 'pensando'
+      : userSpeaking || status === 'live'
+        ? 'escuchando'
+        : 'reposo'
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
@@ -1338,9 +1358,9 @@ export default function ConversationMode({
       {/* Controls */}
       <div className="flex flex-col items-center gap-4 pb-2">
         {/* Timeout warning */}
-        {warningSeconds !== null && (
+        {Number.isFinite(warningDeadline) && (
           <div className="w-full">
-            <SessionTimeoutBanner seconds={warningSeconds} />
+            <SessionTimeoutBanner deadline={warningDeadline} />
           </div>
         )}
         {/* Quota pill — freemium gets a simplified voice counter, premium gets full quota bars */}
@@ -1360,6 +1380,7 @@ export default function ConversationMode({
           status={status}
           userSpeaking={userSpeaking}
           assistantSpeaking={assistantSpeaking}
+          assistantThinking={assistantThinking}
         />
         {!(trialMode && status === 'ended') && (
           <MicButton

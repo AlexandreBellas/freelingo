@@ -72,7 +72,8 @@ export function createAudioQueue(
   let nextTime = 0
   let generation = 0
   const sources: AudioBufferSourceNode[] = []
-  const fallbackAudios: HTMLAudioElement[] = []
+  const fallbackAudios = new Map<HTMLAudioElement, () => void>()
+  let resolveSourcesDrained: (() => void) | null = null
   const pendingChunks: ArrayBuffer[] = []
   let draining = false
   // Serialize decoding+scheduling so that chunks are always played in the
@@ -89,7 +90,7 @@ export function createAudioQueue(
       !draining &&
       pendingChunks.length === 0 &&
       sources.length === 0 &&
-      fallbackAudios.length === 0
+      fallbackAudios.size === 0
     ) {
       onIdle?.()
     }
@@ -193,8 +194,13 @@ export function createAudioQueue(
 
     sources.push(source)
     source.onended = () => {
+      if (generationToken !== generation) return
       const idx = sources.indexOf(source)
       if (idx !== -1) sources.splice(idx, 1)
+      if (sources.length === 0) {
+        resolveSourcesDrained?.()
+        resolveSourcesDrained = null
+      }
       audioQueueLogger.warn('TTS chunk playback ended', {
         chunkId,
         remainingSources: sources.length,
@@ -210,26 +216,36 @@ export function createAudioQueue(
   ): Promise<void> {
     if (generationToken !== generation) return
 
+    // Decoding is serialized, but earlier Web Audio sources can still be playing.
+    if (sources.length > 0) {
+      await new Promise<void>((resolve) => {
+        resolveSourcesDrained = resolve
+      })
+      if (generationToken !== generation) return
+    }
+
     const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' })
     const url = URL.createObjectURL(blob)
     const audio = new Audio(url)
-    fallbackAudios.push(audio)
     audioQueueLogger.warn('using HTMLAudio fallback for TTS chunk', {
       chunkId,
       bytes: arrayBuffer.byteLength,
     })
 
     await new Promise<void>((resolve) => {
+      let finished = false
       const done = () => {
+        if (finished) return
+        finished = true
         audio.removeEventListener('ended', done)
         audio.removeEventListener('error', done)
         URL.revokeObjectURL(url)
-        const idx = fallbackAudios.indexOf(audio)
-        if (idx !== -1) fallbackAudios.splice(idx, 1)
-        notifyIdle()
+        fallbackAudios.delete(audio)
+        if (generationToken === generation) notifyIdle()
         resolve()
       }
 
+      fallbackAudios.set(audio, done)
       audio.addEventListener('ended', done)
       audio.addEventListener('error', done)
       void audio
@@ -294,7 +310,7 @@ export function createAudioQueue(
     audioQueueLogger.warn('cancel called on audio queue', {
       generation,
       activeSources: sources.length,
-      fallbackAudios: fallbackAudios.length,
+      fallbackAudios: fallbackAudios.size,
       pendingChunks: pendingChunks.length,
     })
     if (pendingChunks.length) {
@@ -313,18 +329,19 @@ export function createAudioQueue(
         // already stopped — ignore
       }
     }
-    for (const audio of fallbackAudios) {
+    for (const [audio, finish] of fallbackAudios) {
       try {
         audio.pause()
         audio.src = ''
       } catch {
         // ignore
+      } finally {
+        finish()
       }
     }
-    while (fallbackAudios.length) {
-      fallbackAudios.pop()
-    }
     sources.length = 0
+    resolveSourcesDrained?.()
+    resolveSourcesDrained = null
     nextTime = 0
     draining = false
     chain = Promise.resolve()

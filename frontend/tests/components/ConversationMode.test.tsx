@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   enqueue: vi.fn(),
   cancel: vi.fn(),
   closeAudio: vi.fn(),
+  onAudioIdle: null as (() => void) | null,
   starters: [] as string[],
 }))
 
@@ -44,17 +45,26 @@ vi.mock('next-intl', async (importOriginal) => {
   return {
     useLocale: () => 'en',
     useTranslations: () =>
-      Object.assign((key: string) => key, {
-        raw: () => mocks.starters,
-        rich: practice.rich,
-      }),
+      Object.assign(
+        (key: string, values?: { seconds?: number }) => {
+          if (key === 'warningTimeout') return `${key}:${values?.seconds}`
+          return key
+        },
+        {
+          raw: () => mocks.starters,
+          rich: practice.rich,
+        }
+      ),
   }
 })
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock('@/lib/api', () => ({ apiFetch: mocks.apiFetch }))
 vi.mock('@/lib/audio', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/audio')>()),
-  createAudioQueue: () => ({ enqueue: mocks.enqueue, cancel: mocks.cancel }),
+  createAudioQueue: (_ctx: AudioContext, onIdle?: () => void) => {
+    mocks.onAudioIdle = onIdle ?? null
+    return { enqueue: mocks.enqueue, cancel: mocks.cancel }
+  },
 }))
 vi.mock('@/components/reviews/ReviewPrompt', () => ({
   ReviewPrompt: () => null,
@@ -63,11 +73,20 @@ vi.mock('@/components/reviews/ReviewPrompt', () => ({
 vi.mock('@/lib/review-prompt-triggers', () => ({
   shouldShowVoiceReviewPrompt: () => false,
 }))
-vi.mock('@/components/conversation/StatusIndicator', () => ({
-  default: ({ userSpeaking }: { userSpeaking: boolean }) => (
-    <div data-testid="speaking">{String(userSpeaking)}</div>
-  ),
-}))
+vi.mock('@/components/conversation/StatusIndicator', async (importOriginal) => {
+  const { default: StatusIndicator } =
+    await importOriginal<
+      typeof import('@/components/conversation/StatusIndicator')
+    >()
+  return {
+    default: (props: Parameters<typeof StatusIndicator>[0]) => (
+      <>
+        <div data-testid="speaking">{String(props.userSpeaking)}</div>
+        <StatusIndicator {...props} />
+      </>
+    ),
+  }
+})
 
 import ConversationMode from '@/components/conversation/ConversationMode'
 import { useAuthStore } from '@/store/auth'
@@ -151,6 +170,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   MockWebSocket.instances = []
   mocks.starters = []
+  mocks.onAudioIdle = null
   mocks.getUserMedia.mockReset().mockResolvedValue(microphone().stream)
   mocks.start.mockImplementation(async () => {
     await mocks.options.getStream?.()
@@ -182,6 +202,124 @@ afterEach(() => {
 })
 
 describe('ConversationMode session lifecycle', () => {
+  it.each(['transcribing', 'thinking'])(
+    'does not advertise listening while %s blocks a new user turn',
+    async (value) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      expect(screen.getByText('statusListening')).toBeInTheDocument()
+
+      act(() => speak())
+      expect(screen.getByText('statusThinking')).toBeInTheDocument()
+      act(() => ws.message({ type: 'status', value, turn_id: 2 }))
+      act(() => mocks.options.onSpeechStart?.())
+      expect(screen.getByText('statusThinking')).toBeInTheDocument()
+      act(() => speak())
+
+      expect(ws.send).toHaveBeenCalledTimes(1)
+      expect(ws.send.mock.calls[0][0]).toBeInstanceOf(ArrayBuffer)
+      expect(screen.queryByText('statusListening')).not.toBeInTheDocument()
+      expect(screen.getByText('statusThinking')).toBeInTheDocument()
+    }
+  )
+
+  it('shows preparation between chunks and listens only after backend work and audio end', async () => {
+    render(<ConversationMode />)
+    const ws = await start()
+    act(() => speak())
+    act(() => ws.message({ type: 'status', value: 'thinking', turn_id: 2 }))
+    act(() => ws.onmessage?.({ data: new ArrayBuffer(8) }))
+    act(() => mocks.options.onSpeechStart?.())
+    expect(screen.getByText('statusSpeaking')).toBeInTheDocument()
+    act(() => mocks.options.onVADMisfire?.())
+
+    act(() => mocks.onAudioIdle?.())
+    expect(screen.getByText('statusThinking')).toBeInTheDocument()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(1)
+
+    act(() => ws.onmessage?.({ data: new ArrayBuffer(8) }))
+    act(() => ws.message({ type: 'status', value: 'listening', turn_id: 2 }))
+    act(() => ws.message({ type: 'turn_complete', turn_id: 2 }))
+    expect(screen.getByText('statusSpeaking')).toBeInTheDocument()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(1)
+
+    act(() => mocks.onAudioIdle?.())
+    expect(screen.getByText('statusListening')).toBeInTheDocument()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(2)
+  })
+
+  it.each(['inactivity', 'max_duration'])(
+    'keeps only an applicable %s warning after a new accepted utterance',
+    async (reason) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      vi.useFakeTimers()
+      act(() =>
+        ws.message({
+          type: 'session_warning',
+          reason,
+          remaining_seconds: 60,
+        })
+      )
+      expect(screen.getByText('warningTimeout:60')).toBeInTheDocument()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_000)
+      })
+      act(() => speak())
+      act(() =>
+        ws.message({ type: 'status', value: 'transcribing', turn_id: 2 })
+      )
+      expect(ws.send).toHaveBeenCalledTimes(1)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(50_000)
+      })
+
+      expect(ws.close).not.toHaveBeenCalled()
+      if (reason === 'inactivity') {
+        expect(screen.queryByText(/warningTimeout:/)).not.toBeInTheDocument()
+      } else {
+        expect(screen.getByText('warningTimeout:0')).toBeInTheDocument()
+      }
+    }
+  )
+
+  it.each([
+    ['max_duration', 'inactivity'],
+    ['inactivity', 'max_duration'],
+  ])(
+    'keeps the maximum-duration deadline when warnings arrive as %s then %s',
+    async (first, second) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      vi.useFakeTimers()
+      act(() => {
+        for (const reason of [first, second]) {
+          ws.message({
+            type: 'session_warning',
+            reason,
+            remaining_seconds: reason === 'inactivity' ? 20 : 60,
+          })
+        }
+      })
+      expect(screen.getByText('warningTimeout:20')).toBeInTheDocument()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_000)
+      })
+      act(() => speak())
+      act(() =>
+        ws.message({ type: 'status', value: 'transcribing', turn_id: 2 })
+      )
+      expect(screen.getByText('warningTimeout:50')).toBeInTheDocument()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_000)
+      })
+      expect(screen.getByText('warningTimeout:40')).toBeInTheDocument()
+    }
+  )
+
   it.each(['replace-session', 'unmount'])(
     'ignores a delayed trial profile after %s',
     async (action) => {

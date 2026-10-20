@@ -7,12 +7,14 @@ interface Props {
   status: ConvStatus
   userSpeaking: boolean
   assistantSpeaking: boolean
+  assistantThinking: boolean
 }
 
 export default function StatusIndicator({
   status,
   userSpeaking,
   assistantSpeaking,
+  assistantThinking,
 }: Props) {
   const t = useTranslations('conversation')
 
@@ -29,12 +31,16 @@ export default function StatusIndicator({
     label = t('statusConnecting')
     pulse = true
   } else if (status === 'live') {
-    if (userSpeaking) {
-      label = t('statusDetecting')
+    if (assistantSpeaking) {
+      label = t('statusSpeaking')
       dotClass = 'text-fl-accent'
       pulse = true
-    } else if (assistantSpeaking) {
-      label = t('statusSpeaking')
+    } else if (assistantThinking) {
+      label = t('statusThinking')
+      dotClass = 'text-fl-accent'
+      pulse = true
+    } else if (userSpeaking) {
+      label = t('statusDetecting')
       dotClass = 'text-fl-accent'
       pulse = true
     } else {

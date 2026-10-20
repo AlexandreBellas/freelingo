@@ -222,6 +222,55 @@ async def test_refresh_keeps_prompt_clean_when_disabled_tools_and_memory_read_fa
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("entrypoint", ["greeting", "user_turn"])
+@pytest.mark.parametrize("amount", ["3.50", "0.05", "-1.25"])
+async def test_voice_tts_preserves_decimal_numbers_within_sentences(entrypoint, amount) -> None:
+    pipeline = _make_pipeline()
+    pipeline.stt.transcribe = AsyncMock(return_value="How much does it cost?")
+    pipeline.tts.synthesize = AsyncMock(return_value=b"audio")
+    response = f"It costs {amount} pounds. Is that within your budget?"
+
+    async def fake_stream():
+        yield response
+
+    pipeline.llm.chat = AsyncMock(return_value=fake_stream())
+    ws = FakeWS()
+    try:
+        if entrypoint == "greeting":
+            await pipeline._greet(ws)
+        else:
+            await pipeline._process(b"audio", ws)
+
+        assistant_transcripts = [
+            message
+            for message in ws.json_messages()
+            if message.get("type") == "transcript" and message.get("role") == "assistant"
+        ]
+        assert assistant_transcripts[0]["text"] == response
+        assert "turn_complete" in ws.types()
+        assert [call.args[0] for call in pipeline.tts.synthesize.await_args_list] == [
+            f"It costs {amount} pounds.",
+            "Is that within your budget?",
+        ]
+    finally:
+        await pipeline.cleanup()
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("The value is 3.50. Next sentence.", ["The value is 3.50.", "Next sentence."]),
+        ("The values are 0.05 and 3.50.", ["The values are 0.05 and 3.50."]),
+        ("Count to 3. Then stop.", ["Count to 3.", "Then stop."]),
+        ("Hello. How are you?", ["Hello.", "How are you?"]),
+        ("", []),
+    ],
+)
+def test_tts_chunk_boundaries_preserve_numbers_and_sentence_stops(text, expected) -> None:
+    assert ConversationPipeline._split_tts_sentences(text) == expected
+
+
+@pytest.mark.asyncio
 async def test_greet_streams_greeting_and_sends_turn_complete() -> None:
     pipeline = _make_pipeline(user_id=1, conversation_id=1)
     pipeline.llm.chat = AsyncMock()

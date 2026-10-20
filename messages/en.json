@@ -1359,6 +1359,7 @@
     "statusListening": "Listening...",
     "statusDetecting": "Detecting speech...",
     "statusSpeaking": "Speaking...",
+    "statusThinking": "Preparing a response...",
     "statusError": "Error",
     "errorServicesDisabled": "Voice services are not enabled on this server.",
     "errorConnection": "Connection error. Please try again.",
@@ -1762,6 +1763,10 @@
     "version": "v1.10.45",
     "cta": "Got it",
     "entry1": {
+      "label": "Smoother voice conversations",
+      "desc": "We've refined conversations with Lingu for smoother voice playback and clearer turn indicators."
+    },
+    "entry2": {
       "label": "A smoother experience",
       "desc": "We've also fixed minor bugs and polished a few details to make your everyday learning with FreeLingo more enjoyable."
     }

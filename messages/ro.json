@@ -1359,6 +1359,7 @@
     "statusListening": "Ascultă...",
     "statusDetecting": "Se detectează vocea...",
     "statusSpeaking": "Vorbește...",
+    "statusThinking": "Se pregătește răspunsul...",
     "statusError": "Eroare",
     "errorServicesDisabled": "Serviciile vocale nu sunt activate pe acest server.",
     "errorConnection": "Eroare de conexiune. Încearcă din nou.",
@@ -1762,6 +1763,10 @@
     "version": "v1.10.45",
     "cta": "Am înțeles",
     "entry1": {
+      "label": "Conversații vocale mai fluide",
+      "desc": "Am îmbunătățit conversațiile cu Lingu pentru o redare vocală mai fluidă și indicații mai clare despre când este rândul tău să vorbești."
+    },
+    "entry2": {
       "label": "O experiență mai fluidă",
       "desc": "Am corectat și mici erori și am finisat câteva detalii, ca învățarea de zi cu zi cu FreeLingo să fie și mai plăcută."
     }
