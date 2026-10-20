@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Nyheder",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Forstået",
     "entry1": {
-      "label": "Dine flashcards, på din måde",
-      "desc": "Se og filtrer alle dine flashcards, rediger indholdet, og vælg, om du vil se definitionen eller oversættelsen, når du repeterer. Du kan også slette kort eller sætte dem, du allerede kan, på pause uden at miste dine fremskridt og genaktivere dem, når du vil."
-    },
-    "entry2": {
       "label": "En mere smidig oplevelse",
       "desc": "Vi har også rettet mindre fejl og forbedret nogle detaljer, så du får endnu mere glæde af din daglige læring med FreeLingo."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Historier fra brugerne",
     "title": "Læring føles mere virkelig, når du selv fortæller om den",
     "subtitle": "Anmeldelser fra brugere, der allerede øver sig med Lingu på FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# anmeldelse i alt} other {# anmeldelser i alt}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# bedømmelse} other {# bedømmelser}}",
+    "ratingCount": "{count, plural, one {# bedømmelse} other {# bedømmelser}}",
+    "carouselLabel": "Anmeldelser fra studerende",
+    "previous": "Forrige anmeldelse",
+    "next": "Næste anmeldelse",
+    "pause": "Sæt rulning på pause",
+    "resume": "Genoptag rulning",
+    "readMore": "Læs mere",
+    "readLess": "Vis mindre",
     "learningLanguage": "Lærer {language}",
     "starsLabel": "{rating} ud af 5 stjerner",
     "ratingOnly": "Bekræftet FreeLingo-bedømmelse."

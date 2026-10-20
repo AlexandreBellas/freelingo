@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Novedades",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Entendido",
     "entry1": {
-      "label": "Tus tarjetas, a tu medida",
-      "desc": "Consulta y filtra todas tus tarjetas, edita su contenido y elige si prefieres ver la definición o la traducción al repasarlas. También puedes eliminar tarjetas o suspender las que ya dominas sin perder su progreso, y reactivarlas cuando quieras."
-    },
-    "entry2": {
       "label": "Una experiencia más fluida",
       "desc": "También hemos corregido pequeños errores y pulido algunos detalles para que disfrutes más de tu día a día con FreeLingo."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Historias de estudiantes",
     "title": "Aprender se nota más cuando lo cuentas tú",
     "subtitle": "Reseñas de estudiantes que ya practican con Lingu en FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# reseña en total} other {# reseñas en total}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# valoración} other {# valoraciones}}",
+    "ratingCount": "{count, plural, one {# valoración} other {# valoraciones}}",
+    "carouselLabel": "Reseñas de estudiantes",
+    "previous": "Reseña anterior",
+    "next": "Siguiente reseña",
+    "pause": "Pausar desplazamiento",
+    "resume": "Reanudar desplazamiento",
+    "readMore": "Leer más",
+    "readLess": "Leer menos",
     "learningLanguage": "Aprendiendo {language}",
     "starsLabel": "{rating} de 5 estrellas",
     "ratingOnly": "Puntuación verificada de FreeLingo."

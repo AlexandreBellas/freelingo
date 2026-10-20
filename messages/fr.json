@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Nouveautés",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Compris",
     "entry1": {
-      "label": "Tes fiches, à ta façon",
-      "desc": "Consulte et filtre toutes tes fiches, modifie leur contenu et choisis entre définition et traduction lors des révisions. Tu peux aussi supprimer des fiches ou suspendre celles que tu maîtrises sans perdre leur progression, puis les réactiver quand tu veux."
-    },
-    "entry2": {
       "label": "Une expérience plus fluide",
       "desc": "Nous avons aussi corrigé de petits bugs et peaufiné quelques détails pour rendre ton apprentissage quotidien avec FreeLingo encore plus agréable."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Histoires d'apprenants",
     "title": "Apprendre se voit encore mieux quand vous le racontez",
     "subtitle": "Avis d'étudiants qui s'entraînent déjà avec Lingu sur FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# avis au total} other {# avis au total}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# évaluation} other {# évaluations}}",
+    "ratingCount": "{count, plural, one {# évaluation} other {# évaluations}}",
+    "carouselLabel": "Avis des étudiants",
+    "previous": "Avis précédent",
+    "next": "Avis suivant",
+    "pause": "Mettre le défilement en pause",
+    "resume": "Reprendre le défilement",
+    "readMore": "Lire la suite",
+    "readLess": "Réduire",
     "learningLanguage": "Apprentissage : {language}",
     "starsLabel": "{rating} sur 5 étoiles",
     "ratingOnly": "Note FreeLingo vérifiée."

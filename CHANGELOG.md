@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.45] - 2026-10-20
+
+### Added
+
+- Public review summary endpoint with the total and average of all approved ratings, including ratings without comments and scores below four stars.
+
+### Changed
+
+- Landing reviews highlight the overall rating, use larger readable testimonial text, and offer expandable comments. Responsive carousel controls move by card, support pause/resume, stop on manual interaction, and respect reduced-motion preferences.
+
+### Fixed
+
+- Landing rating totals and averages use all approved ratings rather than the limited carousel selection. The carousel continues to show positive written reviews, while the summary remains visible even without qualifying comments. Updated rating labels across all fifteen interface languages.
+
 ## [1.10.40] - 2026-10-16
 
 ### Changed

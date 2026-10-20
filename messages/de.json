@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Neuigkeiten",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Verstanden",
     "entry1": {
-      "label": "Deine Karteikarten, wie du sie magst",
-      "desc": "Sieh dir alle Karteikarten an, filtere sie, bearbeite ihren Inhalt und wähle beim Wiederholen zwischen Definition und Übersetzung. Du kannst Karten auch löschen oder bereits bekannte Karten pausieren, ohne ihren Lernfortschritt zu verlieren, und sie jederzeit reaktivieren."
-    },
-    "entry2": {
       "label": "Ein flüssigeres Erlebnis",
       "desc": "Außerdem haben wir kleine Fehler behoben und an einigen Details gefeilt, damit dir das tägliche Lernen mit FreeLingo noch mehr Freude macht."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Geschichten von Lernenden",
     "title": "Lernen wirkt echter, wenn du selbst davon erzählst",
     "subtitle": "Bewertungen von Lernenden, die bereits mit Lingu auf FreeLingo üben.",
-    "averageLabel": "{average}/5 · {count, plural, one {# Bewertung insgesamt} other {# Bewertungen insgesamt}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# Bewertung} other {# Bewertungen}}",
+    "ratingCount": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+    "carouselLabel": "Bewertungen von Lernenden",
+    "previous": "Vorherige Bewertung",
+    "next": "Nächste Bewertung",
+    "pause": "Automatischen Bildlauf pausieren",
+    "resume": "Automatischen Bildlauf fortsetzen",
+    "readMore": "Mehr lesen",
+    "readLess": "Weniger anzeigen",
     "learningLanguage": "Lernt {language}",
     "starsLabel": "{rating} von 5 Sternen",
     "ratingOnly": "Verifizierte FreeLingo-Bewertung."

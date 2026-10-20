@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Yenilikler",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Anladım",
     "entry1": {
-      "label": "Kartların, senin tercihin",
-      "desc": "Tüm kartlarını görüntüle ve filtrele, içeriklerini düzenle ve tekrar sırasında tanım mı yoksa çeviri mi görmek istediğini seç. Kartları silebilir veya zaten bildiklerini ilerlemeni kaybetmeden duraklatabilir, istediğin zaman yeniden etkinleştirebilirsin."
-    },
-    "entry2": {
       "label": "Daha akıcı bir deneyim",
       "desc": "FreeLingo ile günlük öğreniminizi daha keyifli hâle getirmek için küçük hataları da düzelttik ve bazı ayrıntıları iyileştirdik."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Öğrenci hikâyeleri",
     "title": "Öğrenmek, kendiniz anlattığınızda daha gerçek hissettirir",
     "subtitle": "FreeLingo'da Lingu ile pratik yapan öğrencilerden yorumlar.",
-    "averageLabel": "{average}/5 · {count, plural, one {toplam # yorum} other {toplam # yorum}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# değerlendirme} other {# değerlendirme}}",
+    "ratingCount": "{count, plural, one {# değerlendirme} other {# değerlendirme}}",
+    "carouselLabel": "Öğrenci yorumları",
+    "previous": "Önceki yorum",
+    "next": "Sonraki yorum",
+    "pause": "Kaydırmayı duraklat",
+    "resume": "Kaydırmayı sürdür",
+    "readMore": "Devamını oku",
+    "readLess": "Daha az göster",
     "learningLanguage": "Öğrendiği dil: {language}",
     "starsLabel": "5 üzerinden {rating} yıldız",
     "ratingOnly": "Doğrulanmış FreeLingo puanı."
