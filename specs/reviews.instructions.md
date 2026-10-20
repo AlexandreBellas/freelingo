@@ -8,7 +8,8 @@ applyTo: "backend/app/models/review.py, backend/app/schemas/review.py, backend/a
 ## Purpose
 
 Authenticated active users can submit a product rating and optional comment. Administrators moderate
-reviews before positive reviews become public social proof on the landing page.
+reviews before they contribute to the public rating summary. Approved positive reviews with comments
+can also appear as testimonials on the landing page.
 
 The API does not require email verification, subscription, a study plan, or completed learning
 activity. An administrator can also create a personal review through the user endpoints.
@@ -87,7 +88,8 @@ Ordering uses creation time without an ID tie-breaker, so equal timestamps do no
 relative order.
 
 `PATCH /api/admin/reviews/{review_id}` changes only `is_approved`. Administrators may approve any
-rating, but approval below four stars does not make it public. Missing IDs return
+rating; approval below four stars contributes to the public aggregate but does not publish its
+individual review in the carousel. Missing IDs return
 `404 review_not_found`.
 
 `DELETE /api/admin/reviews/{review_id}` permanently removes any review and returns `204` or the same
@@ -108,6 +110,16 @@ not-found error. Administrators cannot edit rating, comment, or snapshots.
 The endpoint's maximum collection is the public carousel dataset, not a paginated representation of
 all approved reviews. The comment filter is applied before the limit; whitespace-only submissions
 are normalized to null when created or edited.
+
+`GET /api/reviews/public/summary`:
+
+- requires no authentication;
+- rate limit: `60/minute`;
+- returns `{total, average_rating}` aggregated over every approved review;
+- includes all ratings from one to five stars, with or without comments;
+- has no collection limit or language filter;
+- returns `{total: 0, average_rating: null}` when no approved ratings exist;
+- exposes no individual review or user data.
 
 ## Review prompt
 
@@ -175,23 +187,38 @@ administrative request.
 
 ## Landing carousel
 
-The server-rendered landing requests `/api/reviews/public?limit=50` with five-minute revalidation.
-Failure is non-fatal and hides both the section and its navigation link.
+The server-rendered landing requests `/api/reviews/public?limit=50` and
+`/api/reviews/public/summary` in parallel, both with five-minute revalidation.
+Failures are non-fatal and isolated: available comments remain visible if the summary fails, and the
+summary remains visible if comments fail or none qualify. The section and navigation link are hidden
+only when neither comments nor a positive approved-rating total are available. A missing summary
+never falls back to a mean or count calculated from the carousel subset.
 
 The carousel displays:
 
 - snapshot display name;
 - localized target-language name;
 - accessible five-star rating;
-- comment;
-- six-line comment clamp;
+- comments in Geist Sans at readable body size, with the author and learning language below;
+- a six-line comment clamp and a localized Read more / Read less control only when the collapsed
+  comment actually overflows; the control exposes its expanded state and associated comment;
 - responsive horizontal snap scrolling;
-- manual scroll and automatic 320-pixel advance every 3.5 seconds;
-- wrap to the beginning at the end.
+- previous/next controls when multiple cards overflow the viewport, moving to actual card boundaries
+  and clamping to the end; navigation wraps in both directions;
+- automatic advance every 3.5 seconds only when cards overflow, the page is visible, and reduced
+  motion is not requested;
+- a localized pause/resume control; hovering temporarily pauses rotation, while focusing the cards or
+  arrow controls, using arrows, touching/dragging, or wheel-scrolling stops it until explicitly resumed;
+- reduced-motion support that disables automatic advance and uses instant manual navigation;
+- resize-aware overflow detection and cleanup of timers, observers, and media/font listeners.
 
-One review is centered without auto-scroll. Average rating and count describe only the returned
-maximum-50 collection of approved positive reviews with comments, not necessarily every review in
-the database.
+One review is centered without auto-scroll. The average rating and count come from the separate
+summary and describe every approved rating, including ratings below four stars and ratings without
+comments, without the carousel's 50-item limit. The average is formatted to one decimal place in the
+interface locale, and the count is labeled as ratings rather than written reviews. The summary uses
+a prominent numerical rating and a readable count with one combined accessible label. With only a
+summary available, the heading and summary render without an empty carousel. Cards that all fit do
+not show carousel controls or advance automatically.
 
 ## Email notification
 

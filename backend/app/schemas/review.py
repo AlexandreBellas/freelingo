@@ -41,6 +41,11 @@ class ReviewPublicOut(BaseModel):
         return value.isoformat()
 
 
+class ReviewPublicSummary(BaseModel):
+    total: int = Field(ge=0)
+    average_rating: float | None = Field(ge=1, le=5)
+
+
 class ReviewAdminOut(ReviewPublicOut):
     user_id: int
     is_approved: bool

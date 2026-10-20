@@ -4,7 +4,7 @@ import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Query, Request, Response, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -19,6 +19,7 @@ from app.schemas.review import (
     ReviewCreate,
     ReviewMeResponse,
     ReviewPublicOut,
+    ReviewPublicSummary,
     ReviewUpdate,
 )
 from app.services import email_service
@@ -112,6 +113,19 @@ async def list_public_reviews(
         .limit(limit)
     )
     return list(result.scalars().all())
+
+
+@router.get("/api/reviews/public/summary", response_model=ReviewPublicSummary)
+@limiter.limit("60/minute")
+async def get_public_review_summary(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+) -> ReviewPublicSummary:
+    result = await db.execute(
+        select(func.count(Review.id), func.avg(Review.rating)).where(Review.is_approved.is_(True))
+    )
+    total, average_rating = result.one()
+    return ReviewPublicSummary(total=total, average_rating=average_rating)
 
 
 @router.get("/api/admin/reviews", response_model=PaginatedReviewsResponse)

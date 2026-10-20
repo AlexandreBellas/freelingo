@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Uutta",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Selvä",
     "entry1": {
-      "label": "Muistikortit sinun tavallasi",
-      "desc": "Selaa ja suodata kaikkia muistikorttejasi, muokkaa niiden sisältöä ja valitse, näetkö kerratessa määritelmän vai käännöksen. Voit myös poistaa kortteja tai asettaa jo osaamasi kortit tauolle menettämättä edistymistäsi ja aktivoida ne uudelleen milloin tahansa."
-    },
-    "entry2": {
       "label": "Sujuvampi käyttökokemus",
       "desc": "Korjasimme myös pieniä virheitä ja hioimme yksityiskohtia, jotta FreeLingolla oppiminen olisi joka päivä entistä mukavampaa."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Oppijoiden tarinoita",
     "title": "Oppiminen tuntuu todemmalta, kun kerrot siitä itse",
     "subtitle": "Arvosteluja oppijoilta, jotka harjoittelevat jo Lingun kanssa FreeLingossa.",
-    "averageLabel": "{average}/5 · {count, plural, one {# arvostelu yhteensä} other {# arvostelua yhteensä}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# arvio} other {# arviota}}",
+    "ratingCount": "{count, plural, one {# arvio} other {# arviota}}",
+    "carouselLabel": "Opiskelijoiden arvostelut",
+    "previous": "Edellinen arvostelu",
+    "next": "Seuraava arvostelu",
+    "pause": "Keskeytä vieritys",
+    "resume": "Jatka vieritystä",
+    "readMore": "Lue lisää",
+    "readLess": "Näytä vähemmän",
     "learningLanguage": "Opiskelee: {language}",
     "starsLabel": "{rating}/5 tähteä",
     "ratingOnly": "Vahvistettu FreeLingo-arvosana."

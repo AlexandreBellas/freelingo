@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Co nowego",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Rozumiem",
     "entry1": {
-      "label": "Twoje fiszki, po Twojemu",
-      "desc": "Przeglądaj i filtruj wszystkie fiszki, edytuj ich treść i wybieraj między definicją a tłumaczeniem podczas powtórek. Możesz też usuwać fiszki lub wstrzymać powtórki tych, które już znasz, bez utraty postępów, i wznowić je w dowolnym momencie."
-    },
-    "entry2": {
       "label": "Płynniejsze korzystanie",
       "desc": "Poprawiliśmy też drobne błędy i dopracowaliśmy kilka szczegółów, aby codzienna nauka z FreeLingo była jeszcze przyjemniejsza."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Historie uczących się",
     "title": "Naukę widać lepiej, gdy opowiadasz o niej samodzielnie",
     "subtitle": "Recenzje uczniów, którzy już ćwiczą z Lingu na FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# recenzja łącznie} few {# recenzje łącznie} many {# recenzji łącznie} other {# recenzji łącznie}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# ocena} few {# oceny} many {# ocen} other {# oceny}}",
+    "ratingCount": "{count, plural, one {# ocena} few {# oceny} many {# ocen} other {# oceny}}",
+    "carouselLabel": "Opinie uczących się",
+    "previous": "Poprzednia opinia",
+    "next": "Następna opinia",
+    "pause": "Wstrzymaj przewijanie",
+    "resume": "Wznów przewijanie",
+    "readMore": "Czytaj więcej",
+    "readLess": "Zwiń",
     "learningLanguage": "Nauka: {language}",
     "starsLabel": "{rating} z 5 gwiazdek",
     "ratingOnly": "Zweryfikowana ocena FreeLingo."

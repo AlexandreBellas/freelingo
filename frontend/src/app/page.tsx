@@ -19,7 +19,7 @@ import { ContactButton } from '@/components/ui/contact-button'
 import { LanguageBubbles } from '@/components/LanguageBubbles'
 import { TargetLanguageText } from '@/components/TargetLanguageText'
 import { LandingReviewsCarousel } from '@/components/reviews/LandingReviewsCarousel'
-import type { ReviewPublic } from '@/types/api'
+import type { ReviewPublic, ReviewPublicSummary } from '@/types/api'
 import { createPublicMetadata, SITE_URL } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -64,17 +64,29 @@ export default async function Home() {
   let totalPriceMonthly = 0.0
   let totalPriceYearly = 0.0
   let reviews: ReviewPublic[] = []
+  let reviewSummary: ReviewPublicSummary | null = null
   try {
     const backendUrl = process.env.BACKEND_URL || 'http://backend:8000'
-    const [configRes, reviewsRes] = await Promise.all([
+    const [configRes, publicReviews, publicReviewSummary] = await Promise.all([
       // Landing CTAs can lag registration changes by the existing one-hour cache.
       // The backend still enforces ALLOW_REGISTRATION on every signup request.
-      fetch(`${backendUrl}/api/config`, { next: { revalidate: 3600 } }),
+      fetch(`${backendUrl}/api/config`, {
+        next: { revalidate: 3600 },
+      }).catch(() => null),
       fetch(`${backendUrl}/api/reviews/public?limit=50`, {
         next: { revalidate: 300 },
-      }).catch(() => null),
+      })
+        .then((res) => (res.ok ? res.json() : []))
+        .catch(() => []),
+      fetch(`${backendUrl}/api/reviews/public/summary`, {
+        next: { revalidate: 300 },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null),
     ])
-    if (configRes.ok) {
+    reviews = publicReviews
+    reviewSummary = publicReviewSummary
+    if (configRes?.ok) {
       const cfg = await configRes.json()
       allowRegistration = cfg.allow_registration === true
       stripeEnabled = cfg.stripe_enabled ?? false
@@ -84,9 +96,6 @@ export default async function Home() {
       priceYearly = cfg.price_yearly ?? 0.0
       totalPriceMonthly = cfg.total_price_monthly ?? 0.0
       totalPriceYearly = cfg.total_price_yearly ?? 0.0
-    }
-    if (reviewsRes?.ok) {
-      reviews = await reviewsRes.json()
     }
   } catch {
     /* non-fatal */
@@ -151,7 +160,7 @@ export default async function Home() {
         navReviews={t('navReviews')}
         navPricing={t('navPricing')}
         navFAQ={t('navFAQ')}
-        showReviews={reviews.length > 0}
+        showReviews={reviews.length > 0 || (reviewSummary?.total ?? 0) > 0}
         signIn={t('signIn')}
         dashboard={t('dashboard')}
       />
@@ -350,7 +359,7 @@ export default async function Home() {
 
         {/* Reviews */}
         <ScrollReveal>
-          <LandingReviewsCarousel reviews={reviews} />
+          <LandingReviewsCarousel reviews={reviews} summary={reviewSummary} />
         </ScrollReveal>
 
         {/* Cloud and self-hosting */}

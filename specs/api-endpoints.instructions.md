@@ -438,6 +438,7 @@ User review endpoints. Admin moderation endpoints live under `/api/admin/reviews
 - **PATCH `/me`** — Rate limit: 10/hour. Auth: get_current_user. Updates the authenticated user's existing review. Body: `{rating: 1-5, comment?: string}`. Refreshes display-name and active-learning-language snapshots, resets `is_approved=false`, returns the updated review, and returns HTTP 404 with `review_not_found` if the user has not submitted one yet.
 - **DELETE `/me`** — Rate limit: 10/hour. Auth: get_current_user. Deletes the authenticated user's existing review and returns HTTP 204. Returns HTTP 404 with `review_not_found` if the user has not submitted one yet.
 - **GET `/public`** — Rate limit: 60/min. Public. Returns approved landing reviews only (`is_approved=true` and `rating >= 4`) with a non-null, non-empty comment, ordered newest-first. The comment filter is applied before the limit. Query param: `limit` (default 50, max 50). The landing carousel requests 50 reviews. Response omits `user_id` and `is_approved`.
+- **GET `/public/summary`** — Rate limit: 60/min. Public. Returns `{total, average_rating}` over all approved ratings, including one- to three-star ratings and ratings without comments. No collection limit or language filter. Without approved ratings, returns `{total: 0, average_rating: null}`. The landing uses this aggregate independently of the carousel for its average and rating count, with five-minute revalidation.
 
 ## Memories — `/api/memories`
 

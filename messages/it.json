@@ -1759,13 +1759,9 @@
   },
   "whatsNew": {
     "title": "Novità",
-    "version": "v1.10.40",
+    "version": "v1.10.45",
     "cta": "Capito",
     "entry1": {
-      "label": "Le tue schede, su misura per te",
-      "desc": "Consulta e filtra tutte le tue schede, modifica il contenuto e scegli se vedere la definizione o la traduzione durante il ripasso. Puoi anche eliminare schede o sospendere quelle che conosci già senza perdere i progressi, e riattivarle quando vuoi."
-    },
-    "entry2": {
       "label": "Un'esperienza più fluida",
       "desc": "Abbiamo anche corretto piccoli errori e curato alcuni dettagli per rendere ancora più piacevole imparare ogni giorno con FreeLingo."
     }
@@ -1921,7 +1917,15 @@
     "eyebrow": "Storie di studenti",
     "title": "Imparare si nota di più quando lo racconti tu",
     "subtitle": "Recensioni di studenti che si esercitano già con Lingu su FreeLingo.",
-    "averageLabel": "{average}/5 · {count, plural, one {# recensione totale} other {# recensioni totali}}",
+    "averageLabel": "{average}/5 · {count, plural, one {# valutazione} other {# valutazioni}}",
+    "ratingCount": "{count, plural, one {# valutazione} other {# valutazioni}}",
+    "carouselLabel": "Recensioni degli studenti",
+    "previous": "Recensione precedente",
+    "next": "Recensione successiva",
+    "pause": "Metti in pausa lo scorrimento",
+    "resume": "Riprendi lo scorrimento",
+    "readMore": "Leggi di più",
+    "readLess": "Leggi di meno",
     "learningLanguage": "Studia {language}",
     "starsLabel": "{rating} stelle su 5",
     "ratingOnly": "Valutazione FreeLingo verificata."
