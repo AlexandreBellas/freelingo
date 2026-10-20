@@ -41,7 +41,8 @@ timer. Attempt identities prevent late responses from opening a WebSocket or cha
 session. A client timeout aborts the request and releases session audio resources. Client timeout,
 network failure details, and HTTP status failures are logged independently of audio-debug logging;
 the interface displays the localized connection error without transport diagnostics. Failed attempts
-can be restarted manually.
+can be restarted manually. Manual start and restart controls invoke the session callback without a
+DOM event argument, preserving supplied chat context in the next authentication payload.
 
 After accepting the WebSocket handshake, the backend waits up to ten seconds for the first JSON
 frame. The payload can contain token, initial context, TTS voice, target language, post-assessment
@@ -155,7 +156,9 @@ A normal turn:
 5. Refreshes global memories and native language best-effort.
 6. Builds the prompt from system context and up to the latest 20 messages.
 7. Consumes the complete normalized LLM stream, including at most one native memory-tool round.
-8. Splits completed assistant text on full stops, keeping dots between decimal digits inside the same fragment.
+8. Splits completed assistant text on full stops, keeping dots between decimal digits and consecutive
+   dot runs (ellipses) inside the same fragment. Fragments without any Unicode letter or number are
+   not sent to TTS; the complete transcript is preserved, including for text-only output.
 9. Synthesizes fragments sequentially, with one retry per failed fragment.
 10. Sends the first successful audio before the complete assistant transcript.
 11. Sends remaining audio in order.

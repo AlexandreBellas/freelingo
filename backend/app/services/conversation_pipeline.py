@@ -333,11 +333,13 @@ class ConversationPipeline:
 
     @staticmethod
     def _split_tts_sentences(text: str) -> list[str]:
-        """Split on full stops without separating the digits of a decimal number."""
+        """Split on full stops while preserving decimals and ellipses for speech."""
         chunks: list[str] = []
         start = 0
         for idx, char in enumerate(text):
             if char != ".":
+                continue
+            if (idx > 0 and text[idx - 1] == ".") or (idx + 1 < len(text) and text[idx + 1] == "."):
                 continue
             if (
                 idx > 0
@@ -355,7 +357,7 @@ class ConversationPipeline:
         if tail:
             chunks.append(tail)
 
-        return chunks or ([text.strip()] if text.strip() else [])
+        return [chunk for chunk in chunks if any(char.isalnum() for char in chunk)]
 
     async def _synthesize_and_send_response(
         self,
@@ -403,7 +405,7 @@ class ConversationPipeline:
 
         if chunks_sent == 0 and not transcript_sent and not send_aborted:
             logger.warning(
-                "[pipeline] All TTS sentence chunks failed; publishing text-only transcript: turn_id=%s",
+                "[pipeline] No TTS audio produced; publishing text-only transcript: turn_id=%s",
                 turn_id,
             )
             await self._send_json(ws, transcript_payload)

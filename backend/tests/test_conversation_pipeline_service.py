@@ -234,6 +234,59 @@ async def test_refresh_keeps_prompt_clean_when_disabled_tools_and_memory_read_fa
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("entrypoint", ["greeting", "user_turn"])
+@pytest.mark.parametrize(
+    ("response", "expected_inputs"),
+    [
+        ("Well. Let's continue.", ["Well.", "Let's continue."]),
+        ("Well... let's continue.", ["Well... let's continue."]),
+        ("... Let's continue.", ["... Let's continue."]),
+        ("Well… let's continue.", ["Well… let's continue."]),
+        ("It costs 3.50... is that OK?", ["It costs 3.50... is that OK?"]),
+        ("It costs 3.50. Let's continue.", ["It costs 3.50.", "Let's continue."]),
+        ("考えてみましょう...次に進みます。", ["考えてみましょう...次に進みます。"]),
+        ("...", []),
+        (". . .", []),
+        ("?!", []),
+    ],
+)
+async def test_voice_tts_never_requests_punctuation_only_fragments(
+    entrypoint, response, expected_inputs
+) -> None:
+    pipeline = _make_pipeline()
+    pipeline.stt.transcribe = AsyncMock(return_value="Can we continue?")
+    pipeline.tts.synthesize = AsyncMock(return_value=b"audio")
+
+    async def response_stream():
+        yield response
+
+    pipeline.llm.chat = AsyncMock(return_value=response_stream())
+    ws = FakeWS()
+    try:
+        if entrypoint == "greeting":
+            await pipeline._greet(ws)
+        else:
+            await pipeline._process(b"audio", ws)
+
+        transcripts = [
+            message
+            for message in ws.json_messages()
+            if message.get("type") == "transcript" and message.get("role") == "assistant"
+        ]
+        assert transcripts[0]["text"] == response
+        assert "turn_complete" in ws.types()
+        synthesis_inputs = [call.args[0] for call in pipeline.tts.synthesize.await_args_list]
+        assert synthesis_inputs == expected_inputs
+        assert all(
+            any(char.isalnum() for char in text) for text in synthesis_inputs
+        ), synthesis_inputs
+        assert len([kind for kind, _ in ws.sent if kind == "bytes"]) == len(expected_inputs)
+        assert pipeline.history[-1] == {"role": "assistant", "content": response}
+    finally:
+        await pipeline.cleanup()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("entrypoint", ["greeting", "user_turn"])
 @pytest.mark.parametrize("amount", ["3.50", "0.05", "-1.25"])
 async def test_voice_tts_preserves_decimal_numbers_within_sentences(entrypoint, amount) -> None:
     pipeline = _make_pipeline()

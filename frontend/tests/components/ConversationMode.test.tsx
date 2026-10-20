@@ -211,6 +211,54 @@ afterEach(() => {
 
 describe('ConversationMode session lifecycle', () => {
   it.each([
+    'automatic-start',
+    'manual-start',
+    'retry-after-error',
+    'restart-after-stop',
+  ])('preserves chat context in the voice handshake after %s', async (path) => {
+    const context = [
+      {
+        role: 'user' as const,
+        content: 'I would like to practise ordering food.',
+      },
+      {
+        role: 'assistant' as const,
+        content: 'What would you like to order?',
+      },
+    ]
+    render(
+      <ConversationMode
+        initialContext={context}
+        autoStart={path !== 'manual-start'}
+      />
+    )
+    if (path === 'manual-start') {
+      fireEvent.click(screen.getByRole('button', { name: 'start' }))
+    }
+    await waitFor(() => expect(MockWebSocket.instances).toHaveLength(1))
+    let ws = MockWebSocket.instances[0]
+    act(() => ws.onopen?.())
+    expect(JSON.parse(ws.send.mock.calls[0][0]).context).toEqual(context)
+
+    if (path === 'retry-after-error' || path === 'restart-after-stop') {
+      if (path === 'retry-after-error') {
+        act(() => ws.onerror?.())
+        expect(screen.getByText('✕ errorConnection')).toBeInTheDocument()
+      } else {
+        fireEvent.click(screen.getByRole('button', { name: 'stop' }))
+      }
+      fireEvent.click(screen.getByRole('button', { name: 'startNew' }))
+      await waitFor(() => expect(MockWebSocket.instances).toHaveLength(2))
+      ws = MockWebSocket.instances[1]
+      act(() => ws.onopen?.())
+    }
+
+    const authentication = JSON.parse(ws.send.mock.calls[0][0])
+    expect(authentication.type).toBe('auth')
+    expect(authentication.context).toEqual(context)
+  })
+
+  it.each([
     { speechPause: 1000, voiceFrames: 32, prependSilence: true },
     { speechPause: 2000, voiceFrames: 32, prependSilence: true },
     { speechPause: 3000, voiceFrames: 32, prependSilence: true },
