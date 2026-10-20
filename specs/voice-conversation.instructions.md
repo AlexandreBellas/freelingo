@@ -138,6 +138,9 @@ concurrently.
 The initial greeting is a cancellable task started while the receive loop is already active. It uses
 memory context loaded at connection, does not offer memory tools, and persists only the assistant
 message after successful completion. Greeting failure is logged without a client error.
+Cancelling the greeting preserves initial chat/topic context. An unfinished normal turn rolls back
+only its own learner message in memory, including cancellation during transcription, memory refresh,
+generation, or synthesis; earlier context is retained.
 
 The voice system prompt requires plain text without Markdown formatting for spoken replies and
 transcripts. The shared output policy in `prompts.instructions.md` also applies to greetings,
@@ -188,9 +191,14 @@ value:
 - C1/C2: 1200 ms.
 - No level: 1500 ms.
 
-Accepted speech also passes duration, RMS, and speech-start checks. Ordinary minimum duration is
-900 ms and becomes 1200 ms during an assistant turn. `onVADMisfire` clears the pending speech marker
-and user-speaking state.
+Accepted speech also passes duration, RMS, and speech-start checks. The existing duration check uses
+the complete VAD segment: its minimum is 900 ms and becomes 1200 ms during an assistant turn. VAD also
+enforces its own minimum speech-frame count. The RMS check uses only frames classified as speech at
+the configured positive probability threshold of 0.3, excluding pre-speech padding and non-speech
+frames. Its minimum remains 0.012, independently of the chosen end-of-turn pause. The complete segment,
+including padding, is still encoded and sent to STT. Speech energy resets on every segment end,
+misfire, session stop, and restart. `onVADMisfire` also clears the pending speech marker and
+user-speaking state.
 
 Automatic frontend barge-in is disabled. Speech accepted while an assistant turn or playback is
 active is discarded. The backend still supports interruption: new binary audio cancels the active
@@ -307,7 +315,11 @@ maintenance does not disconnect existing sessions.
 
 The backend runs maximum-duration and inactivity watchers. Each sends one warning in its final 60
 seconds, then emits `session_end` and closes normally. Inactivity is checked every five seconds and
-resets on any received audio frame before transcription confirms speech.
+resets on any received audio frame before transcription confirms speech. The inactivity watcher
+does not warn or close while a greeting or normal backend turn is pending. Finishing, failing, or
+cancelling backend work starts a fresh inactivity interval. Maximum duration continues to apply
+during processing. This timing is based on backend task completion; the protocol has no client
+playback-completion acknowledgement.
 
 The frontend tracks warning deadlines separately for inactivity and maximum duration and displays
 the earliest deadline. A `transcribing` status confirms receipt of new audio and clears only the

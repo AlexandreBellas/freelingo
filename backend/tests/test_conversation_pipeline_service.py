@@ -69,6 +69,17 @@ class FakeWS:
         return [m["type"] for m in self.json_messages()]
 
 
+async def _check_inactivity_once(pipeline, ws) -> None:
+    with patch(
+        "app.services.conversation_pipeline.asyncio.sleep",
+        new=AsyncMock(side_effect=[None, asyncio.CancelledError()]),
+    ):
+        try:
+            await pipeline._inactivity_watcher(ws)
+        except asyncio.CancelledError:
+            pass
+
+
 # ---------------------------------------------------------------------------
 # _build_conversation_system_prompt
 # ---------------------------------------------------------------------------
@@ -453,6 +464,45 @@ async def test_run_cleans_up_timer_tasks_on_exit() -> None:
 # ---------------------------------------------------------------------------
 # handle_audio
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("interrupt_greeting", [False, True])
+async def test_first_spoken_turn_keeps_the_selected_topic(interrupt_greeting) -> None:
+    topic = {"role": "user", "content": "I'd like to practise by talking about Travel."}
+    pipeline = _make_pipeline(initial_context=[topic])
+    pipeline.stt.transcribe = AsyncMock(return_value="Hello, I am ready.")
+    pipeline.tts.synthesize = AsyncMock(return_value=b"audio")
+    greeting_started = asyncio.Event()
+    release_greeting = asyncio.Event()
+
+    async def greeting_stream():
+        greeting_started.set()
+        await release_greeting.wait()
+        yield "Welcome. Where would you like to travel?"
+
+    async def response_stream():
+        yield "Let's talk about your next trip."
+
+    pipeline.llm.chat = AsyncMock(side_effect=[greeting_stream(), response_stream()])
+    ws = FakeWS()
+    pipeline.current_task = asyncio.create_task(pipeline._greet(ws))
+    try:
+        await asyncio.wait_for(greeting_started.wait(), timeout=1)
+        if not interrupt_greeting:
+            release_greeting.set()
+            await pipeline.current_task
+
+        await pipeline.handle_audio(b"user-audio", ws)
+        await pipeline.current_task
+
+        assert pipeline.llm.chat.await_count == 2
+        assert ("barge_in" in ws.types()) is interrupt_greeting
+        messages = pipeline.llm.chat.call_args.args[0]
+        assert messages[-1] == {"role": "user", "content": "Hello, I am ready."}
+        assert topic in messages
+    finally:
+        await pipeline.cleanup()
 
 
 @pytest.mark.asyncio
@@ -1253,16 +1303,71 @@ async def test_cancel_current_cancels_active_task() -> None:
 
 
 @pytest.mark.asyncio
-async def test_cancel_current_pops_user_from_history() -> None:
-    pipeline = _make_pipeline()
-    pipeline.history = [
-        {"role": "user", "content": "hello"},
-    ]
+async def test_cancel_current_preserves_user_context_without_an_active_turn() -> None:
+    context = [{"role": "user", "content": "hello"}]
+    pipeline = _make_pipeline(initial_context=context)
 
     await pipeline.cancel_current()
 
-    # User message should be popped
-    assert len(pipeline.history) == 0
+    assert pipeline.history == context
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("stage", ["stt", "memory", "llm", "tts"])
+async def test_cancel_current_discards_only_its_unfinished_turn(stage) -> None:
+    context = [{"role": "user", "content": "Let's talk about travel."}]
+    pipeline = _make_pipeline(initial_context=context)
+    pipeline.stt.transcribe = AsyncMock(return_value="An unfinished answer.")
+    pipeline._refresh_memory_prompt = AsyncMock()
+    pipeline.tts.synthesize = AsyncMock(return_value=b"audio")
+    pipeline._save_turn = AsyncMock()
+    blocked = asyncio.Event()
+    release = asyncio.Event()
+
+    async def block(*args, **kwargs):
+        blocked.set()
+        await release.wait()
+
+    async def response_stream():
+        if stage == "llm":
+            await block()
+        yield "An unfinished reply."
+
+    pipeline.llm.chat = AsyncMock(return_value=response_stream())
+    if stage == "stt":
+        pipeline.stt.transcribe = AsyncMock(side_effect=block)
+    elif stage == "memory":
+        pipeline._refresh_memory_prompt = AsyncMock(side_effect=block)
+    elif stage == "tts":
+        pipeline.tts.synthesize = AsyncMock(side_effect=block)
+
+    ws = FakeWS()
+    try:
+        await pipeline.handle_audio(b"audio", ws)
+        await asyncio.wait_for(blocked.wait(), timeout=1)
+        await pipeline.cancel_current()
+        await pipeline.cancel_current()
+
+        assert pipeline.history == context
+        pipeline._save_turn.assert_not_awaited()
+
+        async def next_response():
+            yield "Tell me about your next trip."
+
+        pipeline.stt.transcribe = AsyncMock(return_value="I would like to visit Italy.")
+        pipeline._refresh_memory_prompt = AsyncMock()
+        pipeline.llm.chat = AsyncMock(return_value=next_response())
+        pipeline.tts.synthesize = AsyncMock(return_value=b"audio")
+        await pipeline.handle_audio(b"next-audio", ws)
+        await pipeline.current_task
+
+        messages = pipeline.llm.chat.call_args.args[0]
+        assert messages[1:] == context + [
+            {"role": "user", "content": "I would like to visit Italy."}
+        ]
+        assert pipeline.history[-1]["role"] == "assistant"
+    finally:
+        await pipeline.cleanup()
 
 
 @pytest.mark.asyncio
@@ -1427,6 +1532,116 @@ async def test_max_duration_watcher_short_duration_no_warning() -> None:
 # ---------------------------------------------------------------------------
 # _inactivity_watcher
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("response_pending", [False, True])
+async def test_inactivity_distinguishes_silence_from_a_pending_response(response_pending) -> None:
+    with patch("app.services.conversation_pipeline.time", wraps=time) as clock:
+        clock.monotonic.return_value = 1000.0
+        pipeline = _make_pipeline(inactivity_timeout=60)
+        pipeline.stt.transcribe = AsyncMock(return_value="Tell me about your city.")
+        response_started = asyncio.Event()
+        release_response = asyncio.Event()
+
+        async def response_stream():
+            response_started.set()
+            await release_response.wait()
+            yield "My city has a beautiful park."
+
+        pipeline.llm.chat = AsyncMock(return_value=response_stream())
+        ws = FakeWS()
+        try:
+            if response_pending:
+                await pipeline.handle_audio(b"user-audio", ws)
+                await asyncio.wait_for(response_started.wait(), timeout=1)
+                assert {"type": "status", "value": "thinking", "turn_id": 1} in ws.json_messages()
+
+            clock.monotonic.return_value = 1065.0
+            await _check_inactivity_once(pipeline, ws)
+
+            if response_pending:
+                assert pipeline.current_task is not None and not pipeline.current_task.done()
+                assert "session_end" not in ws.types()
+                assert not any(kind == "close" for kind, _ in ws.sent)
+            else:
+                assert {"type": "session_end", "reason": "inactivity"} in ws.json_messages()
+                assert ("close", 1000) in ws.sent
+        finally:
+            await pipeline.cleanup()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("outcome", ["response", "greeting", "empty_stt", "stt_error", "llm_error"])
+async def test_inactivity_restarts_after_backend_work_finishes(outcome) -> None:
+    with patch("app.services.conversation_pipeline.time", wraps=time) as clock:
+        clock.monotonic.return_value = 1000.0
+        pipeline = _make_pipeline(inactivity_timeout=60)
+        pipeline.tts.synthesize = AsyncMock(return_value=b"audio")
+
+        async def transcribe(*args, **kwargs):
+            clock.monotonic.return_value = 1065.0
+            if outcome == "stt_error":
+                raise RuntimeError("Transcription unavailable")
+            return "" if outcome == "empty_stt" else "I enjoy travelling."
+
+        async def response_stream():
+            clock.monotonic.return_value = 1065.0
+            if outcome == "llm_error":
+                raise LLMError("Response unavailable")
+            yield "Where would you like to travel?"
+
+        pipeline.stt.transcribe = AsyncMock(side_effect=transcribe)
+        pipeline.llm.chat = AsyncMock(return_value=response_stream())
+        ws = FakeWS()
+        try:
+            if outcome == "greeting":
+                pipeline.current_task = asyncio.create_task(pipeline._greet(ws))
+            else:
+                await pipeline.handle_audio(b"audio", ws)
+            await pipeline.current_task
+
+            clock.monotonic.return_value = 1120.0
+            await _check_inactivity_once(pipeline, ws)
+            assert "session_end" not in ws.types()
+            assert not any(kind == "close" for kind, _ in ws.sent)
+            warnings = [
+                message for message in ws.json_messages() if message["type"] == "session_warning"
+            ]
+            assert warnings[-1]["remaining_seconds"] == 5
+
+            clock.monotonic.return_value = 1126.0
+            await _check_inactivity_once(pipeline, ws)
+            assert {"type": "session_end", "reason": "inactivity"} in ws.json_messages()
+            assert ("close", 1000) in ws.sent
+        finally:
+            await pipeline.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_max_duration_still_closes_while_a_response_is_pending() -> None:
+    pipeline = _make_pipeline(max_duration=30)
+    pipeline.stt.transcribe = AsyncMock(return_value="Tell me about your city.")
+    started = asyncio.Event()
+    release = asyncio.Event()
+
+    async def response_stream():
+        started.set()
+        await release.wait()
+        yield "My city has a beautiful park."
+
+    pipeline.llm.chat = AsyncMock(return_value=response_stream())
+    ws = FakeWS()
+    try:
+        await pipeline.handle_audio(b"audio", ws)
+        await asyncio.wait_for(started.wait(), timeout=1)
+        with patch("app.services.conversation_pipeline.asyncio.sleep", new=AsyncMock()):
+            await pipeline._max_duration_watcher(ws)
+        assert pipeline.current_task is not None and not pipeline.current_task.done()
+        assert {"type": "session_end", "reason": "max_duration"} in ws.json_messages()
+        assert ("close", 1000) in ws.sent
+    finally:
+        await pipeline.cleanup()
 
 
 @pytest.mark.asyncio

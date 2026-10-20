@@ -260,6 +260,7 @@ const INTERRUPTION_MIN_UTTERANCE_MS = 1200
 const INTERRUPTION_RMS_THRESHOLD = 0.03
 const BARGE_IN_STARTUP_GUARD_MS = 900
 const VAD_MAX_RMS = 0.25
+const VAD_POSITIVE_SPEECH_THRESHOLD = 0.3
 // Allow the backend's 60-second provider budget plus transport/auth overhead.
 const WARMUP_TIMEOUT_MS = 75_000
 const warmupLogger = getLogger('conversation-warmup')
@@ -377,6 +378,7 @@ export default function ConversationMode({
   const assistantSpeakingRef = useRef(false)
   const assistantTurnActiveRef = useRef(false)
   const speechStartedAtRef = useRef<number | null>(null)
+  const speechEnergyRef = useRef({ sumSquares: 0, samples: 0 })
   const sessionActiveRef = useRef(false)
   const ttsChunkIndexRef = useRef(0)
   const lastAssistantAudioAtRef = useRef(0)
@@ -400,15 +402,13 @@ export default function ConversationMode({
       }
       const startedAt = speechStartedAtRef.current
       const durationMs = (samples / 16000) * 1000
-      if (!startedAt || durationMs < minUtteranceMs) {
+      if (startedAt === null || durationMs < minUtteranceMs) {
         return { isSpeech: false, rms: 0, durationMs }
       }
-      let energy = 0
-      for (let i = 0; i < samples; i += 1) {
-        const sample = audio[i]
-        energy += sample * sample
-      }
-      const rms = Math.sqrt(energy / samples)
+      const speechEnergy = speechEnergyRef.current
+      const rms = speechEnergy.samples
+        ? Math.sqrt(speechEnergy.sumSquares / speechEnergy.samples)
+        : 0
       const cappedRms = Number.isFinite(rms) ? Math.min(rms, VAD_MAX_RMS) : 0
       return {
         isSpeech: cappedRms >= MIN_UTTERANCE_RMS,
@@ -435,6 +435,7 @@ export default function ConversationMode({
     startOnLoad: false,
     getStream: getMicStream,
     resumeStream: getMicStream,
+    positiveSpeechThreshold: VAD_POSITIVE_SPEECH_THRESHOLD,
     redemptionMs: resolveVadRedemptionMs(
       user?.conversation_speech_pause,
       cefrLevel
@@ -442,6 +443,18 @@ export default function ConversationMode({
     ortConfig: (ort) => {
       // Single-threaded ONNX — no SharedArrayBuffer / COOP headers required
       ort.env.wasm.numThreads = 1
+    },
+    onFrameProcessed: (probabilities, frame) => {
+      if (
+        !sessionActiveRef.current ||
+        !(probabilities.isSpeech >= VAD_POSITIVE_SPEECH_THRESHOLD)
+      )
+        return
+      // VAD emits this before onSpeechStart. Keep the triggering frame's energy,
+      // but exclude padding and non-speech frames from the volume measurement.
+      const energy = speechEnergyRef.current
+      for (const sample of frame) energy.sumSquares += sample * sample
+      energy.samples += frame.length
     },
     onSpeechStart: () => {
       if (!sessionActiveRef.current) return
@@ -454,6 +467,7 @@ export default function ConversationMode({
     },
     onVADMisfire: () => {
       speechStartedAtRef.current = null
+      speechEnergyRef.current = { sumSquares: 0, samples: 0 }
       if (mountedRef.current) setUserSpeaking(false)
     },
     onSpeechEnd: (audio: Float32Array) => {
@@ -472,6 +486,7 @@ export default function ConversationMode({
         assistantTurnActive: assistantTurnActiveRef.current,
       })
       speechStartedAtRef.current = null
+      speechEnergyRef.current = { sumSquares: 0, samples: 0 }
       if (!isSpeech) {
         setUserSpeaking(false)
         return
@@ -647,6 +662,7 @@ export default function ConversationMode({
       assistantTurnActiveRef.current = false
       assistantSpeakingRef.current = false
       speechStartedAtRef.current = null
+      speechEnergyRef.current = { sumSquares: 0, samples: 0 }
       const ws = wsRef.current
       wsRef.current = null
       if (ws) {
@@ -1054,6 +1070,8 @@ export default function ConversationMode({
     setAssistantThinking(false)
     activeTurnIdRef.current = null
     assistantTurnActiveRef.current = false
+    speechStartedAtRef.current = null
+    speechEnergyRef.current = { sumSquares: 0, samples: 0 }
     sessionStartedAtRef.current = null
     refreshQuota()
 

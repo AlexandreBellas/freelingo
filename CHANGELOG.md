@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Fixed
 
 - Voice conversations preserve decimal numbers within spoken fragments, keep fallback audio playback in order, show response preparation while a turn is pending, and clear obsolete inactivity warnings without resetting the maximum-duration countdown.
+- Voice capture measures speech volume independently of the configured silence pause. Sessions no longer expire for inactivity while Lingu is processing a turn, and speaking before the opening greeting finishes preserves the selected topic and prior context.
 - Landing rating totals and averages use all approved ratings rather than the limited carousel selection. The carousel continues to show positive written reviews, while the summary remains visible even without qualifying comments. Updated rating labels across all fifteen interface languages.
 
 ## [1.10.40] - 2026-10-16
