@@ -1359,6 +1359,7 @@
     "statusListening": "Kuunnellaan...",
     "statusDetecting": "Tunnistetaan puhetta...",
     "statusSpeaking": "Puhuu...",
+    "statusThinking": "Valmistellaan vastausta...",
     "statusError": "Virhe",
     "errorServicesDisabled": "Äänipalvelut eivät ole käytössä tällä palvelimella.",
     "errorConnection": "Yhteysvirhe. Yritä uudelleen.",
@@ -1762,6 +1763,10 @@
     "version": "v1.10.45",
     "cta": "Selvä",
     "entry1": {
+      "label": "Sujuvammat puhekeskustelut",
+      "desc": "Olemme parantaneet keskusteluja Lingun kanssa: puhe toistuu sujuvammin ja puheenvuorot ilmaistaan selkeämmin."
+    },
+    "entry2": {
       "label": "Sujuvampi käyttökokemus",
       "desc": "Korjasimme myös pieniä virheitä ja hioimme yksityiskohtia, jotta FreeLingolla oppiminen olisi joka päivä entistä mukavampaa."
     }

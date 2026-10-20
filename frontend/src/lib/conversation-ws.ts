@@ -46,6 +46,7 @@ export interface BargeInMessage {
 
 export interface SessionWarningMessage {
   type: 'session_warning'
+  reason: 'max_duration' | 'inactivity'
   remaining_seconds: number
   turn_id?: number
 }

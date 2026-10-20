@@ -1359,6 +1359,7 @@
     "statusListening": "Słuchanie...",
     "statusDetecting": "Wykrywanie mowy...",
     "statusSpeaking": "Mówienie...",
+    "statusThinking": "Przygotowywanie odpowiedzi...",
     "statusError": "Błąd",
     "errorServicesDisabled": "Usługi głosowe nie są włączone na tym serwerze.",
     "errorConnection": "Błąd połączenia. Spróbuj ponownie.",
@@ -1762,6 +1763,10 @@
     "version": "v1.10.45",
     "cta": "Rozumiem",
     "entry1": {
+      "label": "Płynniejsze rozmowy głosowe",
+      "desc": "Usprawniliśmy rozmowy z Lingu, aby zapewnić płynniejsze odtwarzanie głosu i wyraźniejsze wskazówki, kiedy mówić."
+    },
+    "entry2": {
       "label": "Płynniejsze korzystanie",
       "desc": "Poprawiliśmy też drobne błędy i dopracowaliśmy kilka szczegółów, aby codzienna nauka z FreeLingo była jeszcze przyjemniejsza."
     }

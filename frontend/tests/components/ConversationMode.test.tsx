@@ -8,6 +8,12 @@ import {
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { useMicVAD } from '@ricky0123/vad-react'
+import {
+  defaultFrameProcessorOptions,
+  FrameProcessor,
+  type FrameProcessorEvent,
+} from '@ricky0123/vad-web/dist/frame-processor'
+import { Message } from '@ricky0123/vad-web/dist/messages'
 
 const mocks = vi.hoisted(() => ({
   options: {} as Parameters<typeof useMicVAD>[0],
@@ -18,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   enqueue: vi.fn(),
   cancel: vi.fn(),
   closeAudio: vi.fn(),
+  onAudioIdle: null as (() => void) | null,
   starters: [] as string[],
 }))
 
@@ -44,17 +51,26 @@ vi.mock('next-intl', async (importOriginal) => {
   return {
     useLocale: () => 'en',
     useTranslations: () =>
-      Object.assign((key: string) => key, {
-        raw: () => mocks.starters,
-        rich: practice.rich,
-      }),
+      Object.assign(
+        (key: string, values?: { seconds?: number }) => {
+          if (key === 'warningTimeout') return `${key}:${values?.seconds}`
+          return key
+        },
+        {
+          raw: () => mocks.starters,
+          rich: practice.rich,
+        }
+      ),
   }
 })
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock('@/lib/api', () => ({ apiFetch: mocks.apiFetch }))
 vi.mock('@/lib/audio', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/audio')>()),
-  createAudioQueue: () => ({ enqueue: mocks.enqueue, cancel: mocks.cancel }),
+  createAudioQueue: (_ctx: AudioContext, onIdle?: () => void) => {
+    mocks.onAudioIdle = onIdle ?? null
+    return { enqueue: mocks.enqueue, cancel: mocks.cancel }
+  },
 }))
 vi.mock('@/components/reviews/ReviewPrompt', () => ({
   ReviewPrompt: () => null,
@@ -63,14 +79,24 @@ vi.mock('@/components/reviews/ReviewPrompt', () => ({
 vi.mock('@/lib/review-prompt-triggers', () => ({
   shouldShowVoiceReviewPrompt: () => false,
 }))
-vi.mock('@/components/conversation/StatusIndicator', () => ({
-  default: ({ userSpeaking }: { userSpeaking: boolean }) => (
-    <div data-testid="speaking">{String(userSpeaking)}</div>
-  ),
-}))
+vi.mock('@/components/conversation/StatusIndicator', async (importOriginal) => {
+  const { default: StatusIndicator } =
+    await importOriginal<
+      typeof import('@/components/conversation/StatusIndicator')
+    >()
+  return {
+    default: (props: Parameters<typeof StatusIndicator>[0]) => (
+      <>
+        <div data-testid="speaking">{String(props.userSpeaking)}</div>
+        <StatusIndicator {...props} />
+      </>
+    ),
+  }
+})
 
 import ConversationMode from '@/components/conversation/ConversationMode'
 import { useAuthStore } from '@/store/auth'
+import { mapUser } from '@/lib/mappers'
 
 class MockWebSocket {
   static OPEN = 1
@@ -142,15 +168,17 @@ async function start(label = 'start') {
   return ws
 }
 
-function speak() {
+function speak(audio = new Float32Array(24000).fill(0.05)) {
+  mocks.options.onFrameProcessed?.({ isSpeech: 0.99, notSpeech: 0.01 }, audio)
   mocks.options.onSpeechStart?.()
-  mocks.options.onSpeechEnd?.(new Float32Array(24000).fill(0.05))
+  mocks.options.onSpeechEnd?.(audio)
 }
 
 beforeEach(() => {
   vi.clearAllMocks()
   MockWebSocket.instances = []
   mocks.starters = []
+  mocks.onAudioIdle = null
   mocks.getUserMedia.mockReset().mockResolvedValue(microphone().stream)
   mocks.start.mockImplementation(async () => {
     await mocks.options.getStream?.()
@@ -182,6 +210,330 @@ afterEach(() => {
 })
 
 describe('ConversationMode session lifecycle', () => {
+  it.each([
+    'automatic-start',
+    'manual-start',
+    'retry-after-error',
+    'restart-after-stop',
+  ])('preserves chat context in the voice handshake after %s', async (path) => {
+    const context = [
+      {
+        role: 'user' as const,
+        content: 'I would like to practise ordering food.',
+      },
+      {
+        role: 'assistant' as const,
+        content: 'What would you like to order?',
+      },
+    ]
+    render(
+      <ConversationMode
+        initialContext={context}
+        autoStart={path !== 'manual-start'}
+      />
+    )
+    if (path === 'manual-start') {
+      fireEvent.click(screen.getByRole('button', { name: 'start' }))
+    }
+    await waitFor(() => expect(MockWebSocket.instances).toHaveLength(1))
+    let ws = MockWebSocket.instances[0]
+    act(() => ws.onopen?.())
+    expect(JSON.parse(ws.send.mock.calls[0][0]).context).toEqual(context)
+
+    if (path === 'retry-after-error' || path === 'restart-after-stop') {
+      if (path === 'retry-after-error') {
+        act(() => ws.onerror?.())
+        expect(screen.getByText('✕ errorConnection')).toBeInTheDocument()
+      } else {
+        fireEvent.click(screen.getByRole('button', { name: 'stop' }))
+      }
+      fireEvent.click(screen.getByRole('button', { name: 'startNew' }))
+      await waitFor(() => expect(MockWebSocket.instances).toHaveLength(2))
+      ws = MockWebSocket.instances[1]
+      act(() => ws.onopen?.())
+    }
+
+    const authentication = JSON.parse(ws.send.mock.calls[0][0])
+    expect(authentication.type).toBe('auth')
+    expect(authentication.context).toEqual(context)
+  })
+
+  it.each([
+    { speechPause: 1000, voiceFrames: 32, prependSilence: true },
+    { speechPause: 2000, voiceFrames: 32, prependSilence: true },
+    { speechPause: 3000, voiceFrames: 32, prependSilence: true },
+    { speechPause: 3000, voiceFrames: 32, prependSilence: false },
+    { speechPause: 3000, voiceFrames: 13, prependSilence: true },
+  ])(
+    'sends the same detected voice with pause=$speechPause frames=$voiceFrames padding=$prependSilence',
+    async ({ speechPause, voiceFrames, prependSilence }) => {
+      useAuthStore.setState({
+        user: mapUser({
+          id: 1,
+          username: 'voice-test',
+          display_name: 'Voice Test',
+          role: 'user',
+          native_language: 'es',
+          target_language: 'en-GB',
+          conversation_speech_pause: speechPause,
+        }),
+      })
+      render(<ConversationMode />)
+      const ws = await start()
+      expect(mocks.options.redemptionMs).toBe(speechPause)
+      vi.spyOn(performance, 'now').mockReturnValue(1000)
+
+      const voiceFrame = Float32Array.from(
+        { length: 512 },
+        (_, index) => 0.032 * Math.sin((2 * Math.PI * 250 * index) / 16000)
+      )
+      const silenceFrame = new Float32Array(512)
+      const segments: Float32Array[] = []
+      // Only model inference is simulated; padding and segmentation use installed VAD code.
+      const processor = new FrameProcessor(
+        async (frame) => ({
+          isSpeech: frame === voiceFrame ? 0.99 : 0.01,
+          notSpeech: frame === voiceFrame ? 0.01 : 0.99,
+        }),
+        () => {},
+        {
+          ...defaultFrameProcessorOptions,
+          positiveSpeechThreshold: mocks.options.positiveSpeechThreshold!,
+          redemptionMs: mocks.options.redemptionMs!,
+        },
+        32
+      )
+      const handleEvent = (event: FrameProcessorEvent) => {
+        if (event.msg === Message.FrameProcessed) {
+          mocks.options.onFrameProcessed?.(event.probs, event.frame)
+        }
+        if (event.msg === Message.SpeechStart) mocks.options.onSpeechStart?.()
+        if (event.msg === Message.VADMisfire) mocks.options.onVADMisfire?.()
+        if (event.msg === Message.SpeechEnd) {
+          segments.push(event.audio)
+          mocks.options.onSpeechEnd?.(event.audio)
+        }
+      }
+
+      processor.resume()
+      await act(async () => {
+        if (prependSilence) {
+          for (let i = 0; i < processor.preSpeechPadFrames; i++) {
+            await processor.process(silenceFrame, handleEvent)
+          }
+        }
+        for (let i = 0; i < voiceFrames; i++) {
+          await processor.process(voiceFrame, handleEvent)
+        }
+        for (let i = 0; i < processor.redemptionFrames; i++) {
+          await processor.process(silenceFrame, handleEvent)
+        }
+      })
+
+      expect(segments).toHaveLength(1)
+      const segment = segments[0]
+      const rms = Math.sqrt(
+        segment.reduce((energy, sample) => energy + sample * sample, 0) /
+          segment.length
+      )
+      expect(
+        ws.send,
+        JSON.stringify({
+          speechPause,
+          voicedMs: voiceFrames * 32,
+          segmentMs: (segment.length / 16000) * 1000,
+          rms,
+        })
+      ).toHaveBeenCalledTimes(1)
+      const wav = ws.send.mock.calls[0][0] as ArrayBuffer
+      expect(wav.byteLength).toBe(44 + segment.length * 2)
+      const pcm = new DataView(wav)
+      const firstVoicedSample = prependSilence
+        ? processor.preSpeechPadFrames * 512
+        : 0
+      expect(pcm.getInt16(44 + (firstVoicedSample + 1) * 2, true)).toBe(
+        Math.trunc(voiceFrame[1] * 0x7fff)
+      )
+    }
+  )
+
+  it.each([0, 0.005, NaN, Infinity])(
+    'rejects a detected segment with quiet or invalid amplitude %s',
+    async (amplitude) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      act(() => speak(new Float32Array(24000).fill(amplitude)))
+      expect(ws.send).not.toHaveBeenCalled()
+      act(() => speak())
+      expect(ws.send).toHaveBeenCalledTimes(1)
+    }
+  )
+
+  it.each(['misfire', 'too-short', 'assistant-active'])(
+    'does not carry %s speech energy into the next utterance',
+    async (discard) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      if (discard === 'assistant-active') {
+        act(() => speak())
+        act(() => speak())
+        act(() => ws.message({ type: 'status', value: 'listening' }))
+        ws.send.mockClear()
+      } else if (discard === 'too-short') {
+        act(() => speak(new Float32Array(512).fill(0.5)))
+      } else {
+        act(() => {
+          mocks.options.onFrameProcessed?.(
+            { isSpeech: 0.99, notSpeech: 0.01 },
+            new Float32Array(24000).fill(0.5)
+          )
+          mocks.options.onSpeechStart?.()
+          mocks.options.onVADMisfire?.()
+        })
+      }
+      act(() => speak(new Float32Array(24000).fill(0.005)))
+      expect(ws.send).not.toHaveBeenCalled()
+      act(() => speak())
+      expect(ws.send).toHaveBeenCalledTimes(1)
+    }
+  )
+
+  it('clears unfinished speech energy when restarting the session', async () => {
+    render(<ConversationMode />)
+    await start()
+    act(() => {
+      mocks.options.onFrameProcessed?.(
+        { isSpeech: 0.99, notSpeech: 0.01 },
+        new Float32Array(24000).fill(0.5)
+      )
+      mocks.options.onSpeechStart?.()
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'stop' }))
+    const ws = await start('startNew')
+    act(() => speak(new Float32Array(24000).fill(0.005)))
+    expect(ws.send).not.toHaveBeenCalled()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['transcribing', 'thinking'])(
+    'does not advertise listening while %s blocks a new user turn',
+    async (value) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      expect(screen.getByText('statusListening')).toBeInTheDocument()
+
+      act(() => speak())
+      expect(screen.getByText('statusThinking')).toBeInTheDocument()
+      act(() => ws.message({ type: 'status', value, turn_id: 2 }))
+      act(() => mocks.options.onSpeechStart?.())
+      expect(screen.getByText('statusThinking')).toBeInTheDocument()
+      act(() => speak())
+
+      expect(ws.send).toHaveBeenCalledTimes(1)
+      expect(ws.send.mock.calls[0][0]).toBeInstanceOf(ArrayBuffer)
+      expect(screen.queryByText('statusListening')).not.toBeInTheDocument()
+      expect(screen.getByText('statusThinking')).toBeInTheDocument()
+    }
+  )
+
+  it('shows preparation between chunks and listens only after backend work and audio end', async () => {
+    render(<ConversationMode />)
+    const ws = await start()
+    act(() => speak())
+    act(() => ws.message({ type: 'status', value: 'thinking', turn_id: 2 }))
+    act(() => ws.onmessage?.({ data: new ArrayBuffer(8) }))
+    act(() => mocks.options.onSpeechStart?.())
+    expect(screen.getByText('statusSpeaking')).toBeInTheDocument()
+    act(() => mocks.options.onVADMisfire?.())
+
+    act(() => mocks.onAudioIdle?.())
+    expect(screen.getByText('statusThinking')).toBeInTheDocument()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(1)
+
+    act(() => ws.onmessage?.({ data: new ArrayBuffer(8) }))
+    act(() => ws.message({ type: 'status', value: 'listening', turn_id: 2 }))
+    act(() => ws.message({ type: 'turn_complete', turn_id: 2 }))
+    expect(screen.getByText('statusSpeaking')).toBeInTheDocument()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(1)
+
+    act(() => mocks.onAudioIdle?.())
+    expect(screen.getByText('statusListening')).toBeInTheDocument()
+    act(() => speak())
+    expect(ws.send).toHaveBeenCalledTimes(2)
+  })
+
+  it.each(['inactivity', 'max_duration'])(
+    'keeps only an applicable %s warning after a new accepted utterance',
+    async (reason) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      vi.useFakeTimers()
+      act(() =>
+        ws.message({
+          type: 'session_warning',
+          reason,
+          remaining_seconds: 60,
+        })
+      )
+      expect(screen.getByText('warningTimeout:60')).toBeInTheDocument()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_000)
+      })
+      act(() => speak())
+      act(() =>
+        ws.message({ type: 'status', value: 'transcribing', turn_id: 2 })
+      )
+      expect(ws.send).toHaveBeenCalledTimes(1)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(50_000)
+      })
+
+      expect(ws.close).not.toHaveBeenCalled()
+      if (reason === 'inactivity') {
+        expect(screen.queryByText(/warningTimeout:/)).not.toBeInTheDocument()
+      } else {
+        expect(screen.getByText('warningTimeout:0')).toBeInTheDocument()
+      }
+    }
+  )
+
+  it.each([
+    ['max_duration', 'inactivity'],
+    ['inactivity', 'max_duration'],
+  ])(
+    'keeps the maximum-duration deadline when warnings arrive as %s then %s',
+    async (first, second) => {
+      render(<ConversationMode />)
+      const ws = await start()
+      vi.useFakeTimers()
+      act(() => {
+        for (const reason of [first, second]) {
+          ws.message({
+            type: 'session_warning',
+            reason,
+            remaining_seconds: reason === 'inactivity' ? 20 : 60,
+          })
+        }
+      })
+      expect(screen.getByText('warningTimeout:20')).toBeInTheDocument()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_000)
+      })
+      act(() => speak())
+      act(() =>
+        ws.message({ type: 'status', value: 'transcribing', turn_id: 2 })
+      )
+      expect(screen.getByText('warningTimeout:50')).toBeInTheDocument()
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10_000)
+      })
+      expect(screen.getByText('warningTimeout:40')).toBeInTheDocument()
+    }
+  )
+
   it.each(['replace-session', 'unmount'])(
     'ignores a delayed trial profile after %s',
     async (action) => {

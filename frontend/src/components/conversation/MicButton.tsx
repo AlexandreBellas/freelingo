@@ -42,7 +42,7 @@ export default function MicButton({ status, onStart, onStop }: Props) {
   if (status === 'ready') {
     return (
       <button
-        onClick={onStart}
+        onClick={() => onStart()}
         className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 px-8 py-3 font-mono text-sm font-bold tracking-widest uppercase transition-colors"
       >
         {t('start')}
@@ -68,7 +68,7 @@ export default function MicButton({ status, onStart, onStop }: Props) {
   // ended or error → offer restart
   return (
     <button
-      onClick={onStart}
+      onClick={() => onStart()}
       className="border-fl-border text-fl-muted-2 hover:text-fl-fg hover:border-fl-border-2 border px-8 py-3 font-mono text-sm tracking-widest uppercase transition-colors"
     >
       {t('startNew')}

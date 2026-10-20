@@ -1359,6 +1359,7 @@
     "statusListening": "Lytter...",
     "statusDetecting": "Registrerer tale...",
     "statusSpeaking": "Taler...",
+    "statusThinking": "Forbereder svar...",
     "statusError": "Fejl",
     "errorServicesDisabled": "Stemmetjenester er ikke aktiveret på denne server.",
     "errorConnection": "Forbindelsesfejl. Prøv igen.",
@@ -1762,6 +1763,10 @@
     "version": "v1.10.45",
     "cta": "Forstået",
     "entry1": {
+      "label": "Mere flydende stemmesamtaler",
+      "desc": "Vi har forbedret samtalerne med Lingu med mere flydende stemmeafspilning og tydeligere signaler om, hvis tur det er til at tale."
+    },
+    "entry2": {
       "label": "En mere smidig oplevelse",
       "desc": "Vi har også rettet mindre fejl og forbedret nogle detaljer, så du får endnu mere glæde af din daglige læring med FreeLingo."
     }

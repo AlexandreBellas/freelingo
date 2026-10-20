@@ -1359,6 +1359,7 @@
     "statusListening": "En écoute...",
     "statusDetecting": "Détection de la parole...",
     "statusSpeaking": "Parole en cours...",
+    "statusThinking": "Préparation de la réponse...",
     "statusError": "Erreur",
     "errorServicesDisabled": "Les services vocaux ne sont pas activés sur ce serveur.",
     "errorConnection": "Erreur de connexion. Veuillez réessayer.",
@@ -1762,6 +1763,10 @@
     "version": "v1.10.45",
     "cta": "Compris",
     "entry1": {
+      "label": "Des conversations vocales plus fluides",
+      "desc": "Nous avons amélioré les conversations avec Lingu pour une lecture audio plus fluide et des indications plus claires sur les tours de parole."
+    },
+    "entry2": {
       "label": "Une expérience plus fluide",
       "desc": "Nous avons aussi corrigé de petits bugs et peaufiné quelques détails pour rendre ton apprentissage quotidien avec FreeLingo encore plus agréable."
     }
