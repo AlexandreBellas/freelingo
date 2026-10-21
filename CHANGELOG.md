@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.50] - 2026-10-21
+
+### Security
+
+- Updated backend certifi to 2026.10.19 and pip to 26.2.2 across backend images, CI, and local tooling to incorporate CA trust fixes for the eMudhra intermediate certificate compromise.
+
 ## [1.10.45] - 2026-10-20
 
 ### Added
