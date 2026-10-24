@@ -20,7 +20,7 @@ From the repository root:
 ./scripts/bootstrap.sh
 ```
 
-`scripts/toolchain.env` pins exact Python 3.14, Node 25, bundled npm 11 and pip versions. Bootstrap
+`scripts/toolchain.env` pins Python 3.14.9, Node 26.12.1, bundled npm 11.20.0 and pip 26.2.2. Bootstrap
 downloads standalone CPython from `astral-sh/python-build-standalone` and Node from `nodejs.org`,
 verifying their archives against committed SHA-256 checksums before extraction.
 
@@ -83,5 +83,5 @@ environment because virtualenv scripts contain absolute paths.
 
 Review dependency updates in the committed requirements, constraints and npm lockfile. Runtime
 updates require matching versions and archive checksums in `scripts/toolchain.env`; npm must match
-the selected Node archive's bundled version. Keep the Python/Node majors and pip version aligned
-with CI and images. Use the local npm 11 when intentionally regenerating the frontend lockfile.
+the selected Node archive's bundled version. Keep exact Python, Node, npm and pip versions aligned
+with CI and images. Use the local npm 11.20.0 when intentionally regenerating the frontend lockfile.

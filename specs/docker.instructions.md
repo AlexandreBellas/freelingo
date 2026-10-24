@@ -41,9 +41,10 @@ backend and frontend Dockerfiles.
 
 ## Images and publication
 
-Backend images use Python 3.14 and pip 26.2.1 with `requirements.txt` plus `constraints.txt`.
-Frontend production/development images use Node 25, explicitly install npm 11, and use the committed
-lockfile through `npm ci`. Production uses Next.js standalone output.
+Backend images use Python 3.14.9 and pip 26.2.2 with `requirements.txt` plus `constraints.txt`.
+Frontend production/development images use Node 26.12.1, explicitly install npm 11.20.0, and use the
+committed lockfile through `npm ci`. These exact runtime and package-manager versions match the local
+toolchain and PR CI. Production uses Next.js standalone output.
 
 The frontend builder places the frontend in `/app` and copies translation catalogs to `/app/messages`.
 Next.js checks types with `frontend/tsconfig.build.json`, which excludes `tests/`; test imports resolve
