@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.55] - 2026-10-24
+
+### Changed
+
+- Aligned local tooling, CI, and container images on Node.js 26.12.1, npm 11.20.0, and Python 3.14.9, with Node.js 26 type definitions.
+- Updated Next.js and eslint-config-next to 16.4.3, FastAPI to 0.143.5, SQLAlchemy to 2.1.6, Alembic to 1.20.1, and Ruff to 0.17.2 for upstream maintenance fixes.
+- Updated Zustand to 5.0.16, Lucide React to 1.61.0, shadcn to 4.22.1, pydantic-settings to 2.16.1, and certifi to 2026.10.23.
+- Updated coverage to 7.17.0, websockets to 17.3, pycparser to 3.12, and platformdirs to 4.13.5 for upstream maintenance fixes in backend dependencies and development tooling.
+- Updated GitHub Actions checkout to 7.0.1, Node.js and Python setup to 7.1.0, and release publishing to 3.0.3 across CI and publication workflows.
+
+### Security
+
+- Replaced the end-of-life Node.js 25 runtime with Node.js 26.12.1 and updated Python to 3.14.9 to incorporate upstream security fixes.
+
 ## [1.10.50] - 2026-10-21
 
 ### Security

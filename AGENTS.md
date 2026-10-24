@@ -81,8 +81,8 @@ Use the narrowest relevant spec first:
 - Use the `run-tests` skill for requested targeted validation and the `pre-push` skill for final full validation.
 - Ask before running tests, builds, linters, typechecks, formatters, or other validation. Do not launch full suites automatically.
 - If a test fails, stop, report the failure, and ask before changing code or tests.
-- Backend CI and images use Python 3.14 and pip 26.2.1. Keep `requirements.txt`, `constraints.txt`, Docker, CI, and cache inputs aligned.
-- Frontend CI and Dockerfiles use Node 25 and explicitly install npm 11. Generate `package-lock.json` with npm 11 and keep `@types/node` on major 25.
+- Backend CI and images use Python 3.14.9 and pip 26.2.2. Keep `requirements.txt`, `constraints.txt`, Docker, CI, and cache inputs aligned.
+- Frontend CI and Dockerfiles use Node 26.12.1 and explicitly install npm 11.20.0, matching the local toolchain. Generate `package-lock.json` with that npm version and keep `@types/node` on major 26.
 - `develop` and `main` publish Linux `amd64` and `arm64` images from the same backend/frontend Dockerfile paths.
 
 ## Code conventions

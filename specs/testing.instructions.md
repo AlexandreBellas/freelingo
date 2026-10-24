@@ -101,7 +101,7 @@ Pushes to `develop` and `main` trigger image-publication workflows, not this qua
 Both quality-check jobs use GitHub-hosted `ubuntu-24.04` runners. This fixes the Ubuntu LTS series,
 while GitHub continues updating the runner image and its preinstalled tools.
 
-Backend CI uses Python 3.14, pip 26.2.1, pinned requirements/constraints, SQLite tests, and configured
+Backend CI uses Python 3.14.9, pip 26.2.2, pinned requirements/constraints, SQLite tests, and configured
 coverage enforcement. The existing backend job also starts an ephemeral PostgreSQL 16 service with a
 health check. Before pytest, it applies `alembic upgrade head` to its empty database, overriding only
 the CI Alembic script location to the repository's `backend/alembic` directory. Migration failure
@@ -109,7 +109,8 @@ fails the job. This checks the fresh-install migration chain, not upgrades with 
 
 The same pytest invocation receives `TEST_POSTGRES_URL` for the PostgreSQL concurrency tests; ordinary
 tests retain their SQLite fixture. PostgreSQL schemas created by tests are separate from the migrated
-public schema. Frontend CI uses Node 25, installs npm 11, runs `npm ci`, then lint, typecheck, and Vitest.
+public schema. Frontend CI uses Node 26.12.1, installs npm 11.20.0, runs `npm ci`, then lint, typecheck,
+and Vitest. Exact runtime and package-manager versions match the local toolchain and container images.
 
 ## Rules
 
